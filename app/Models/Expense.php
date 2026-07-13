@@ -18,6 +18,7 @@ class Expense extends Model
         'amount',
         'notes',
         'user_id',
+        'deposit_account_id',
     ];
 
     public function category(): BelongsTo {
@@ -26,5 +27,9 @@ class Expense extends Model
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function depositAccount(): BelongsTo {
+        return $this->belongsTo(DepositAccount::class, 'deposit_account_id');
     }
 }

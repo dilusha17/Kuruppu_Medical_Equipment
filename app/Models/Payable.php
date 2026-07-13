@@ -16,10 +16,16 @@ class Payable extends Model
         'amount',
         'dateTime',
         'note',
+        'deposit_account_id',
     ];
 
     public function grn(): BelongsTo
     {
         return $this->belongsTo(Grn::class, 'grns_id');
+    }
+
+    public function depositAccount(): BelongsTo
+    {
+        return $this->belongsTo(DepositAccount::class, 'deposit_account_id');
     }
 }

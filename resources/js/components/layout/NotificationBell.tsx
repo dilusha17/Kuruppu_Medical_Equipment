@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
+import { Bell, AlertCircle } from 'lucide-react';
+import NumberedPagination from '@/components/shared/NumberedPagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 import axios from 'axios';
 
 interface OverdueInvoice {
@@ -107,20 +107,14 @@ export default function NotificationBell() {
                 </div>
 
                 {data && data.last_page > 1 && (
-                    <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-muted/30">
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0"
-                            disabled={page <= 1 || loading}
-                            onClick={() => fetch(page - 1)}>
-                            <ChevronLeft className="h-3.5 w-3.5" />
-                        </Button>
-                        <span className="text-xs text-muted-foreground">
-                            Page {data.current_page} of {data.last_page}
-                        </span>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0"
-                            disabled={page >= data.last_page || loading}
-                            onClick={() => fetch(page + 1)}>
-                            <ChevronRight className="h-3.5 w-3.5" />
-                        </Button>
+                    <div className="px-4 py-2.5 border-t border-border bg-muted/30">
+                        <NumberedPagination
+                            currentPage={data.current_page}
+                            lastPage={data.last_page}
+                            total={data.total}
+                            onPageChange={(p) => fetch(p)}
+                            compact
+                        />
                     </div>
                 )}
             </PopoverContent>

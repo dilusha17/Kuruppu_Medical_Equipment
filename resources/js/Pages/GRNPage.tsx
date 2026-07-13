@@ -652,6 +652,8 @@ function GRNPage() {
     const [discount, setDiscount] = useState('');
     const [paymentMethodId, setPaymentMethodId] = useState<string>('');
     const [paymentMethods, setPaymentMethods] = useState<{ id: number; name: string }[]>([]);
+    const [depositAccountId, setDepositAccountId] = useState<string>('');
+    const [depositAccounts, setDepositAccounts] = useState<{ id: number; name: string; type: string }[]>([]);
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [saving, setSaving] = useState(false);
@@ -779,6 +781,7 @@ function GRNPage() {
             setBrands(res.data.brands || []);
             setUnitTypes(res.data.unit_types || []);
             setPaymentMethods(res.data.payment_methods || []);
+            setDepositAccounts(res.data.deposit_accounts || []);
             if (res.data.next_number) setGrnNum(res.data.next_number);
         } catch (e: any) { console.log(e.response?.data); }
     };
@@ -905,6 +908,7 @@ function GRNPage() {
                 total_amount: grandTotal,
                 paid_amount: Number(paidAmount || 0),
                 payment_method_id: paymentMethodId ? Number(paymentMethodId) : null,
+                deposit_account_id: depositAccountId ? Number(depositAccountId) : null,
                 is_vat: selectedSupplierIsVat ? 1 : 0,
                 vat_amount: vatAmount,
                 vat_percentage: selectedSupplierIsVat ? vatRate : 0,
@@ -931,6 +935,7 @@ function GRNPage() {
             setDiscount('');
             setPaidAmount('');
             setPaymentMethodId('');
+            setDepositAccountId('');
             await fetchNextNumber();
 
         } catch (error: any) {
@@ -1014,8 +1019,8 @@ function GRNPage() {
             <span class="meta-value">${data.received_by}</span>
         </div>
         <div class="meta-item">
-            <span class="meta-label">Payment Method</span>
-            <span class="meta-value" style="text-transform:capitalize">${data.payment_method}</span>
+            <span class="meta-label">Payment Account</span>
+            <span class="meta-value" style="text-transform:capitalize">${data.deposit_account || '—'}</span>
         </div>
     </div>
 
@@ -1264,15 +1269,17 @@ function GRNPage() {
                     <div className="flex justify-end">
                         <div className="w-full max-w-md">
                             <div className="flex items-center justify-between py-2.5 border-b border-border/40">
-                                <span className="text-xs font-medium text-muted-foreground">Payment Method</span>
-                                <div className="w-44">
-                                    <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
+                                <span className="text-xs font-medium text-muted-foreground">Payment Account</span>
+                                <div className="w-48">
+                                    <Select value={depositAccountId} onValueChange={setDepositAccountId}>
                                         <SelectTrigger className="h-8 text-xs">
-                                            <SelectValue placeholder="Select method" />
+                                            <SelectValue placeholder="Select account" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {paymentMethods.map((pm) => (
-                                                <SelectItem key={pm.id} value={String(pm.id)}>{pm.name}</SelectItem>
+                                            {depositAccounts.map((da) => (
+                                                <SelectItem key={da.id} value={String(da.id)}>
+                                                    {da.name} ({da.type})
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>

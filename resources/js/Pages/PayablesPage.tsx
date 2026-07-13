@@ -675,6 +675,7 @@ import SearchBar from '@/components/shared/SearchBar';
 import Modal from '@/components/shared/Modal';
 import { Combobox } from '@/components/ui/combobox';
 import { format } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Banknote, CheckCircle2, Clock, Eye, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
@@ -721,12 +722,16 @@ function PayablesPage() {
     const [statusFilter, setStatusFilter] = useState<'all' | 'outstanding' | 'paid'>('outstanding');
     const [loading,      setLoading]      = useState(false);
 
+    // Deposit accounts
+    const [depositAccounts, setDepositAccounts] = useState<{ id: number; name: string; type: string }[]>([]);
+
     // Payment modal
-    const [payOpen,   setPayOpen]   = useState(false);
-    const [payTarget, setPayTarget] = useState<{ id: number; number: string; type: 'grn' | 'expense'; outstanding: number } | null>(null);
-    const [payDate,   setPayDate]   = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [payAmount, setPayAmount] = useState('');
-    const [payNotes,  setPayNotes]  = useState('');
+    const [payOpen,      setPayOpen]      = useState(false);
+    const [payTarget,    setPayTarget]    = useState<{ id: number; number: string; type: 'grn' | 'expense'; outstanding: number } | null>(null);
+    const [payDate,      setPayDate]      = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [payAmount,    setPayAmount]    = useState('');
+    const [payNotes,     setPayNotes]     = useState('');
+    const [payDepositId, setPayDepositId] = useState('');
 
     // History modal
     const [historyOpen,    setHistoryOpen]    = useState(false);
@@ -745,6 +750,7 @@ function PayablesPage() {
     const [nextExpNumber,    setNextExpNumber]    = useState('Auto-generated');
     const [newCatOpen,       setNewCatOpen]       = useState(false);
     const [newCatName,       setNewCatName]       = useState('');
+    const [expDepositId,     setExpDepositId]     = useState('');
     const [deleteExpId, setDeleteExpId] = useState<number | null>(null);
 
     // GRN detail modal
@@ -757,6 +763,7 @@ function PayablesPage() {
         axios.get('/expenses-category/all').then(r =>
             setExpenseCategories(r.data.map((c: any) => ({ value: String(c.id), label: c.name })))
         ).catch(() => {});
+        axios.get('/deposit-accounts/all').then(r => setDepositAccounts(r.data)).catch(() => {});
     }, []);
 
     useEffect(() => {
@@ -809,6 +816,7 @@ function PayablesPage() {
         setPayAmount(String(outstanding));
         setPayDate(format(new Date(), 'yyyy-MM-dd'));
         setPayNotes('');
+        setPayDepositId('');
         setPayOpen(true);
     };
 
@@ -818,12 +826,13 @@ function PayablesPage() {
         setLoading(true);
         try {
             await axios.post('/payables/payment', {
-                reference_type: payTarget.type,
-                reference_id:   payTarget.id,
-                amount:         Number(payAmount),
-                date:           payDate,
-                notes:          payNotes || null,
-                user_id:        user?.id,
+                reference_type:      payTarget.type,
+                reference_id:        payTarget.id,
+                amount:              Number(payAmount),
+                date:                payDate,
+                notes:               payNotes || null,
+                user_id:             user?.id,
+                deposit_account_id:  payDepositId ? Number(payDepositId) : null,
             });
             toast.success('Payment recorded!');
             setPayOpen(false);
@@ -867,12 +876,13 @@ function PayablesPage() {
         setLoading(true);
         try {
             await axios.post('/payables/expense/store', {
-                date:        expDate,
-                description: expDesc,
-                category_id: Number(expCategory),
-                amount:      Number(expAmount),
-                notes:       expNotes || null,
-                user_id:     user?.id,
+                date:               expDate,
+                description:        expDesc,
+                category_id:        Number(expCategory),
+                amount:             Number(expAmount),
+                notes:              expNotes || null,
+                user_id:            user?.id,
+                deposit_account_id: expDepositId ? Number(expDepositId) : null,
             });
             toast.success('Expense added!');
             setExpOpen(false);
@@ -881,6 +891,7 @@ function PayablesPage() {
             setExpCategory('');
             setExpAmount('');
             setExpNotes('');
+            setExpDepositId('');
             fetchExpenses();
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to add expense.');
@@ -1093,6 +1104,22 @@ function PayablesPage() {
                             </div>
                         </div>
                         <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Paid From</label>
+                            <Select value={payDepositId || 'none'} onValueChange={(v) => setPayDepositId(v === 'none' ? '' : v)}>
+                                <SelectTrigger className="w-full h-9 text-sm">
+                                    <SelectValue placeholder="Select account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">— Select account —</SelectItem>
+                                    {depositAccounts.map((a) => (
+                                        <SelectItem key={a.id} value={String(a.id)}>
+                                            {a.name} ({a.type})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes (optional)</label>
                             <Input value={payNotes} onChange={(e) => setPayNotes(e.target.value)} placeholder="e.g. Balance Payment" />
                         </div>
@@ -1150,9 +1177,25 @@ function PayablesPage() {
                             <Input type="number" value={expAmount} onChange={(e) => setExpAmount(e.target.value)} />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes (optional)</label>
-                            <Input value={expNotes} onChange={(e) => setExpNotes(e.target.value)} />
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Paid From</label>
+                            <Select value={expDepositId || 'none'} onValueChange={(v) => setExpDepositId(v === 'none' ? '' : v)}>
+                                <SelectTrigger className="w-full h-9 text-sm">
+                                    <SelectValue placeholder="Select account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">— Select account —</SelectItem>
+                                    {depositAccounts.map((a) => (
+                                        <SelectItem key={a.id} value={String(a.id)}>
+                                            {a.name} ({a.type})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
+                    </div>
+                    <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes (optional)</label>
+                        <Input value={expNotes} onChange={(e) => setExpNotes(e.target.value)} />
                     </div>
                     <div className="flex justify-end gap-2 pt-2">
                         <Button variant="outline" onClick={() => setExpOpen(false)}>Cancel</Button>

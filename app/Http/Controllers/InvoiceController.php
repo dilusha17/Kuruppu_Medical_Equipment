@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessEntity;
 use App\Models\Customers;
 use App\Models\Invoice;
 use App\Models\InvoiceItems;
 use App\Models\PaymentMethod;
 use App\Models\Receivable;
-use App\Models\Settings;
 use App\Models\StockBatches;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -60,11 +60,15 @@ class InvoiceController extends Controller
             $last       = Invoice::withTrashed()->latest()->first();
             $nextNum    = 'INV-' . str_pad(($last ? $last->id + 1 : 1), 4, '0', STR_PAD_LEFT);
 
+            $businessEntities = BusinessEntity::where('is_active', true)
+                ->get(['id', 'name', 'is_vat_registered', 'vat_no', 'address', 'phone', 'place_of_supply']);
+
             return response()->json([
-                'customers'       => $customers,
-                'payment_methods' => $payment_methods,
-                'stock'           => $stock,
-                'next_number'     => $nextNum,
+                'customers'         => $customers,
+                'payment_methods'   => $payment_methods,
+                'stock'             => $stock,
+                'next_number'       => $nextNum,
+                'business_entities' => $businessEntities,
             ]);
 
         } catch (\Exception $e) {
@@ -114,6 +118,7 @@ class InvoiceController extends Controller
         $query = Invoice::with([
                 'customer:id,name,contact_no,address',
                 'user:id,name',
+                'businessEntity:id,name',
                 'items:id,invoice_id,stock_batch_id,quantity,unit_price',
                 'items.stockBatch:id,batch_number,product_id',
                 'items.stockBatch.product:id,generic_name',
@@ -132,12 +137,17 @@ class InvoiceController extends Controller
             $query->whereDate('invoice_date', $request->date);
         }
 
+        if ($request->filled('business_entity_id')) {
+            $query->where('business_entity_id', $request->business_entity_id);
+        }
+
         return response()->json($query->paginate(50));
     }
 
     public function store(Request $request) {
 
         $validated = $request->validate([
+            'business_entity_id' => 'nullable|exists:business_entities,id',
             'customer_id'        => 'required|exists:customers,id',
             'user_id'            => 'required|exists:users,id',
             'po_number'          => 'nullable|string|max:100',
@@ -169,9 +179,10 @@ class InvoiceController extends Controller
             $invNum = 'INV-' . str_pad($next, 4, '0', STR_PAD_LEFT);  
             
             $invoice = Invoice::create([
-                'invoice_number' => $invNum,
-                'po_number'      => $validated['po_number'] ?? null,
-                'customer_id'    => $validated['customer_id'],
+                'invoice_number'    => $invNum,
+                'business_entity_id'=> $validated['business_entity_id'] ?? null,
+                'po_number'         => $validated['po_number'] ?? null,
+                'customer_id'       => $validated['customer_id'],
                 'user_id'        => $validated['user_id'],
                 'invoice_date'   => $validated['invoice_date'],
                 'sub_total'      => $validated['sub_total'],
@@ -225,6 +236,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::with([
             'customer:id,name,contact_no,address',
             'user:id,name',
+            'businessEntity:id,name',
             'items:id,invoice_id,stock_batch_id,quantity,unit_price',
             'items.stockBatch:id,batch_number,product_id',
             'items.stockBatch.product:id,generic_name',
@@ -241,6 +253,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::with([
             'customer:id,name,contact_no,address',
             'user:id,name',
+            'businessEntity',
             'items:id,invoice_id,stock_batch_id,quantity,unit_price',
             'items.stockBatch:id,batch_number,product_id',
             'items.stockBatch.product:id,generic_name',
@@ -248,8 +261,18 @@ class InvoiceController extends Controller
             'paymentMethod:id,name',
         ])->findOrFail($id);
 
-        $company  = Settings::first();
-        $logoPath = $this->resolveLogoPath();
+        $entity = $invoice->businessEntity
+            ?? BusinessEntity::where('is_active', true)->first();
+
+        $company = (object) [
+            'company_name'    => $entity?->name ?? '',
+            'company_address' => $entity?->address ?? '',
+            'company_phone'   => $entity?->phone ?? '',
+            'company_vat_no'  => $entity?->vat_no ?? '',
+        ];
+        $logoPath = ($entity?->logo_path
+            ? storage_path('app/public/' . $entity->logo_path)
+            : null) ?? $this->resolveLogoPath();
 
         $pdf = Pdf::loadView('pdf.invoice', [
             'invoice'  => $invoice,

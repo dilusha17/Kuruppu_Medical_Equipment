@@ -14,6 +14,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'invoice_number',
+        'business_entity_id',
         'po_number',
         'customer_id',
         'user_id',
@@ -42,6 +43,10 @@ class Invoice extends Model
 
     public function receivables(): HasMany {
         return $this->hasMany(Receivable::class, 'invoice_id');
+    }
+
+    public function businessEntity(): BelongsTo {
+        return $this->belongsTo(BusinessEntity::class, 'business_entity_id');
     }
 
     public function paymentMethod(): BelongsTo {

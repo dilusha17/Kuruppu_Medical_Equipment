@@ -9,7 +9,8 @@ use App\Models\Product;
 use App\Models\Suppliers;
 use App\Models\Payable;
 use App\Models\PaymentMethod;
-use App\Models\Settings;
+use App\Models\DepositAccount;
+use App\Models\BusinessEntity;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,19 +63,21 @@ class GrnController extends Controller
             $brands         = \App\Models\Brands::all(['id', 'name']);
             $unitTypes      = \App\Models\UnitTypes::all(['id', 'name']);
             $paymentMethods = PaymentMethod::orderBy('name')->get(['id', 'name']);
+            $depositAccounts = DepositAccount::where('is_active', true)->orderBy('name')->get(['id', 'name', 'type']);
 
             // Include next GRN number so GRNPage needs only one request on load
             $last       = Grn::withTrashed()->latest()->first();
             $nextNum    = 'GRN-' . str_pad(($last ? $last->id + 1 : 1), 4, '0', STR_PAD_LEFT);
 
             return response()->json([
-                'suppliers'       => $suppliers,
-                'products'        => $products,
-                'categories'      => $categories,
-                'brands'          => $brands,
-                'unit_types'      => $unitTypes,
-                'payment_methods' => $paymentMethods,
-                'next_number'     => $nextNum,
+                'suppliers'        => $suppliers,
+                'products'         => $products,
+                'categories'       => $categories,
+                'brands'           => $brands,
+                'unit_types'       => $unitTypes,
+                'payment_methods'  => $paymentMethods,
+                'deposit_accounts' => $depositAccounts,
+                'next_number'      => $nextNum,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -119,6 +122,7 @@ class GrnController extends Controller
             'total_amount'           => 'required|numeric',
             'paid_amount'            => 'required|numeric|min:0',
             'payment_method_id'      => 'nullable|exists:payment_methods,id',
+            'deposit_account_id'     => 'nullable|exists:deposit_accounts,id',
             'is_vat'                 => 'sometimes|boolean',
             'vat_amount'             => 'sometimes|numeric|min:0',
             'vat_percentage'         => 'sometimes|numeric|min:0',
@@ -159,6 +163,7 @@ class GrnController extends Controller
                 'total_amount'        => $validated['total_amount'],
                 'paid_amount'         => $validated['paid_amount'],
                 'payment_method_id'   => $validated['payment_method_id'] ?? null,
+                'deposit_account_id'  => $validated['deposit_account_id'] ?? null,
                 'is_vat'              => $validated['is_vat'] ?? false,
                 'vat_amount'          => $validated['vat_amount'] ?? 0,
                 'vat_percentage'      => $validated['vat_percentage'] ?? 0,
@@ -198,10 +203,11 @@ class GrnController extends Controller
                     : $grn->grn_number . ' First Payment';
 
                 Payable::create([
-                    'grns_id'  => $grn->id,
-                    'amount'   => $validated['paid_amount'],
-                    'dateTime' => $validated['received_date'],
-                    'note'     => $note,
+                    'grns_id'            => $grn->id,
+                    'amount'             => $validated['paid_amount'],
+                    'dateTime'           => $validated['received_date'],
+                    'note'               => $note,
+                    'deposit_account_id' => $validated['deposit_account_id'] ?? null,
                 ]);
             }
 
@@ -245,10 +251,19 @@ class GrnController extends Controller
             'items.product:id,generic_name',
             'payables',
             'paymentMethod:id,name',
+            'depositAccount:id,name,type',
         ])->findOrFail($id);
 
-        $company  = Settings::first();
-        $logoPath = $this->resolveLogoPath();
+        $entity   = BusinessEntity::where('is_active', true)->first();
+        $company  = (object) [
+            'company_name'    => $entity?->name ?? '',
+            'company_address' => $entity?->address ?? '',
+            'company_phone'   => $entity?->phone ?? '',
+            'company_vat_no'  => $entity?->vat_no ?? '',
+        ];
+        $logoPath = ($entity?->logo_path
+            ? storage_path('app/public/' . $entity->logo_path)
+            : null) ?? $this->resolveLogoPath();
 
         $pdf = Pdf::loadView('pdf.grn', [
             'grn'      => $grn,

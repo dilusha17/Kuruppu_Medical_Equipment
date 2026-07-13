@@ -5,36 +5,71 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Receivable;
+use Illuminate\Support\Facades\DB;
 
 class ReceivableController extends Controller
 {
-    public function invoices() {
+    public function invoices(Request $request)
+    {
+        $query = Invoice::with(['customer', 'receivables'])->latest();
 
-        $invoices = Invoice::with(['customer', 'receivables'])
-            ->latest()
-            ->get()
-            ->map(function ($inv) {
-                $collected   = $inv->receivables->sum('amount');
-                $outstanding = max(0, $inv->grand_total - $collected);
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
 
-                return [
-                    'id'             => $inv->id,
-                    'invoice_number' => $inv->invoice_number,
-                    'invoice_date'   => $inv->invoice_date,
-                    'customer'       => $inv->customer?->name ?? 'Walk-in Customer',
-                    'grand_total'    => $inv->grand_total,
-                    'paid_amount'    => $inv->paid_amount,
-                    'collected'      => $collected,
-                    'outstanding'    => $outstanding,
-                    'status'         => $inv->status,
-                ];
-            });
+        if ($request->filled('status')) {
+            if ($request->status === 'outstanding') {
+                $query->whereIn('status', ['unpaid', 'partial']);
+            } elseif ($request->status === 'paid') {
+                $query->where('status', 'paid');
+            }
+        }
 
-        return response()->json($invoices);
+        if ($request->filled('search')) {
+            $query->where('invoice_number', 'like', '%' . $request->search . '%');
+        }
+
+        $paginated = $query->paginate(50);
+
+        $paginated->getCollection()->transform(function ($inv) {
+            $collected = $inv->receivables->sum('amount');
+            return [
+                'id'             => $inv->id,
+                'invoice_number' => $inv->invoice_number,
+                'invoice_date'   => $inv->invoice_date,
+                'customer'       => $inv->customer?->name ?? 'Walk-in Customer',
+                'customer_id'    => $inv->customer_id,
+                'grand_total'    => $inv->grand_total,
+                'collected'      => $collected,
+                'outstanding'    => max(0, $inv->grand_total - $collected),
+                'status'         => $inv->status,
+            ];
+        });
+
+        return response()->json($paginated);
     }
 
-    public function paymentHistory($id) {
+    public function customerSummary(Request $request)
+    {
+        $query = Invoice::query();
 
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        $invoices = $query->with('receivables')->get();
+        $totalInvoiced  = $invoices->sum('grand_total');
+        $totalCollected = $invoices->sum(fn($i) => $i->receivables->sum('amount'));
+
+        return response()->json([
+            'total_invoiced'    => $totalInvoiced,
+            'total_collected'   => $totalCollected,
+            'total_outstanding' => $totalInvoiced - $totalCollected,
+        ]);
+    }
+
+    public function paymentHistory($id)
+    {
         $records = Receivable::where('invoice_id', $id)
             ->orderByDesc('dateTime')
             ->get(['id', 'amount', 'dateTime', 'note']);
@@ -42,8 +77,8 @@ class ReceivableController extends Controller
         return response()->json($records);
     }
 
-    public function recordPayment(Request $request) {
-
+    public function recordPayment(Request $request)
+    {
         $validated = $request->validate([
             'reference_id' => 'required|exists:invoices,id',
             'amount'       => 'required|numeric|min:0.01',
@@ -75,5 +110,43 @@ class ReceivableController extends Controller
         $invoice->update(['status' => $newStatus]);
 
         return response()->json($receivable, 201);
+    }
+
+    public function batchPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_ids'        => 'required|array|min:1',
+            'invoice_ids.*'      => 'required|exists:invoices,id',
+            'date'               => 'required|date',
+            'payment_method_id'  => 'required|exists:payment_methods,id',
+            'deposit_account_id' => 'required|exists:deposit_accounts,id',
+            'reference_no'       => 'nullable|string|max:100',
+            'notes'              => 'nullable|string',
+            'user_id'            => 'required|exists:users,id',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['invoice_ids'] as $invoiceId) {
+                $invoice     = Invoice::findOrFail($invoiceId);
+                $collected   = $invoice->receivables()->sum('amount');
+                $outstanding = max(0, $invoice->grand_total - $collected);
+
+                if ($outstanding <= 0) continue;
+
+                Receivable::create([
+                    'invoice_id'         => $invoiceId,
+                    'amount'             => $outstanding,
+                    'dateTime'           => $validated['date'],
+                    'note'               => $validated['notes'] ?? 'Batch Settlement',
+                    'payment_method_id'  => $validated['payment_method_id'],
+                    'deposit_account_id' => $validated['deposit_account_id'],
+                    'reference_no'       => $validated['reference_no'] ?? null,
+                ]);
+
+                $invoice->update(['status' => 'paid']);
+            }
+        });
+
+        return response()->json(['message' => 'Batch settlement recorded successfully.'], 201);
     }
 }

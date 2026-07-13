@@ -383,6 +383,8 @@ function InvoicePage() {
     const [stockItems,     setStockItems]     = useState<StockItem[]>([]);
     const [saving,         setSaving]         = useState(false);
     const [vatRate,        setVatRate]        = useState(0);
+    const [businessEntities, setBusinessEntities] = useState<{ id: number; name: string; is_vat_registered: number; vat_no: string | null }[]>([]);
+    const [businessEntityId, setBusinessEntityId] = useState<string>('');
 
     // Unit price modal state
     const [priceModalOpen,  setPriceModalOpen]  = useState(false);
@@ -407,10 +409,15 @@ function InvoicePage() {
 
     useEffect(() => {
         if (!invoiceDate) return;
+        const selectedEntity = businessEntities.find((e) => String(e.id) === businessEntityId);
+        if (selectedEntity && !selectedEntity.is_vat_registered) {
+            setVatRate(0);
+            return;
+        }
         axios.get('/vat/by-date', { params: { date: invoiceDate } })
             .then((res) => setVatRate(res.data ? Number(res.data.vat_percentage) : 0))
             .catch(() => setVatRate(0));
-    }, [invoiceDate]);
+    }, [invoiceDate, businessEntityId, businessEntities]);
 
     const fetchNextNumber = async () => {
         try {
@@ -427,6 +434,9 @@ function InvoicePage() {
             if (res.data.next_number) setInvoiceNum(res.data.next_number);
             if (Array.isArray(res.data.payment_methods)) {
                 setPaymentMethods(res.data.payment_methods);
+            }
+            if (Array.isArray(res.data.business_entities)) {
+                setBusinessEntities(res.data.business_entities);
             }
         } catch (e: any) {
             console.log('Form data error:', e.response?.data);
@@ -549,6 +559,7 @@ function InvoicePage() {
 
         try {
             const res = await axios.post('/invoice/store', {
+                business_entity_id: businessEntityId ? Number(businessEntityId) : null,
                 customer_id:    Number(selectedCustomer),
                 user_id:        user?.id,
                 po_number:      poNumber || null,
@@ -575,6 +586,7 @@ function InvoicePage() {
             // Reset
             setCart([]);
             setSelectedCustomer('');
+            setBusinessEntityId('');
             setPoNumber('');
             setDiscount('');
             setPaidAmount('');
@@ -661,6 +673,16 @@ function InvoicePage() {
                         <DatePicker value={invoiceDate} onChange={setInvoiceDate}
                             className="h-8 text-xs px-2" />
                     </div>
+                    {businessEntities.length > 0 && (
+                        <Combobox
+                            options={businessEntities.map((e) => ({ value: String(e.id), label: e.name }))}
+                            value={businessEntityId}
+                            onValueChange={setBusinessEntityId}
+                            placeholder="Select company..."
+                            searchPlaceholder="Search companies..."
+                            className="mt-3 h-9 text-sm"
+                        />
+                    )}
                     <Combobox options={customerOptions} value={selectedCustomer}
                         onValueChange={setSelectedCustomer}
                         placeholder="Select customer..."

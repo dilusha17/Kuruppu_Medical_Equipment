@@ -245,9 +245,11 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Printer, Eye, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
+import NumberedPagination from '@/components/shared/NumberedPagination';
 
 interface InvoiceItem {
     id:         number;
@@ -265,6 +267,7 @@ interface Invoice {
     invoice_date:   string;
     customer:       { id: number; name: string } | null;
     user:           { name: string } | null;
+    business_entity: { id: number; name: string } | null;
     sub_total:      number;
     discount:       number;
     grand_total:    number;
@@ -284,13 +287,24 @@ function InvoiceHistoryPage() {
     const [lastPage,    setLastPage]    = useState(1);
     const [total,       setTotal]       = useState(0);
     const [loading,     setLoading]     = useState(false);
+    const [businessEntities, setBusinessEntities] = useState<{ id: number; name: string }[]>([]);
+    const [entityFilter, setEntityFilter] = useState('');
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const fetchInvoices = async (pg: number, s: string, d: string) => {
+    useEffect(() => {
+        axios.get('/business-entities/all').then((res) => setBusinessEntities(res.data)).catch(() => {});
+    }, []);
+
+    const fetchInvoices = async (pg: number, s: string, d: string, entityId?: string) => {
         setLoading(true);
         try {
             const res = await axios.get('/invoice/all', {
-                params: { page: pg, search: s || undefined, date: d || undefined },
+                params: {
+                    page: pg,
+                    search: s || undefined,
+                    date: d || undefined,
+                    business_entity_id: entityId && entityId !== 'all' ? entityId : undefined,
+                },
             });
             setInvoices(res.data.data);
             setLastPage(res.data.last_page);
@@ -300,17 +314,17 @@ function InvoiceHistoryPage() {
     };
 
     // Fetch when page changes
-    useEffect(() => { fetchInvoices(page, search, dateFilter); }, [page]);
+    useEffect(() => { fetchInvoices(page, search, dateFilter, entityFilter); }, [page]);
 
-    // Debounce search/date changes and reset to page 1
+    // Debounce search/date/entity changes and reset to page 1
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             setPage(1);
-            fetchInvoices(1, search, dateFilter);
+            fetchInvoices(1, search, dateFilter, entityFilter);
         }, 350);
         return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-    }, [search, dateFilter]);
+    }, [search, dateFilter, entityFilter]);
 
     const handleDelete = async () => {
         try {
@@ -338,6 +352,21 @@ function InvoiceHistoryPage() {
                 </div>
                 <DatePicker value={dateFilter} onChange={setDateFilter}
                     placeholder="Filter by date" className="w-full sm:w-44" />
+                {businessEntities.length > 0 && (
+                    <Select value={entityFilter} onValueChange={setEntityFilter}>
+                        <SelectTrigger className="w-full sm:w-48 h-9 text-sm">
+                            <SelectValue placeholder="All companies" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Companies</SelectItem>
+                            {businessEntities.map((e) => (
+                                <SelectItem key={e.id} value={String(e.id)}>
+                                    {e.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
             </div>
 
             <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -348,6 +377,7 @@ function InvoiceHistoryPage() {
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Invoice #</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Date</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Customer</th>
+                                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">Company</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">Served By</th>
                                 <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Total</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Status</th>
@@ -363,6 +393,9 @@ function InvoiceHistoryPage() {
                                     <td className="px-4 py-3 text-sm">{inv.invoice_date}</td>
                                     <td className="px-4 py-3 text-sm">
                                         {inv.customer?.name || 'Walk-in Customer'}
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-muted-foreground hidden lg:table-cell">
+                                        {inv.business_entity?.name || '-'}
                                     </td>
                                     <td className="px-4 py-3 text-sm text-muted-foreground hidden md:table-cell">
                                         {inv.user?.name}
@@ -395,7 +428,7 @@ function InvoiceHistoryPage() {
                             ))}
                             {invoices.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                                    <td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-foreground">
                                         {loading ? 'Loading...' : 'No invoices found.'}
                                     </td>
                                 </tr>
@@ -406,23 +439,12 @@ function InvoiceHistoryPage() {
             </div>
 
             {/* Pagination */}
-            {lastPage > 1 && (
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                        Page {page} of {lastPage} &mdash; {total} records
-                    </span>
-                    <div className="flex gap-2">
-                        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                            className="px-3 py-1 rounded border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                            Prev
-                        </button>
-                        <button onClick={() => setPage((p) => Math.min(lastPage, p + 1))} disabled={page === lastPage}
-                            className="px-3 py-1 rounded border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                            Next
-                        </button>
-                    </div>
-                </div>
-            )}
+            <NumberedPagination
+                currentPage={page}
+                lastPage={lastPage}
+                total={total}
+                onPageChange={setPage}
+            />
 
             {/* View Dialog */}
             <Dialog open={!!viewInv} onOpenChange={(open) => !open && setViewInv(null)}>

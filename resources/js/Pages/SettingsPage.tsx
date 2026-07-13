@@ -820,16 +820,19 @@ import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Sun, Moon, Shield, Building, Receipt, Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sun, Moon, Shield, Building, Receipt, Plus, Edit, Trash2, Search, Wallet, Landmark } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 
+interface DepositAccount { id: number; name: string; type: 'cash' | 'bank'; bank_name: string | null; account_number: string | null; is_active: boolean; }
 interface Category  { id: number; name: string; description?: string; }
 interface Brand          { id: number; name: string; }
 interface UnitType       { id: number; name: string; }
 interface ExpensesCategory { id: number; name: string; }
 interface Company   { id: number; name: string; mobile: string; address: string; }
+interface BusinessEntity { id: number; name: string; address: string | null; phone: string | null; email: string | null; vat_no: string | null; place_of_supply: string | null; is_active: boolean; is_vat_registered: boolean; }
 
 // ── Reusable Simple List (Brand, UnitType) ──
 function SimpleListSection({ title, items, onAdd, onEdit, onDelete }: {
@@ -1242,34 +1245,38 @@ function SettingsPage() {
     const [vatDate,          setVatDate]          = useState('');
     const [currentVatInfo,   setCurrentVatInfo]   = useState<{ vat_percentage: string; from_date: string } | null>(null);
 
-    // Company profile state
-    const [companyName,      setCompanyName]      = useState('');
-    const [companyAddress,   setCompanyAddress]   = useState('');
-    const [companyPhone,     setCompanyPhone]     = useState('');
-    const [companyVatNo,     setCompanyVatNo]     = useState('');
-    const [placeOfSupply,    setPlaceOfSupply]    = useState('');
-
     const [categories,        setCategories]        = useState<Category[]>([]);
     const [brands,             setBrands]             = useState<Brand[]>([]);
     const [unitTypes,          setUnitTypes]          = useState<UnitType[]>([]);
     const [expensesCategories, setExpensesCategories] = useState<ExpensesCategory[]>([]);
 
+    // Business Entities
+    const [businessEntities,   setBusinessEntities]   = useState<BusinessEntity[]>([]);
+    const [entityModal,        setEntityModal]        = useState(false);
+    const [editingEntity,      setEditingEntity]      = useState<BusinessEntity | null>(null);
+    const [entityForm,         setEntityForm]         = useState({ name: '', address: '', phone: '', email: '', is_vat_registered: false, vat_no: '', place_of_supply: '' });
+    const [entityDeleteId,     setEntityDeleteId]     = useState<number | null>(null);
+
+    // Deposit Accounts
+    const [depositAccounts,    setDepositAccounts]    = useState<DepositAccount[]>([]);
+    const [depositModal,       setDepositModal]       = useState(false);
+    const [editingDeposit,     setEditingDeposit]     = useState<DepositAccount | null>(null);
+    const [depositForm,        setDepositForm]        = useState({ name: '', type: 'cash' as 'cash' | 'bank', bank_name: '', account_number: '' });
+    const [depositDeleteId,    setDepositDeleteId]    = useState<number | null>(null);
+
     useEffect(() => {
-        fetchSettings();
+        fetchTheme();
         fetchCurrentVat();
         fetchCrudData();
+        fetchBusinessEntities();
+        fetchDepositAccounts();
     }, []);
 
-    const fetchSettings = async () => {
+    const fetchTheme = async () => {
         try {
             const res = await axios.get('settings/all');
             const s   = res.data[0];
-            setTheme(s.theme === 1);
-            setCompanyName(s.company_name    || '');
-            setCompanyAddress(s.company_address || '');
-            setCompanyPhone(s.company_phone  || '');
-            setCompanyVatNo(s.company_vat_no || '');
-            setPlaceOfSupply(s.place_of_supply || '');
+            if (s) setTheme(s.theme === 1);
         } catch (e) { console.log(e); }
     };
 
@@ -1300,20 +1307,6 @@ function SettingsPage() {
         setTheme(newTheme);
         try { await axios.post('settings/change_theme', { theme: newTheme ? 1 : 0 }); }
         catch (e) { console.log(e); }
-    };
-
-    const handleCompanyProfile = async () => {
-        try {
-            await axios.post('/settings/update_company_profile', {
-                company_name:    companyName,
-                company_address: companyAddress,
-                company_phone:   companyPhone,
-                company_vat_no:  companyVatNo,
-                place_of_supply: placeOfSupply,
-            });
-            await fetchSettings();
-            toast.success('Company profile saved!');
-        } catch (e) { console.log(e); }
     };
 
     const handleVATSettings = async () => {
@@ -1347,6 +1340,114 @@ function SettingsPage() {
     const addExpensesCategory    = async (name: string) => { try { const res = await axios.post('/expenses-category/store', { name }); setExpensesCategories((p) => [...p, res.data]); } catch (e) { console.log(e); } };
     const editExpensesCategory   = async (id: number, name: string) => { try { const res = await axios.post(`/expenses-category/update/${id}`, { name }); setExpensesCategories((p) => p.map((u) => u.id === id ? res.data : u)); } catch (e) { console.log(e); } };
     const deleteExpensesCategory = async (id: number) => { try { await axios.delete(`/expenses-category/delete/${id}`); setExpensesCategories((p) => p.filter((u) => u.id !== id)); } catch (e) { console.log(e); } };
+
+    // Business Entities
+    const fetchBusinessEntities = async () => {
+        try {
+            const res = await axios.get('/business-entities/all');
+            setBusinessEntities(res.data);
+        } catch (e) { console.log(e); }
+    };
+
+    const openEntityModal = (entity?: BusinessEntity) => {
+        if (entity) {
+            setEditingEntity(entity);
+            setEntityForm({
+                name: entity.name,
+                address: entity.address || '',
+                phone: entity.phone || '',
+                email: entity.email || '',
+                is_vat_registered: !!entity.is_vat_registered,
+                vat_no: entity.vat_no || '',
+                place_of_supply: entity.place_of_supply || '',
+            });
+        } else {
+            setEditingEntity(null);
+            setEntityForm({ name: '', address: '', phone: '', email: '', is_vat_registered: false, vat_no: '', place_of_supply: '' });
+        }
+        setEntityModal(true);
+    };
+
+    const handleEntitySave = async () => {
+        if (!entityForm.name.trim()) { toast.error('Name is required'); return; }
+        const payload = {
+            ...entityForm,
+            vat_no: entityForm.is_vat_registered ? entityForm.vat_no : null,
+            place_of_supply: entityForm.is_vat_registered ? entityForm.place_of_supply : null,
+        };
+        try {
+            if (editingEntity) {
+                const res = await axios.post(`/business-entities/update/${editingEntity.id}`, payload);
+                setBusinessEntities((p) => p.map((e) => e.id === editingEntity.id ? res.data : e));
+                toast.success('Business entity updated');
+            } else {
+                const res = await axios.post('/business-entities/store', payload);
+                setBusinessEntities((p) => [...p, res.data]);
+                toast.success('Business entity added');
+            }
+            setEntityModal(false);
+        } catch (error: any) {
+            const msg = error.response?.data?.errors?.name?.[0] || error.response?.data?.message || 'Failed to save';
+            toast.error(msg);
+        }
+    };
+
+    const handleEntityDelete = async () => {
+        if (!entityDeleteId) return;
+        try {
+            await axios.delete(`/business-entities/delete/${entityDeleteId}`);
+            setBusinessEntities((p) => p.filter((e) => e.id !== entityDeleteId));
+            setEntityDeleteId(null);
+            toast.success('Business entity removed');
+        } catch (e) { toast.error('Failed to delete'); }
+    };
+
+    // Deposit Accounts
+    const fetchDepositAccounts = async () => {
+        try {
+            const res = await axios.get('/deposit-accounts/all');
+            setDepositAccounts(res.data);
+        } catch (e) { console.log(e); }
+    };
+
+    const openDepositModal = (acc?: DepositAccount) => {
+        if (acc) {
+            setEditingDeposit(acc);
+            setDepositForm({ name: acc.name, type: acc.type, bank_name: acc.bank_name || '', account_number: acc.account_number || '' });
+        } else {
+            setEditingDeposit(null);
+            setDepositForm({ name: '', type: 'cash', bank_name: '', account_number: '' });
+        }
+        setDepositModal(true);
+    };
+
+    const handleDepositSave = async () => {
+        if (!depositForm.name.trim()) { toast.error('Name is required'); return; }
+        try {
+            if (editingDeposit) {
+                const res = await axios.post(`/deposit-accounts/update/${editingDeposit.id}`, depositForm);
+                setDepositAccounts((p) => p.map((a) => a.id === editingDeposit.id ? res.data : a));
+                toast.success('Account updated');
+            } else {
+                const res = await axios.post('/deposit-accounts/store', depositForm);
+                setDepositAccounts((p) => [...p, res.data]);
+                toast.success('Account added');
+            }
+            setDepositModal(false);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to save');
+        }
+    };
+
+    const handleDepositDelete = async () => {
+        if (!depositDeleteId) return;
+        try {
+            await axios.delete(`/deposit-accounts/delete/${depositDeleteId}`);
+            setDepositAccounts((p) => p.filter((a) => a.id !== depositDeleteId));
+            setDepositDeleteId(null);
+            toast.success('Account deactivated');
+        } catch (e) { toast.error('Failed to delete'); }
+    };
 
     const roles = [
         { role: 'Owner',   permissions: ['Full Access', 'Manage Employees', 'View Reports', 'Settings', 'Billing', 'Products', 'Stock', 'GRN'] },
@@ -1393,35 +1494,206 @@ function SettingsPage() {
                 </div>
             </div>
 
-            {/* Company Profile */}
+            {/* Business Entities */}
             <div className="bg-card rounded-xl border border-border p-5">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                    <Building className="h-4 w-4" /> Company Profile
-                </h3>
-                <div className="space-y-3">
-                    <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Company Name</label>
-                        <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-                    </div>
-                    <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Address</label>
-                        <Input value={companyAddress} onChange={(e) => setCompanyAddress(e.target.value)} />
-                    </div>
-                    <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone</label>
-                        <Input value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} />
-                    </div>
-                    <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Company VAT No.</label>
-                        <Input value={companyVatNo} onChange={(e) => setCompanyVatNo(e.target.value)} />
-                    </div>
-                    <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Place of Supply</label>
-                        <Input value={placeOfSupply} onChange={(e) => setPlaceOfSupply(e.target.value)} />
-                    </div>
-                    <Button onClick={handleCompanyProfile}>Save Changes</Button>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                        <Building className="h-4 w-4" /> Business Entities
+                    </h3>
+                    <Button size="sm" variant="outline" className="gap-1 h-7 text-xs" onClick={() => openEntityModal()}>
+                        <Plus className="h-3 w-3" /> Add
+                    </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                    Manage companies that issue invoices. Each invoice can be assigned to a business entity.
+                </p>
+                <div className="space-y-2">
+                    {businessEntities.length === 0 && (
+                        <p className="text-xs text-muted-foreground py-2">No business entities added yet.</p>
+                    )}
+                    {businessEntities.map((entity) => (
+                        <div key={entity.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm font-medium">{entity.name}</p>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${entity.is_vat_registered ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                        {entity.is_vat_registered ? 'VAT' : 'Non-VAT'}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-muted-foreground">{[entity.phone, entity.email, entity.is_vat_registered ? entity.vat_no : null].filter(Boolean).join(' | ')}</p>
+                            </div>
+                            <div className="flex gap-1">
+                                <button onClick={() => openEntityModal(entity)} className="p-1 rounded hover:bg-muted">
+                                    <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                                <button onClick={() => setEntityDeleteId(entity.id)} className="p-1 rounded hover:bg-destructive/10">
+                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
+
+            {/* Business Entity Modal */}
+            <Dialog open={entityModal} onOpenChange={setEntityModal}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>{editingEntity ? 'Edit' : 'Add'} Business Entity</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Company Name *</label>
+                            <Input value={entityForm.name} onChange={(e) => setEntityForm((f) => ({ ...f, name: e.target.value }))} />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Address</label>
+                            <Input value={entityForm.address} onChange={(e) => setEntityForm((f) => ({ ...f, address: e.target.value }))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone</label>
+                                <Input value={entityForm.phone} onChange={(e) => setEntityForm((f) => ({ ...f, phone: e.target.value }))} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                                <Input value={entityForm.email} onChange={(e) => setEntityForm((f) => ({ ...f, email: e.target.value }))} />
+                            </div>
+                        </div>
+
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked={entityForm.is_vat_registered}
+                                onChange={(e) => setEntityForm((f) => ({ ...f, is_vat_registered: e.target.checked }))}
+                                className="rounded" />
+                            <span className="text-sm">VAT Registered Company</span>
+                        </label>
+
+                        {entityForm.is_vat_registered && (
+                            <div className="grid grid-cols-2 gap-3 p-3 bg-muted/50 rounded-lg border border-border">
+                                <p className="col-span-2 text-xs font-semibold text-muted-foreground">VAT Details</p>
+                                <div>
+                                    <label className="text-xs font-medium text-muted-foreground mb-1 block">VAT Number</label>
+                                    <Input value={entityForm.vat_no} onChange={(e) => setEntityForm((f) => ({ ...f, vat_no: e.target.value }))} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Place of Supply</label>
+                                    <Input value={entityForm.place_of_supply} onChange={(e) => setEntityForm((f) => ({ ...f, place_of_supply: e.target.value }))} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setEntityModal(false)}>Cancel</Button>
+                        <Button onClick={handleEntitySave}>{editingEntity ? 'Update' : 'Add'}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <ConfirmDialog open={!!entityDeleteId} onConfirm={handleEntityDelete}
+                onClose={() => setEntityDeleteId(null)}
+                title="Delete Business Entity"
+                message="This will deactivate the business entity. Existing invoices will retain their assignment." />
+
+            {/* Deposit Accounts */}
+            <div className="bg-card rounded-xl border border-border p-5">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                        <Wallet className="h-4 w-4" /> Deposit Accounts
+                    </h3>
+                    <Button size="sm" variant="outline" className="gap-1 h-7 text-xs" onClick={() => openDepositModal()}>
+                        <Plus className="h-3 w-3" /> Add
+                    </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                    Manage where received payments are deposited — petty cash or bank accounts.
+                </p>
+                <div className="space-y-2">
+                    {depositAccounts.length === 0 && (
+                        <p className="text-xs text-muted-foreground py-2">No deposit accounts added yet.</p>
+                    )}
+                    {depositAccounts.map((acc) => (
+                        <div key={acc.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                            <div className="flex items-center gap-3">
+                                {acc.type === 'cash' ? (
+                                    <Wallet className="h-4 w-4 text-green-600" />
+                                ) : (
+                                    <Landmark className="h-4 w-4 text-blue-600" />
+                                )}
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm font-medium">{acc.name}</p>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                                            acc.type === 'cash' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                        }`}>
+                                            {acc.type}
+                                        </span>
+                                    </div>
+                                    {acc.type === 'bank' && acc.bank_name && (
+                                        <p className="text-xs text-muted-foreground">{acc.bank_name}{acc.account_number ? ` — ${acc.account_number}` : ''}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex gap-1">
+                                <button onClick={() => openDepositModal(acc)} className="p-1 rounded hover:bg-muted">
+                                    <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                                <button onClick={() => setDepositDeleteId(acc.id)} className="p-1 rounded hover:bg-destructive/10">
+                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Deposit Account Modal */}
+            <Dialog open={depositModal} onOpenChange={setDepositModal}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>{editingDeposit ? 'Edit' : 'Add'} Deposit Account</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Account Name *</label>
+                            <Input value={depositForm.name} onChange={(e) => setDepositForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Petty Cash, Commercial Bank" />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Type</label>
+                            <Select value={depositForm.type} onValueChange={(v: 'cash' | 'bank') => setDepositForm((f) => ({ ...f, type: v }))}>
+                                <SelectTrigger className="w-full h-9 text-sm">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="cash">Cash (Petty Cash)</SelectItem>
+                                    <SelectItem value="bank">Bank</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        {depositForm.type === 'bank' && (
+                            <div className="grid grid-cols-2 gap-3 p-3 bg-muted/50 rounded-lg border border-border">
+                                <p className="col-span-2 text-xs font-semibold text-muted-foreground">Bank Details</p>
+                                <div>
+                                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Bank Name</label>
+                                    <Input value={depositForm.bank_name} onChange={(e) => setDepositForm((f) => ({ ...f, bank_name: e.target.value }))} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Account Number</label>
+                                    <Input value={depositForm.account_number} onChange={(e) => setDepositForm((f) => ({ ...f, account_number: e.target.value }))} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDepositModal(false)}>Cancel</Button>
+                        <Button onClick={handleDepositSave}>{editingDeposit ? 'Update' : 'Add'}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <ConfirmDialog open={!!depositDeleteId} onConfirm={handleDepositDelete}
+                onClose={() => setDepositDeleteId(null)}
+                title="Deactivate Deposit Account"
+                message="This account will be deactivated. Existing records will retain their assignment." />
 
             {/* VAT Settings */}
             <div className="bg-card rounded-xl border border-border p-5">

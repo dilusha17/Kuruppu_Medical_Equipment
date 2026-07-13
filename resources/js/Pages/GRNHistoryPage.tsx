@@ -238,6 +238,7 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Printer, Eye, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
+import NumberedPagination from '@/components/shared/NumberedPagination';
 
 interface GrnItem {
     id:           number;
@@ -410,23 +411,12 @@ function GRNHistoryPage() {
             </div>
 
             {/* Pagination */}
-            {lastPage > 1 && (
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                        Page {page} of {lastPage} &mdash; {total} records
-                    </span>
-                    <div className="flex gap-2">
-                        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                            className="px-3 py-1 rounded border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                            Prev
-                        </button>
-                        <button onClick={() => setPage((p) => Math.min(lastPage, p + 1))} disabled={page === lastPage}
-                            className="px-3 py-1 rounded border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                            Next
-                        </button>
-                    </div>
-                </div>
-            )}
+            <NumberedPagination
+                currentPage={page}
+                lastPage={lastPage}
+                total={total}
+                onPageChange={setPage}
+            />
 
             {/* View Dialog */}
             <Dialog open={!!viewGrn} onOpenChange={(open) => !open && setViewGrn(null)}>

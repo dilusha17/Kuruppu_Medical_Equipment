@@ -12,10 +12,10 @@ class UserSeeder extends Seeder
     {
         // Create first owner account
         User::create([
-            'name'        => 'Sarath Edirisinghe',
-            'email'       => 'sarath@test.com',
-            'user_name'   => 'sarath',
-            'password'    => Hash::make('password123'),
+            'name'        => 'Chamila Kuruppu',
+            'email'       => 'info@kuruppusafety.com',
+            'user_name'   => 'chamila',
+            'password'    => Hash::make('kuruppu@321'),
             'mobile'      => '0711234455',
             'address'     => 'Colombo',
             'designation' => 'CEO',

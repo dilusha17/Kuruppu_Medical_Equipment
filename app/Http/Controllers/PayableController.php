@@ -75,12 +75,13 @@ class PayableController extends Controller
     public function storeExpense(Request $request) {
 
         $validated = $request->validate([
-            'date'        => 'required|date',
-            'description' => 'required|string',
-            'category_id' => 'required|exists:expenses_category,id',
-            'amount'      => 'required|numeric|min:0',
-            'notes'       => 'nullable|string',
-            'user_id'     => 'required|exists:users,id',
+            'date'               => 'required|date',
+            'description'        => 'required|string',
+            'category_id'        => 'required|exists:expenses_category,id',
+            'amount'             => 'required|numeric|min:0',
+            'notes'              => 'nullable|string',
+            'user_id'            => 'required|exists:users,id',
+            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
         ]);
 
         // expense number
@@ -89,13 +90,14 @@ class PayableController extends Controller
         $expNumber = 'EXP-' . str_pad($next, 4, '0', STR_PAD_LEFT);
 
         $expense = Expense::create([
-            'expense_number' => $expNumber,
-            'date'           => $validated['date'],
-            'description'    => $validated['description'],
-            'category_id'    => $validated['category_id'],
-            'amount'         => $validated['amount'],
-            'notes'          => $validated['notes'] ?? null,
-            'user_id'        => $validated['user_id'],
+            'expense_number'     => $expNumber,
+            'date'               => $validated['date'],
+            'description'        => $validated['description'],
+            'category_id'        => $validated['category_id'],
+            'amount'             => $validated['amount'],
+            'notes'              => $validated['notes'] ?? null,
+            'user_id'            => $validated['user_id'],
+            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
         ]);
 
         return response()->json($expense, 201);
@@ -118,12 +120,13 @@ class PayableController extends Controller
     public function recordPayment(Request $request) {
 
         $validated = $request->validate([
-            'reference_type' => 'required|in:grn,expense',
-            'reference_id'   => 'required|integer',
-            'amount'         => 'required|numeric|min:0.01',
-            'date'           => 'required|date',
-            'notes'          => 'nullable|string',
-            'user_id'        => 'required|exists:users,id',
+            'reference_type'     => 'required|in:grn,expense',
+            'reference_id'       => 'required|integer',
+            'amount'             => 'required|numeric|min:0.01',
+            'date'               => 'required|date',
+            'notes'              => 'nullable|string',
+            'user_id'            => 'required|exists:users,id',
+            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
         ]);
 
         if ($validated['reference_type'] === 'grn') {
@@ -151,10 +154,11 @@ class PayableController extends Controller
         $grn->update(['payment_status' => $newStatus]);
 
         $payable = Payable::create([
-            'grns_id'  => $validated['reference_id'],
-            'amount'   => $validated['amount'],
-            'dateTime' => $validated['date'],
-            'note'     => $validated['notes'] ?? 'Additional Payment',
+            'grns_id'            => $validated['reference_id'],
+            'amount'             => $validated['amount'],
+            'dateTime'           => $validated['date'],
+            'note'               => $validated['notes'] ?? 'Additional Payment',
+            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
         ]);
 
         return response()->json($payable, 201);

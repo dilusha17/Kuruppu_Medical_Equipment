@@ -22,6 +22,7 @@ class Grn extends Model
         'total_amount',
         'paid_amount',
         'payment_method_id',
+        'deposit_account_id',
         'is_vat',
         'vat_amount',
         'vat_percentage',
@@ -47,5 +48,9 @@ class Grn extends Model
 
     public function paymentMethod(): BelongsTo {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function depositAccount(): BelongsTo {
+        return $this->belongsTo(DepositAccount::class, 'deposit_account_id');
     }
 }

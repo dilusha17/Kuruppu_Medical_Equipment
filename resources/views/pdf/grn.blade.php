@@ -296,7 +296,9 @@
                 @if ($grn->user?->name)
                     <p class="info-text"><strong>Received by:</strong> {{ $grn->user->name }}</p>
                 @endif
-                @if ($grn->paymentMethod?->name)
+                @if ($grn->depositAccount?->name)
+                    <p class="info-text"><strong>Paid From:</strong> {{ $grn->depositAccount->name }} ({{ ucfirst($grn->depositAccount->type) }})</p>
+                @elseif ($grn->paymentMethod?->name)
                     <p class="info-text"><strong>Payment:</strong> {{ ucfirst($grn->paymentMethod->name) }}</p>
                 @endif
                 @if ($grn->supplier_invoice_no)

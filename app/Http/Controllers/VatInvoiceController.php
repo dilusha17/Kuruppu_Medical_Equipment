@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Settings;
+use App\Models\BusinessEntity;
 use App\Models\Invoice;
 use App\Models\VatInvoice;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -95,7 +95,8 @@ class VatInvoiceController extends Controller
 
     private function buildViewData($invoice, $vatInvoice, $customer, $customerVat, $totalAmount, $vatPercentage, $vatAmount, $subTotal): array
     {
-        $company = Settings::first();
+        $entity = $invoice->businessEntity
+            ?? BusinessEntity::where('is_active', true)->first();
 
         $records = $invoice->items->map(function ($item) use ($invoice) {
             $product       = $item->stockBatch?->product;
@@ -112,11 +113,11 @@ class VatInvoiceController extends Controller
         return [
             'taxInvoiceNumber' => $vatInvoice->vat_invoice_number,
             'printedDateTime'  => $vatInvoice->vat_invoice_date,
-            'companyVatNo'     => substr($company?->company_vat_no ?? '', 0, 9),
-            'companyName'      => $company?->company_name ?? '',
-            'companyAddress'   => $company?->company_address ?? '',
-            'companyPhone'     => $company?->company_phone ?? '',
-            'placeOfSupply'    => $company?->place_of_supply ?? '',
+            'companyVatNo'     => substr($entity?->vat_no ?? '', 0, 9),
+            'companyName'      => $entity?->name ?? '',
+            'companyAddress'   => $entity?->address ?? '',
+            'companyPhone'     => $entity?->phone ?? '',
+            'placeOfSupply'    => $entity?->place_of_supply ?? '',
             'clientVatNo'      => substr($customerVat?->vat_number ?? '', 0, 9),
             'clientName'       => $customerVat?->company_name ?? $customer->name,
             'clientAddress'    => $customerVat?->company_address ?? $customer->address ?? '',

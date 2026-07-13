@@ -25,7 +25,11 @@ use App\Http\Controllers\ExpensesCategoryController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\VatInvoiceController;
 use App\Http\Controllers\VatInvoiceApiController;
+use App\Http\Controllers\BusinessEntityController;
+use App\Http\Controllers\DepositAccountController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CashFlowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,7 +176,6 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/settings')->group(function () {
         Route::get('/all',                    [SettingsController::class, 'all']);
         Route::post('/change_theme',          [SettingsController::class, 'change_theme']);
-        Route::post('/update_company_profile',[SettingsController::class, 'update_company_profile']);
         Route::post('/update_vat_settings',   [SettingsController::class, 'update_vat_settings']);
     });
 
@@ -198,8 +201,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/receivables', fn() => Inertia::render('ReceivablesPage'));
     Route::prefix('/receivables')->group(function () {
         Route::get('/invoices',        [ReceivableController::class, 'invoices']);
+        Route::get('/summary',         [ReceivableController::class, 'customerSummary']);
         Route::get('/history/{id}',    [ReceivableController::class, 'paymentHistory']);
         Route::post('/payment',        [ReceivableController::class, 'recordPayment']);
+        Route::post('/batch-payment',  [ReceivableController::class, 'batchPayment']);
     });
 
     // ── VAT Invoices ──────────────────────────────────────────────────────
@@ -211,10 +216,44 @@ Route::middleware('auth')->group(function () {
     Route::post('/vat-invoice/generate',  [VatInvoiceController::class, 'generatePdf']);
     Route::post('/vat-invoice/reprint',   [VatInvoiceController::class, 'viewHistoryPdf']);
 
+    // ── Business Entities ──────────────────────────────────────────────────
+    Route::prefix('/business-entities')->group(function () {
+        Route::get('/all',            [BusinessEntityController::class, 'all']);
+        Route::post('/store',         [BusinessEntityController::class, 'store']);
+        Route::post('/update/{id}',   [BusinessEntityController::class, 'update']);
+        Route::delete('/delete/{id}', [BusinessEntityController::class, 'delete']);
+    });
+
     // ── Notifications ──────────────────────────────────────────────────────
     Route::get('/notifications/overdue-invoices', [NotificationController::class, 'overdueInvoices']);
 
-    // ── Other Pages ────────────────────────────────────────────────────────
+    // ── Deposit Accounts ──────────────────────────────────────────────────
+    Route::prefix('/deposit-accounts')->group(function () {
+        Route::get('/all',            [DepositAccountController::class, 'all']);
+        Route::post('/store',         [DepositAccountController::class, 'store']);
+        Route::post('/update/{id}',   [DepositAccountController::class, 'update']);
+        Route::delete('/delete/{id}', [DepositAccountController::class, 'delete']);
+    });
+
+    // ── Cash Flow ─────────────────────────────────────────────────────────
+    Route::get('/cash-flow', fn() => Inertia::render('CashFlowPage'));
+    Route::prefix('/cash-flow')->group(function () {
+        Route::get('/data',    [CashFlowController::class, 'data']);
+        Route::get('/pdf',     [CashFlowController::class, 'pdf']);
+    });
+
+    // ── Reports ────────────────────────────────────────────────────────────
+    Route::get('/reports', fn() => Inertia::render('ReportsPage'));
+    Route::prefix('/reports')->group(function () {
+        Route::get('/outstanding',  [ReportController::class, 'outstanding']);
+        Route::get('/profit-loss',  [ReportController::class, 'profitLoss']);
+        Route::get('/expenses',     [ReportController::class, 'expenses']);
+        Route::get('/purchases',    [ReportController::class, 'purchases']);
+        Route::get('/outstanding/pdf',  [ReportController::class, 'outstandingPdf']);
+        Route::get('/profit-loss/pdf',  [ReportController::class, 'profitLossPdf']);
+        Route::get('/expenses/pdf',     [ReportController::class, 'expensesPdf']);
+        Route::get('/purchases/pdf',    [ReportController::class, 'purchasesPdf']);
+    });
 
     // ── Fallback ───────────────────────────────────────────────────────────
     Route::fallback(fn() => Inertia::render('NotFound'));

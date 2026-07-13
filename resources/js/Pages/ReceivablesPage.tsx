@@ -349,12 +349,15 @@
 
 import { Head } from '@inertiajs/react';
 import AppShell from '@/AppShell';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
+import { Combobox } from '@/components/ui/combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SearchBar from '@/components/shared/SearchBar';
+import NumberedPagination from '@/components/shared/NumberedPagination';
 import Modal from '@/components/shared/Modal';
 import { format } from 'date-fns';
 import { Plus, CreditCard, CheckCircle2, Clock, Eye } from 'lucide-react';
@@ -367,21 +370,45 @@ interface InvoiceReceivable {
     invoice_number: string;
     invoice_date:   string;
     customer:       string;
+    customer_id:    number;
     grand_total:    number;
-    paid_amount:    number;
     collected:      number;
     outstanding:    number;
     status:         string;
 }
 
+interface SummaryData {
+    total_invoiced:    number;
+    total_collected:   number;
+    total_outstanding: number;
+}
+
 function ReceivablesPage() {
     const { user } = useAuth();
-    const [invoices, setInvoices] = useState<InvoiceReceivable[]>([]);
-    const [tab,      setTab]      = useState<'all' | 'outstanding' | 'paid'>('outstanding');
-    const [search,   setSearch]   = useState('');
-    const [loading,  setLoading]  = useState(false);
+    const [invoices, setInvoices]   = useState<InvoiceReceivable[]>([]);
+    const [customers, setCustomers] = useState<{ id: number; name: string }[]>([]);
+    const [selectedCustomer, setSelectedCustomer] = useState<string>('');
+    const [tab,      setTab]       = useState<'all' | 'outstanding' | 'paid'>('outstanding');
+    const [search,   setSearch]    = useState('');
+    const [loading,  setLoading]   = useState(false);
+    const [page,     setPage]      = useState(1);
+    const [lastPage, setLastPage]  = useState(1);
+    const [total,    setTotal]     = useState(0);
+    const [summary,  setSummary]   = useState<SummaryData>({ total_invoiced: 0, total_collected: 0, total_outstanding: 0 });
+    const [paymentMethods, setPaymentMethods] = useState<{ id: number; name: string }[]>([]);
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Payment modal
+    // Selection for batch settlement
+    const [selectedIds,    setSelectedIds]    = useState<Set<number>>(new Set());
+    const [batchDate,      setBatchDate]      = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [batchMethodId,  setBatchMethodId]  = useState<string>('');
+    const [batchRefNo,     setBatchRefNo]     = useState('');
+    const [batchDepositId, setBatchDepositId] = useState<string>('');
+    const [batchNotes,     setBatchNotes]     = useState('');
+    const [batchLoading,   setBatchLoading]   = useState(false);
+    const [depositAccounts, setDepositAccounts] = useState<{ id: number; name: string; type: string }[]>([]);
+
+    // Single payment modal
     const [payOpen,   setPayOpen]   = useState(false);
     const [payTarget, setPayTarget] = useState<{ id: number; number: string; outstanding: number } | null>(null);
     const [payDate,   setPayDate]   = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -392,33 +419,117 @@ function ReceivablesPage() {
     const [invDetailOpen, setInvDetailOpen] = useState(false);
     const [invDetailData, setInvDetailData] = useState<any | null>(null);
 
-    useEffect(() => { fetchInvoices(); }, []);
+    useEffect(() => {
+        axios.get('/customers/all').then((res) => setCustomers(res.data)).catch(() => {});
+        axios.get('/payment-methods/all').then((res) => setPaymentMethods(res.data)).catch(() => {});
+        axios.get('/deposit-accounts/all').then((res) => setDepositAccounts(res.data)).catch(() => {});
+    }, []);
 
-    const fetchInvoices = async () => {
+    const fetchInvoices = async (pg: number, custId?: string, status?: string, q?: string) => {
+        setLoading(true);
         try {
-            const res = await axios.get('/receivables/invoices');
-            setInvoices(res.data);
+            const res = await axios.get('/receivables/invoices', {
+                params: {
+                    page: pg,
+                    customer_id: custId || undefined,
+                    status: status === 'all' ? undefined : status || undefined,
+                    search: q || undefined,
+                },
+            });
+            setInvoices(res.data.data);
+            setLastPage(res.data.last_page);
+            setTotal(res.data.total);
+        } catch (e) { console.log(e); }
+        finally { setLoading(false); }
+    };
+
+    const fetchSummary = async (custId?: string) => {
+        try {
+            const res = await axios.get('/receivables/summary', {
+                params: { customer_id: custId || undefined },
+            });
+            setSummary(res.data);
         } catch (e) { console.log(e); }
     };
 
-    // Summary
-    const totalInvoiced    = invoices.reduce((s, i) => s + Number(i.grand_total), 0);
-    const totalCollected   = invoices.reduce((s, i) => s + Number(i.collected), 0);
-    const totalOutstanding = invoices.reduce((s, i) => s + Number(i.outstanding), 0);
+    useEffect(() => { fetchInvoices(page, selectedCustomer, tab, search); }, [page]);
 
-    const filtered = invoices.filter((inv) => {
-        const matchSearch = inv.invoice_number.toLowerCase().includes(search.toLowerCase()) ||
-            inv.customer.toLowerCase().includes(search.toLowerCase());
-        const matchTab = tab === 'all' ||
-            (tab === 'outstanding' && inv.outstanding > 0) ||
-            (tab === 'paid' && inv.outstanding <= 0);
-        return matchSearch && matchTab;
-    });
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            setPage(1);
+            setSelectedIds(new Set());
+            fetchInvoices(1, selectedCustomer, tab, search);
+        }, 350);
+        return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    }, [search, tab]);
 
-    const countAll         = invoices.length;
-    const countOutstanding = invoices.filter(i => i.outstanding > 0).length;
-    const countPaid        = invoices.filter(i => i.outstanding <= 0).length;
+    useEffect(() => {
+        setPage(1);
+        setSearch('');
+        setTab('outstanding');
+        setSelectedIds(new Set());
+        fetchInvoices(1, selectedCustomer, 'outstanding', '');
+        fetchSummary(selectedCustomer);
+    }, [selectedCustomer]);
 
+    const customerOptions = [
+        { value: 'all', label: 'All Customers' },
+        ...customers.map((c) => ({ value: String(c.id), label: c.name })),
+    ];
+
+    // Selection helpers
+    const toggleSelect = (id: number) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const toggleSelectAll = () => {
+        const outstanding = invoices.filter((i) => i.outstanding > 0);
+        if (selectedIds.size === outstanding.length && outstanding.length > 0) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(outstanding.map((i) => i.id)));
+        }
+    };
+
+    const selectedInvoices = invoices.filter((i) => selectedIds.has(i.id));
+    const totalSelected = selectedInvoices.reduce((s, inv) => s + Number(inv.outstanding), 0);
+
+    const handleBatchPayment = async () => {
+        if (selectedIds.size === 0) return;
+        if (!batchMethodId) { toast.error('Select a payment method.'); return; }
+        if (!batchDepositId) { toast.error('Select a deposit account.'); return; }
+
+        setBatchLoading(true);
+        try {
+            await axios.post('/receivables/batch-payment', {
+                invoice_ids: Array.from(selectedIds),
+                date: batchDate,
+                payment_method_id: Number(batchMethodId),
+                deposit_account_id: Number(batchDepositId),
+                reference_no: batchRefNo || null,
+                notes: batchNotes || null,
+                user_id: user?.id,
+            });
+            toast.success('Batch settlement recorded!');
+            setSelectedIds(new Set());
+            setBatchRefNo('');
+            setBatchNotes('');
+            fetchInvoices(page, selectedCustomer, tab, search);
+            fetchSummary(selectedCustomer);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to record batch payment.');
+        } finally {
+            setBatchLoading(false);
+        }
+    };
+
+    // Single payment
     const openPay = (inv: InvoiceReceivable) => {
         setPayTarget({ id: inv.id, number: inv.invoice_number, outstanding: inv.outstanding });
         setPayAmount(String(inv.outstanding));
@@ -440,7 +551,8 @@ function ReceivablesPage() {
             });
             toast.success('Payment recorded!');
             setPayOpen(false);
-            fetchInvoices();
+            fetchInvoices(page, selectedCustomer, tab, search);
+            fetchSummary(selectedCustomer);
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to record payment.');
         } finally {
@@ -464,19 +576,31 @@ function ReceivablesPage() {
 
     return (
         <div className="space-y-5 animate-fade-in">
+            {/* Customer Selector */}
+            <div className="bg-card rounded-xl border border-border p-4">
+                <Combobox
+                    options={customerOptions}
+                    value={selectedCustomer}
+                    onValueChange={(v) => setSelectedCustomer(v === 'all' ? '' : v)}
+                    placeholder="Select customer..."
+                    searchPlaceholder="Search customers..."
+                    className="h-10 text-sm"
+                />
+            </div>
+
             {/* Summary */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-card rounded-xl border border-border p-4">
                     <p className="text-xs text-muted-foreground mb-1">Total Invoiced</p>
-                    <p className="text-2xl font-bold text-primary">Rs. {totalInvoiced.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-primary">Rs. {Number(summary.total_invoiced).toLocaleString()}</p>
                 </div>
                 <div className="bg-card rounded-xl border border-border p-4">
                     <p className="text-xs text-muted-foreground mb-1">Total Collected</p>
-                    <p className="text-2xl font-bold text-green-600">Rs. {totalCollected.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-green-600">Rs. {Number(summary.total_collected).toLocaleString()}</p>
                 </div>
                 <div className="bg-card rounded-xl border border-border p-4">
                     <p className="text-xs text-muted-foreground mb-1">Outstanding</p>
-                    <p className="text-2xl font-bold text-destructive">Rs. {totalOutstanding.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-destructive">Rs. {Number(summary.total_outstanding).toLocaleString()}</p>
                 </div>
             </div>
 
@@ -487,12 +611,12 @@ function ReceivablesPage() {
                         <button key={t} onClick={() => setTab(t)}
                             className={cn('px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors',
                                 tab === t ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
-                            {t === 'all' ? `All (${countAll})` : t === 'outstanding' ? `Outstanding (${countOutstanding})` : `Paid (${countPaid})`}
+                            {t}
                         </button>
                     ))}
                 </div>
                 <div className="w-full sm:w-72">
-                    <SearchBar value={search} onChange={setSearch} placeholder="Search invoice # or customer..." />
+                    <SearchBar value={search} onChange={setSearch} placeholder="Search by invoice number..." />
                 </div>
             </div>
 
@@ -502,6 +626,12 @@ function ReceivablesPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-border bg-muted/50">
+                                <th className="px-4 py-3 w-10">
+                                    <input type="checkbox"
+                                        checked={selectedIds.size > 0 && selectedIds.size === invoices.filter((i) => i.outstanding > 0).length}
+                                        onChange={toggleSelectAll}
+                                        className="rounded border-border" />
+                                </th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Invoice #</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Date</th>
                                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Customer</th>
@@ -513,10 +643,21 @@ function ReceivablesPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-10 text-sm text-muted-foreground">No invoices found.</td></tr>
-                            ) : filtered.map((inv) => (
-                                <tr key={inv.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+                            {invoices.length === 0 ? (
+                                <tr><td colSpan={9} className="text-center py-10 text-sm text-muted-foreground">
+                                    {loading ? 'Loading...' : 'No invoices found.'}
+                                </td></tr>
+                            ) : invoices.map((inv) => (
+                                <tr key={inv.id} className={cn('border-b border-border last:border-0 hover:bg-muted/30',
+                                    selectedIds.has(inv.id) && 'bg-primary/5')}>
+                                    <td className="px-4 py-3">
+                                        {inv.outstanding > 0 && (
+                                            <input type="checkbox"
+                                                checked={selectedIds.has(inv.id)}
+                                                onChange={() => toggleSelect(inv.id)}
+                                                className="rounded border-border" />
+                                        )}
+                                    </td>
                                     <td className="px-4 py-3 text-sm font-medium text-primary font-mono">{inv.invoice_number}</td>
                                     <td className="px-4 py-3 text-sm">{inv.invoice_date}</td>
                                     <td className="px-4 py-3 text-sm">{inv.customer}</td>
@@ -534,12 +675,12 @@ function ReceivablesPage() {
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-1">
                                             <button onClick={() => openInvoiceDetail(inv)}
-                                                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="History">
+                                                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="View details">
                                                 <Eye className="h-3.5 w-3.5" />
                                             </button>
                                             {inv.outstanding > 0 && (
                                                 <button onClick={() => openPay(inv)}
-                                                    className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary" title="Record payment">
+                                                    className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary" title="Record single payment">
                                                     <Plus className="h-3.5 w-3.5" />
                                                 </button>
                                             )}
@@ -552,7 +693,71 @@ function ReceivablesPage() {
                 </div>
             </div>
 
-            {/* Record Payment Modal */}
+            {/* Pagination */}
+            <NumberedPagination currentPage={page} lastPage={lastPage} total={total} onPageChange={setPage} />
+
+            {/* Batch Settlement Panel */}
+            {selectedIds.size > 0 && (
+                <div className="bg-card rounded-xl border-2 border-primary/30 p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-primary" />
+                            Batch Settlement — {selectedIds.size} invoice{selectedIds.size > 1 ? 's' : ''} selected
+                        </h3>
+                        <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Total Outstanding</p>
+                            <p className="text-lg font-bold text-primary">Rs. {totalSelected.toLocaleString()}</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 border-t pt-3">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Payment Received Date</label>
+                            <DatePicker value={batchDate} onChange={setBatchDate} className="w-full" />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Payment Method</label>
+                            <Select value={batchMethodId} onValueChange={setBatchMethodId}>
+                                <SelectTrigger className="w-full h-9 text-xs">
+                                    <SelectValue placeholder="Select method" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {paymentMethods.map((m) => (
+                                        <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Reference No</label>
+                            <Input value={batchRefNo} onChange={(e) => setBatchRefNo(e.target.value)}
+                                placeholder="Cheque / Ref #" className="h-9 text-xs" />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Deposit To</label>
+                            <Select value={batchDepositId} onValueChange={setBatchDepositId}>
+                                <SelectTrigger className="w-full h-9 text-xs">
+                                    <SelectValue placeholder="Select account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {depositAccounts.map((a) => (
+                                        <SelectItem key={a.id} value={String(a.id)}>
+                                            {a.name} ({a.type})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex items-end">
+                            <Button onClick={handleBatchPayment} disabled={batchLoading} className="gap-2 w-full h-9">
+                                <CreditCard className="h-4 w-4" /> Settle
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Record Single Payment Modal */}
             <Modal open={payOpen} onClose={() => setPayOpen(false)} title="Record Payment Received">
                 {payTarget && (
                     <div className="space-y-4">
@@ -594,7 +799,6 @@ function ReceivablesPage() {
                     const outstanding = Math.max(0, Number(inv.grand_total) - collected);
                     return (
                         <div className="space-y-4">
-                            {/* Meta */}
                             <div className="grid grid-cols-2 gap-3 p-3 bg-muted/40 rounded-lg text-sm">
                                 <div><span className="text-muted-foreground text-xs">Date:</span><span className="ml-2 font-medium">{inv.invoice_date}</span></div>
                                 <div><span className="text-muted-foreground text-xs">Customer:</span><span className="ml-2 font-medium">{inv.customer?.name ?? 'Walk-in'}</span></div>
@@ -605,7 +809,6 @@ function ReceivablesPage() {
                                 </div>
                             </div>
 
-                            {/* Items */}
                             <div>
                                 <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Items</p>
                                 <div className="border rounded-lg overflow-hidden">
@@ -634,8 +837,6 @@ function ReceivablesPage() {
                                         </tbody>
                                     </table>
                                 </div>
-
-                                {/* Totals */}
                                 <div className="mt-2 space-y-1 px-3 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground text-xs">Sub Total</span>
@@ -660,7 +861,6 @@ function ReceivablesPage() {
                                 </div>
                             </div>
 
-                            {/* Payment History */}
                             <div>
                                 <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Payment History</p>
                                 <div className="border rounded-lg overflow-hidden">

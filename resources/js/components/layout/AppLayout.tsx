@@ -6,7 +6,7 @@ import {
   LayoutDashboard, FileText, Package, ShoppingCart,
   Truck, ClipboardList, Settings, LogOut,
   ChevronLeft, ChevronRight, Pill, Receipt, History,
-  UserCheck, Menu, TrendingUp, TrendingDown,
+  UserCheck, Menu, TrendingUp, TrendingDown, BarChart3, Wallet,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from './NotificationBell';
@@ -31,6 +31,8 @@ const navItems: NavItem[] = [
   { label: 'VAT Invoices', path: '/vat-invoices', icon: Receipt, roles: ['owner', 'admin'] },
   { label: 'Receivables', path: '/receivables', icon: TrendingUp, roles: ['owner', 'admin'] },
   { label: 'Payables', path: '/payables', icon: TrendingDown, roles: ['owner', 'admin'] },
+  { label: 'Reports', path: '/reports', icon: BarChart3, roles: ['owner', 'admin'] },
+  { label: 'Cash Flow', path: '/cash-flow', icon: Wallet, roles: ['owner', 'admin'] },
   { label: 'Settings', path: '/settings', icon: Settings, roles: ['owner', 'admin'] },
 ];
 
