@@ -422,6 +422,26 @@
         Mode of Payment: <strong>{{ $paymentMode }}</strong>
     </div>
 
+    <!-- Signing Section -->
+    <div style="margin-top: 30px;">
+        <table style="width: 80%; margin: 0 auto; border-collapse: collapse;">
+            <tr>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+                <td style="width: 5%;">&nbsp;</td>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+                <td style="width: 5%;">&nbsp;</td>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-size: 9pt; font-weight: bold; padding-top: 4px;">Prepared By</td>
+                <td>&nbsp;</td>
+                <td style="text-align: center; font-size: 9pt; font-weight: bold; padding-top: 4px;">Checked By</td>
+                <td>&nbsp;</td>
+                <td style="text-align: center; font-size: 9pt; font-weight: bold; padding-top: 4px;">Received By</td>
+            </tr>
+        </table>
+    </div>
+
     <!-- Footer -->
     <div class="footer">
         <table>

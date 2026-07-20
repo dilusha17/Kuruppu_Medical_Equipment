@@ -23,19 +23,20 @@ class VatInvoiceController extends Controller
 
             $customer    = $invoice->customer;
             $customerVat = DB::table('customers_vat_details')->where('customer_id', $customer->id)->first();
-            $vatNickName = strtoupper($customerVat?->nick_name ?? substr($customer->name, 0, 2));
-            $prefix      = date('y') . strtoupper(date('M'));
 
-            $latestVat = VatInvoice::where('vat_invoice_number', 'like', "{$prefix}_{$vatNickName}_%")
-                ->orderBy('id', 'desc')
-                ->first();
+            $currentYearPrefix = date('y');
+            $monthPrefix       = strtoupper(date('M'));
 
-            $nextNum = 1;
-            if ($latestVat && preg_match('/_(\d+)$/', $latestVat->vat_invoice_number, $matches)) {
-                $nextNum = intval($matches[1]) + 1;
+            $latestVat = VatInvoice::orderBy('id', 'desc')->first();
+            $nextNum   = 1;
+            if ($latestVat) {
+                $latestYear = substr($latestVat->vat_invoice_number, 0, 2);
+                if ($latestYear === $currentYearPrefix && preg_match('/_(\d+)$/', $latestVat->vat_invoice_number, $matches)) {
+                    $nextNum = intval($matches[1]) + 1;
+                }
             }
 
-            $vatInvoiceNumber = sprintf('%s_%s_%05d', $prefix, $vatNickName, $nextNum);
+            $vatInvoiceNumber = sprintf('%s%s_%05d', $currentYearPrefix, $monthPrefix, $nextNum);
 
             $vatSetting    = DB::table('vat_percentage')
                 ->where('from_date', '<=', $invoice->invoice_date)

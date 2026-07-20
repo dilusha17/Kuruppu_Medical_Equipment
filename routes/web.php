@@ -29,6 +29,7 @@ use App\Http\Controllers\BusinessEntityController;
 use App\Http\Controllers\DepositAccountController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\CashFlowController;
 
 /*
@@ -70,6 +71,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/show/{id}',      [InvoiceController::class, 'show']);
         Route::post('/store',         [InvoiceController::class, 'store']);
         Route::delete('/delete/{id}', [InvoiceController::class, 'delete']);
+    });
+
+    // ── Quotation ──────────────────────────────────────────────────────────
+    Route::get('/quotation', fn() => Inertia::render('QuotationPage'));
+    Route::get('/quotation-history', fn() => Inertia::render('QuotationHistoryPage'));
+    Route::get('/quotation/print/{id}', [QuotationController::class, 'printView']);
+    Route::prefix('/quotation')->group(function () {
+        Route::get('/next-number',    [QuotationController::class, 'nextNumber']);
+        Route::get('/form-data',      [QuotationController::class, 'formData']);
+        Route::get('/all',            [QuotationController::class, 'all']);
+        Route::get('/show/{id}',      [QuotationController::class, 'show']);
+        Route::post('/store',         [QuotationController::class, 'store']);
+        Route::post('/issue-invoice', [QuotationController::class, 'issueInvoice']);
+        Route::delete('/delete/{id}', [QuotationController::class, 'delete']);
     });
 
     // ── GRN ────────────────────────────────────────────────────────────────

@@ -741,6 +741,7 @@ const productOptions = products.map((p) => ({
                 <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">GRN</th>
                 <th className="text-center text-xs font-medium text-muted-foreground px-4 py-3">Stock</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Cost (Rs.)</th>
+                <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Value (Rs.)</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Actions</th>
               </tr>
             </thead>
@@ -779,6 +780,9 @@ const productOptions = products.map((p) => ({
                     <td className="px-4 py-3 text-sm text-right">
                       {Number(s.purchase_price).toLocaleString()}
                     </td>
+                    <td className="px-4 py-3 text-sm font-semibold text-right">
+                      {(s.current_quantity * Number(s.purchase_price)).toLocaleString()}
+                    </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">
                         <button onClick={() => openAdj(s)}
@@ -798,7 +802,7 @@ const productOptions = products.map((p) => ({
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-foreground">
                     No stock found. Add products via GRN.
                   </td>
                 </tr>
