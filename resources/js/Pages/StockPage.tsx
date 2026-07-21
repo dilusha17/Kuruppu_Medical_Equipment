@@ -545,7 +545,6 @@ function StockPage() {
     purchase_price: '',
     batch_number:   '',
     expiry_date:    '',
-    mfd:            '',
   });
   const [products, setProducts] = useState<{ id: number; generic_name: string }[]>([]);
 
@@ -582,7 +581,7 @@ const openOpeningStock = () => {
     fetchProducts();
     setStockForm({
         product_id: '', quantity: '', purchase_price: '',
-        batch_number: '', expiry_date: '', mfd: '',
+        batch_number: '', expiry_date: '',
     });
     setShowOpeningStock(true);
 };
@@ -599,7 +598,6 @@ const handleSaveOpeningStock = async () => {
             purchase_price: Number(stockForm.purchase_price || 0),
             batch_number:   stockForm.batch_number  || null,
             expiry_date:    stockForm.expiry_date   || null,
-            mfd:            stockForm.mfd           || null,
             user_id:        user?.id,
         });
 
@@ -847,14 +845,7 @@ const productOptions = products.map((p) => ({
                 onChange={(e) => setStockForm({ ...stockForm, purchase_price: e.target.value })}
                 className={spinnerOff} />
 
-            <div className="flex flex-col gap-1.5">
-                <p className="text-xs font-medium text-muted-foreground">Manufacture Date (optional)</p>
-                <DatePicker value={stockForm.mfd}
-                    onChange={(v) => setStockForm({ ...stockForm, mfd: v })}
-                    placeholder="Mfg date" className="w-full h-10" />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
+            <div className="sm:col-span-2 flex flex-col gap-1.5">
                 <p className="text-xs font-medium text-muted-foreground">Expiry Date (optional)</p>
                 <DatePicker value={stockForm.expiry_date}
                     onChange={(v) => setStockForm({ ...stockForm, expiry_date: v })}

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('initial_quantity');
             $table->integer('current_quantity');
             $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('grn_id');
+            $table->unsignedBigInteger('grn_id')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 

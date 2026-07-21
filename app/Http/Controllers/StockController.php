@@ -100,7 +100,6 @@ class StockController extends Controller
             'purchase_price' => 'required|numeric|min:0',
             'batch_number'   => 'nullable|string',
             'expiry_date'    => 'nullable|date',
-            'mfd'            => 'nullable|date',
             'user_id'        => 'required|exists:users,id',
         ]);
 
@@ -109,7 +108,6 @@ class StockController extends Controller
             'grn_id'           => null,
             'user_id'          => $validated['user_id'],
             'batch_number'     => $validated['batch_number'] ?? null,
-            'mfd'              => $validated['mfd'] ?? null,
             'expiry_date'      => $validated['expiry_date'] ?? null,
             'purchase_price'   => $validated['purchase_price'],
             'initial_quantity' => $validated['quantity'],
