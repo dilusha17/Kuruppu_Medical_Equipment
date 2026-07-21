@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
   { label: 'Stock', path: '/stock', icon: Package, roles: ['owner', 'admin'] },
   { label: 'Customers', path: '/customers', icon: UserCheck, roles: ['owner', 'admin', 'cashier'] },
   { label: 'Suppliers', path: '/suppliers', icon: Truck, roles: ['owner', 'admin'] },
-  { label: 'VAT Invoices', path: '/vat-invoices', icon: Receipt, roles: ['owner', 'admin'] },
+  { label: 'Tax Invoices', path: '/tax-invoices', icon: Receipt, roles: ['owner', 'admin'] },
   { label: 'Receivables', path: '/receivables', icon: TrendingUp, roles: ['owner', 'admin'] },
   { label: 'Payables', path: '/payables', icon: TrendingDown, roles: ['owner', 'admin'] },
   { label: 'Reports', path: '/reports', icon: BarChart3, roles: ['owner', 'admin'] },

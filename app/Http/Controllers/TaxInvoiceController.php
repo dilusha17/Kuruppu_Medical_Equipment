@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\BusinessEntity;
 use App\Models\Invoice;
-use App\Models\VatInvoice;
+use App\Models\TaxInvoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class VatInvoiceController extends Controller
+class TaxInvoiceController extends Controller
 {
     public function generatePdf(Request $request)
     {
@@ -27,7 +27,7 @@ class VatInvoiceController extends Controller
             $currentYearPrefix = date('y');
             $monthPrefix       = strtoupper(date('M'));
 
-            $latestVat = VatInvoice::orderBy('id', 'desc')->first();
+            $latestVat = TaxInvoice::orderBy('id', 'desc')->first();
             $nextNum   = 1;
             if ($latestVat) {
                 $latestYear = substr($latestVat->vat_invoice_number, 0, 2);
@@ -48,7 +48,7 @@ class VatInvoiceController extends Controller
             $vatAmount   = ($subTotal * $vatPercentage) / 100;
             $totalAmount = $subTotal + $vatAmount;
 
-            $vatInvoice = VatInvoice::create([
+            $vatInvoice = TaxInvoice::create([
                 'invoice_id'         => $invoice->id,
                 'customer_id'        => $customer->id,
                 'vat_invoice_number' => $vatInvoiceNumber,
@@ -74,7 +74,7 @@ class VatInvoiceController extends Controller
     {
         try {
             $id         = $request->input('id');
-            $vatInvoice = VatInvoice::with(['customer', 'invoice.items.stockBatch.product', 'invoice.paymentMethod'])->findOrFail($id);
+            $vatInvoice = TaxInvoice::with(['customer', 'invoice.items.stockBatch.product', 'invoice.paymentMethod'])->findOrFail($id);
             $invoice    = $vatInvoice->invoice;
             $customer   = $vatInvoice->customer;
             $customerVat = DB::table('customers_vat_details')->where('customer_id', $customer->id)->first();

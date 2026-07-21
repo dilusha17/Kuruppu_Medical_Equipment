@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class VatInvoice extends Model
+class TaxInvoice extends Model
 {
-    protected $table = 'vat_invoice';
+    protected $table = 'tax_invoice';
 
     protected $fillable = [
         'invoice_id',

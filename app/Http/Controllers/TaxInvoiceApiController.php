@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invoice;
-use App\Models\VatInvoice;
+use App\Models\TaxInvoice;
 use Illuminate\Support\Facades\DB;
 
-class VatInvoiceApiController extends Controller
+class TaxInvoiceApiController extends Controller
 {
     public function getCustomers()
     {
@@ -56,7 +56,7 @@ class VatInvoiceApiController extends Controller
 
     public function history(Request $request)
     {
-        $query = VatInvoice::orderBy('created_at', 'desc');
+        $query = TaxInvoice::orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;

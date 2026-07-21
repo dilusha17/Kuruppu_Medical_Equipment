@@ -1,13 +1,18 @@
-# Graph Report - .  (2026-07-21)
+# Graph Report - Kuruppu Medical Equipment  (2026-07-21)
 
 ## Corpus Check
-- 247 files · ~106,133 words
+- 235 files · ~105,890 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1313 nodes · 2270 edges · 181 communities (122 shown, 59 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 180 edges (avg confidence: 0.8)
-- Token cost: 4,200 input · 850 output
+- 1286 nodes · 2252 edges · 174 communities (114 shown, 60 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 181 edges (avg confidence: 0.8)
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `c2ae93bb`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - UI: Stat Cards & Badges
@@ -62,6 +67,9 @@
 - Payments
 - accordion
 - avatar
+- 2026_04_24_123452_payment_methods
+- 2026_04_25_164647_unit_types
+- 2026_07_12_000003_add_payment_method_id_
 - Inertia + React Bridge
 - Mock Authentication (localStorage)
 - BarcodeScanner
@@ -69,7 +77,6 @@
 - app
 - class-variance-authority
 - clsx
-- cmdk
 - embla-carousel-react
 - @hookform/resolvers
 - html5-qrcode
@@ -124,21 +131,21 @@
 5. `compilerOptions` - 21 edges
 6. `Button` - 20 edges
 7. `useAuth()` - 20 edges
-8. `AppShell()` - 19 edges
-9. `BusinessEntity` - 18 edges
+8. `BusinessEntity` - 19 edges
+9. `AppShell()` - 19 edges
 10. `Expense` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `useChart()` --references--> `react`  [EXTRACTED]
-  resources/js/components/ui/chart.tsx → package.json
-- `useFormField()` --references--> `react`  [EXTRACTED]
-  resources/js/components/ui/form.tsx → package.json
 - `useCarousel()` --references--> `react`  [EXTRACTED]
   resources/js/components/ui/carousel.tsx → package.json
-- `useSidebar()` --references--> `react`  [EXTRACTED]
-  resources/js/components/ui/sidebar.tsx → package.json
-- `useIsMobile()` --references--> `react`  [EXTRACTED]
-  resources/js/hooks/use-mobile.tsx → package.json
+- `useChart()` --references--> `react`  [EXTRACTED]
+  resources/js/components/ui/chart.tsx → package.json
+- `Combobox()` --references--> `react`  [EXTRACTED]
+  resources/js/components/ui/combobox.tsx → package.json
+- `DatePicker()` --references--> `react`  [EXTRACTED]
+  resources/js/components/ui/date-picker.tsx → package.json
+- `ExpiryDatePicker()` --references--> `react`  [EXTRACTED]
+  resources/js/components/ui/date-picker.tsx → package.json
 
 ## Import Cycles
 - None detected.
@@ -146,27 +153,27 @@
 ## Hyperedges (group relationships)
 - **localStorage-Persisted Frontend Demo State** — merge_notes_mock_auth, merge_notes_theme_toggle, merge_notes_role_based_access [INFERRED 0.75]
 
-## Communities (181 total, 59 thin omitted)
+## Communities (174 total, 60 thin omitted)
 
 ### Community 0 - "UI: Stat Cards & Badges"
 Cohesion: 0.05
-Nodes (43): IconVariant, iconVariantStyles, StatCard(), StatCardProps, Badge(), BadgeProps, badgeVariants, Card (+35 more)
+Nodes (42): IconVariant, iconVariantStyles, StatCard(), StatCardProps, Badge(), BadgeProps, badgeVariants, Card (+34 more)
 
 ### Community 1 - "Composer Dependencies"
 Cohesion: 0.04
 Nodes (44): pestphp/pest-plugin, php-http/discovery, autoload, autoload-dev, psr-4, psr-4, config, allow-plugins (+36 more)
 
 ### Community 2 - "Laravel Controllers (Core)"
-Cohesion: 0.13
-Nodes (4): CashFlowController, Payment, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes
+Cohesion: 0.15
+Nodes (3): Payment, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes
 
 ### Community 3 - "GRN Controller & Actions"
-Cohesion: 0.07
-Nodes (7): GrnController, PayableController, Expense, Grn, Grn_items, Payable, Illuminate\Database\Eloquent\Relations\BelongsTo
+Cohesion: 0.11
+Nodes (7): DashboardController, GrnController, ProductController, Grn, Grn_items, Product, Illuminate\Database\Eloquent\Relations\BelongsTo
 
 ### Community 4 - "UI: Sheet Component"
-Cohesion: 0.05
-Nodes (37): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants (+29 more)
+Cohesion: 0.07
+Nodes (26): Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarHeader (+18 more)
 
 ### Community 5 - "Build Tooling & ESLint"
 Cohesion: 0.05
@@ -177,87 +184,87 @@ Cohesion: 0.05
 Nodes (31): brands, categories, Customer, Employee, Expense, expenseCategories, GRN, initialCustomers (+23 more)
 
 ### Community 7 - "Deposit Accounts & Receivables"
-Cohesion: 0.08
-Nodes (15): DepositAccountController, DepositAccount, User, CustomerSeeder, DatabaseSeeder, DepositAccountSeeder, PaymentMethodSeeder, UserSeeder (+7 more)
+Cohesion: 0.09
+Nodes (12): SettingsController, VatController, Settings, Vat, CustomerSeeder, DatabaseSeeder, DepositAccountSeeder, PaymentMethodSeeder (+4 more)
 
 ### Community 8 - "Base Controller & Dashboard"
 Cohesion: 0.09
-Nodes (9): Controller, DashboardController, InvoiceController, NotificationController, ReceivableController, VatInvoiceApiController, Invoice, InvoiceItems (+1 more)
+Nodes (6): InvoiceController, ReceivableController, VatInvoiceApiController, Invoice, InvoiceItems, Receivable
 
 ### Community 9 - "Auth & Business Entity Controllers"
 Cohesion: 0.12
-Nodes (9): AuthController, BusinessEntityController, ReportController, VatInvoiceController, HandleInertiaRequests, BusinessEntity, VatInvoice, Illuminate\Http\Request (+1 more)
+Nodes (8): BusinessEntityController, CashFlowController, PayableController, ReportController, BusinessEntity, Expense, Payable, Illuminate\Http\Request
 
 ### Community 10 - "App Shell & Layout"
 Cohesion: 0.09
-Nodes (25): AppShell(), AppLayout(), NavItem, navItems, SidebarContent(), SidebarContentProps, Textarea, TextareaProps (+17 more)
+Nodes (23): AppLayout(), NavItem, navItems, SidebarContent(), SidebarContentProps, ExpiryDatePicker(), AuthContext, AuthContextType (+15 more)
 
 ### Community 11 - "Modal & Dialog Components"
 Cohesion: 0.09
-Nodes (25): Modal(), ModalProps, sizes, DialogContent, DialogDescription, DialogFooter(), DialogHeader(), DialogOverlay (+17 more)
+Nodes (27): Modal(), ModalProps, sizes, Combobox(), DialogContent, DialogDescription, DialogFooter(), DialogHeader() (+19 more)
 
 ### Community 12 - "Breadcrumb & Drawer UI"
-Cohesion: 0.08
-Nodes (27): Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator(), DrawerContent (+19 more)
+Cohesion: 0.25
+Nodes (7): Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator()
 
 ### Community 13 - "Customer & Payment Controllers"
-Cohesion: 0.09
-Nodes (7): CustomerController, PaymentMethodController, QuotationController, Customers, PaymentMethod, Quotation, QuotationItem
+Cohesion: 0.16
+Nodes (3): QuotationController, Quotation, QuotationItem
 
 ### Community 14 - "Toast Notifications UI"
-Cohesion: 0.12
-Nodes (24): Toast, ToastAction, ToastActionElement, ToastClose, ToastDescription, ToastProps, ToastTitle, toastVariants (+16 more)
+Cohesion: 0.08
+Nodes (32): queryClient, Toaster(), Toast, ToastAction, ToastActionElement, ToastClose, ToastDescription, ToastProps (+24 more)
 
 ### Community 15 - "TypeScript App Config"
 Cohesion: 0.07
 Nodes (26): DOM, DOM.Iterable, ES2020, resources/js, compilerOptions, allowImportingTsExtensions, baseUrl, ignoreDeprecations (+18 more)
 
 ### Community 16 - "App Bootstrap & Providers"
-Cohesion: 0.10
-Nodes (18): queryClient, PaginationContent, PaginationItem, Toaster(), ToasterProps, AuthProvider(), ThemeContext, ThemeContextType (+10 more)
+Cohesion: 0.09
+Nodes (30): ConfirmDialog(), ConfirmDialogProps, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader() (+22 more)
 
 ### Community 17 - "Composer Scripts"
 Cohesion: 0.08
 Nodes (26): scripts, dev, post-autoload-dump, post-create-project-cmd, post-root-package-install, post-update-cmd, pre-package-uninstall, setup (+18 more)
 
 ### Community 18 - "Search Bar & Form Inputs"
-Cohesion: 0.14
-Nodes (11): SearchBar(), SearchBarProps, Button, ButtonProps, Input, Customer, emptyForm, FormData (+3 more)
+Cohesion: 0.08
+Nodes (23): AppShell(), getPageNumbers(), NumberedPagination(), NumberedPaginationProps, SearchBar(), SearchBarProps, Button, Input (+15 more)
 
 ### Community 19 - "Carousel Component"
-Cohesion: 0.08
-Nodes (20): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+12 more)
+Cohesion: 0.15
+Nodes (12): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+4 more)
 
 ### Community 20 - "Dropdown Menu UI"
-Cohesion: 0.09
-Nodes (20): DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut(), DropdownMenuSubContent (+12 more)
+Cohesion: 0.17
+Nodes (11): Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarLabel, MenubarRadioItem, MenubarSeparator, MenubarShortcut() (+3 more)
 
 ### Community 21 - "NavLink & Small Controls"
-Cohesion: 0.10
-Nodes (11): NavLink, NavLinkCompatProps, Checkbox, HoverCardContent, Progress, RadioGroup, RadioGroupItem, ScrollArea (+3 more)
+Cohesion: 0.08
+Nodes (17): NotifResponse, OverdueInvoice, NavLink, NavLinkCompatProps, Calendar(), CalendarProps, Checkbox, DatePickerProps (+9 more)
 
 ### Community 22 - "Select & Cash Flow Page"
-Cohesion: 0.14
-Nodes (13): SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, AccountSummary (+5 more)
+Cohesion: 0.10
+Nodes (21): DatePicker(), SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger (+13 more)
 
 ### Community 23 - "Stock / Inventory Controller"
-Cohesion: 0.16
-Nodes (4): StockController, InventoryAdjustment, StockBatches, Illuminate\Database\Eloquent\Relations\HasMany
+Cohesion: 0.15
+Nodes (3): StockController, InventoryAdjustment, StockBatches
 
 ### Community 24 - "Vite & Node TS Config"
 Cohesion: 0.11
 Nodes (17): ES2023, vite.config.ts, compilerOptions, allowImportingTsExtensions, isolatedModules, lib, module, moduleDetection (+9 more)
 
 ### Community 25 - "Confirm & Alert Dialogs"
-Cohesion: 0.21
-Nodes (13): ConfirmDialog(), ConfirmDialogProps, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader() (+5 more)
+Cohesion: 0.29
+Nodes (3): CustomerController, Customers, PaymentMethod
 
 ### Community 26 - "Date Pickers & Payables"
-Cohesion: 0.16
-Nodes (12): react, react, useCarousel(), Combobox(), DatePicker(), DatePickerProps, ExpiryDatePicker(), ExpenseItem (+4 more)
+Cohesion: 0.22
+Nodes (8): react, react, useCarousel(), useChart(), useFormField(), SidebarContext, useSidebar(), useIsMobile()
 
 ### Community 27 - "Company Controller & Factories"
-Cohesion: 0.21
+Cohesion: 0.18
 Nodes (5): CompanyController, Companies, UserFactory, Illuminate\Database\Eloquent\Factories\Factory, static
 
 ### Community 28 - "Combobox & Command Palette"
@@ -265,8 +272,8 @@ Cohesion: 0.21
 Nodes (11): ComboboxOption, ComboboxProps, Command, CommandDialogProps, CommandEmpty, CommandGroup, CommandInput, CommandItem (+3 more)
 
 ### Community 29 - "Settings & VAT Controllers"
-Cohesion: 0.22
-Nodes (4): SettingsController, VatController, Settings, Vat
+Cohesion: 0.20
+Nodes (7): ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLegendContent, ChartTooltipContent, THEMES
 
 ### Community 30 - "Supplier Controller"
 Cohesion: 0.23
@@ -274,15 +281,19 @@ Nodes (4): SupplierController, Suppliers, SupplierVatDetail, HasOne
 
 ### Community 31 - "NPM Radix Dependencies"
 Cohesion: 0.15
-Nodes (13): date-fns, dependencies, date-fns, @radix-ui/react-accordion, @radix-ui/react-context-menu, @radix-ui/react-menubar, react-barcode, react-to-print (+5 more)
+Nodes (13): cmdk, dependencies, cmdk, @radix-ui/react-accordion, @radix-ui/react-context-menu, @radix-ui/react-menubar, react-barcode, react-to-print (+5 more)
 
 ### Community 32 - "Root TypeScript Config"
 Cohesion: 0.15
 Nodes (12): compilerOptions, allowJs, baseUrl, ignoreDeprecations, noImplicitAny, noUnusedLocals, noUnusedParameters, paths (+4 more)
 
+### Community 33 - "Product Controller"
+Cohesion: 0.13
+Nodes (7): AuthController, User, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Database\Eloquent\Relations\HasMany, Illuminate\Foundation\Auth\User, Illuminate\Notifications\Notifiable, Laravel\Sanctum\HasApiTokens
+
 ### Community 34 - "Numbered Pagination & GRN History"
 Cohesion: 0.20
-Nodes (7): getPageNumbers(), NumberedPagination(), NumberedPaginationProps, Separator, Grn, GrnItem, GrnPayable
+Nodes (9): DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut(), DropdownMenuSubContent (+1 more)
 
 ### Community 35 - "Context Menu UI"
 Cohesion: 0.20
@@ -293,32 +304,32 @@ Cohesion: 0.22
 Nodes (8): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow
 
 ### Community 40 - "Navigation Menu UI"
-Cohesion: 0.25
-Nodes (7): NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuViewport
+Cohesion: 0.10
+Nodes (14): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescription, AlertTitle, alertVariants, NavigationMenu (+6 more)
 
 ### Community 41 - "Toggle Components"
 Cohesion: 0.33
 Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
 
+### Community 42 - "Company Profile Controller"
+Cohesion: 0.20
+Nodes (5): CompanyProfileController, Controller, NotificationController, PaymentMethodController, CompanyProfile
+
 ### Community 44 - "Notification Bell & Popover"
-Cohesion: 0.40
-Nodes (3): NotifResponse, OverdueInvoice, PopoverContent
+Cohesion: 0.22
+Nodes (8): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants
 
 ### Community 45 - "vite-env.d"
 Cohesion: 0.33
 Nodes (5): ImportMeta, ImportMetaEnv, *.jpg, *.png, *.svg
-
-### Community 47 - "alert"
-Cohesion: 0.40
-Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
 
 ### Community 48 - "input-otp"
 Cohesion: 0.40
 Nodes (4): InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot
 
 ### Community 50 - "accordion"
-Cohesion: 0.50
-Nodes (3): AccordionContent, AccordionItem, AccordionTrigger
+Cohesion: 0.25
+Nodes (6): DrawerContent, DrawerDescription, DrawerFooter(), DrawerHeader(), DrawerOverlay, DrawerTitle
 
 ### Community 51 - "avatar"
 Cohesion: 0.50
@@ -335,22 +346,22 @@ Nodes (3): Mock Authentication (localStorage), Role-Based Demo Users (owner/admi
 ## Knowledge Gaps
 - **459 isolated node(s):** `$schema`, `name`, `type`, `description`, `laravel` (+454 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **59 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **60 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `NPM Radix Dependencies` to `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-day-picker`, `react-dom`, `react-hook-form`, `Build Tooling & ESLint`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tanstack/react-query`, `vaul`, `@vitejs/plugin-react`, `zod`, `Date Pickers & Payables`, `axios`, `class-variance-authority`, `clsx`, `cmdk`, `embla-carousel-react`, `@hookform/resolvers`, `html5-qrcode`, `@inertiajs/react`, `input-otp`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slider`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toast`, `@radix-ui/react-toggle`?**
-  _High betweenness centrality (0.094) - this node is a cross-community bridge._
-- **Why does `react` connect `Date Pickers & Payables` to `UI: Stat Cards & Badges`, `UI: Sheet Component`, `Toast Notifications UI`, `Carousel Component`, `NPM Radix Dependencies`?**
-  _High betweenness centrality (0.081) - this node is a cross-community bridge._
-- **Why does `cn()` connect `Breadcrumb & Drawer UI` to `UI: Stat Cards & Badges`, `UI: Sheet Component`, `App Shell & Layout`, `Modal & Dialog Components`, `Toast Notifications UI`, `Search Bar & Form Inputs`, `Carousel Component`, `Dropdown Menu UI`, `NavLink & Small Controls`, `Select & Cash Flow Page`, `Confirm & Alert Dialogs`, `Date Pickers & Payables`, `Combobox & Command Palette`, `Numbered Pagination & GRN History`, `Context Menu UI`, `Table Component`, `Navigation Menu UI`, `Toggle Components`, `Notification Bell & Popover`, `alert`, `input-otp`, `accordion`, `avatar`?**
-  _High betweenness centrality (0.074) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `NPM Radix Dependencies` to `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-day-picker`, `react-dom`, `react-hook-form`, `Build Tooling & ESLint`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tanstack/react-query`, `vaul`, `@vitejs/plugin-react`, `zod`, `Date Pickers & Payables`, `2026_07_12_000003_add_payment_method_id_`, `axios`, `class-variance-authority`, `clsx`, `embla-carousel-react`, `@hookform/resolvers`, `html5-qrcode`, `@inertiajs/react`, `input-otp`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slider`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toast`, `@radix-ui/react-toggle`?**
+  _High betweenness centrality (0.095) - this node is a cross-community bridge._
+- **Why does `react` connect `Date Pickers & Payables` to `App Shell & Layout`, `Modal & Dialog Components`, `Toast Notifications UI`, `Select & Cash Flow Page`, `NPM Radix Dependencies`?**
+  _High betweenness centrality (0.084) - this node is a cross-community bridge._
+- **Why does `cn()` connect `App Bootstrap & Providers` to `UI: Stat Cards & Badges`, `UI: Sheet Component`, `App Shell & Layout`, `Modal & Dialog Components`, `Breadcrumb & Drawer UI`, `Toast Notifications UI`, `Search Bar & Form Inputs`, `Carousel Component`, `Dropdown Menu UI`, `NavLink & Small Controls`, `Select & Cash Flow Page`, `Combobox & Command Palette`, `Settings & VAT Controllers`, `Numbered Pagination & GRN History`, `Context Menu UI`, `Table Component`, `Navigation Menu UI`, `Toggle Components`, `Notification Bell & Popover`, `input-otp`, `accordion`, `avatar`?**
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
 - **What connects `$schema`, `name`, `type` to the rest of the system?**
   _459 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `UI: Stat Cards & Badges` be split into smaller, more focused modules?**
-  _Cohesion score 0.05101327742837177 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05224963715529753 - nodes in this community are weakly interconnected._
 - **Should `Composer Dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected._
 - **Should `Laravel Controllers (Core)` be split into smaller, more focused modules?**
-  _Cohesion score 0.12624584717607973 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1484480431848853 - nodes in this community are weakly interconnected._

@@ -455,8 +455,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_http_controllers_controller",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 3,
+      "community_name": "GRN Controller & Actions",
       "norm_label": "controller.php"
     },
     {
@@ -466,8 +466,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_http_controllers_controller_controller",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 3,
+      "community_name": "GRN Controller & Actions",
       "norm_label": "controller"
     },
     {
@@ -730,8 +730,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": "grncontroller"
     },
     {
@@ -741,8 +741,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_nextnumber",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".nextnumber()"
     },
     {
@@ -752,8 +752,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_formdata",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".formdata()"
     },
     {
@@ -763,8 +763,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_all",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".all()"
     },
     {
@@ -774,8 +774,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_store",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".store()"
     },
     {
@@ -785,8 +785,8 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_show",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".show()"
     },
     {
@@ -796,8 +796,8 @@
       "source_location": "L249",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_printview",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".printview()"
     },
     {
@@ -807,8 +807,8 @@
       "source_location": "L281",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_resolvelogopath",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".resolvelogopath()"
     },
     {
@@ -818,8 +818,8 @@
       "source_location": "L292",
       "_origin": "ast",
       "id": "app_http_controllers_grncontroller_grncontroller_delete",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": ".delete()"
     },
     {
@@ -895,8 +895,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "app_http_controllers_invoicecontroller_invoicecontroller_store",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".store()"
     },
     {
@@ -961,8 +961,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_http_controllers_notificationcontroller_notificationcontroller",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 3,
+      "community_name": "GRN Controller & Actions",
       "norm_label": "notificationcontroller"
     },
     {
@@ -972,8 +972,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_http_controllers_notificationcontroller_notificationcontroller_overdueinvoices",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 3,
+      "community_name": "GRN Controller & Actions",
       "norm_label": ".overdueinvoices()"
     },
     {
@@ -1093,8 +1093,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_http_controllers_paymentmethodcontroller_paymentmethodcontroller",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 25,
+      "community_name": "Confirm & Alert Dialogs",
       "norm_label": "paymentmethodcontroller"
     },
     {
@@ -1104,8 +1104,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_http_controllers_paymentmethodcontroller_paymentmethodcontroller_all",
-      "community": 42,
-      "community_name": "Company Profile Controller",
+      "community": 25,
+      "community_name": "Confirm & Alert Dialogs",
       "norm_label": ".all()"
     },
     {
@@ -1269,8 +1269,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "app_http_controllers_quotationcontroller_quotationcontroller_issueinvoice",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".issueinvoice()"
     },
     {
@@ -1346,8 +1346,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "app_http_controllers_receivablecontroller_receivablecontroller_paymenthistory",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".paymenthistory()"
     },
     {
@@ -1681,6 +1681,138 @@
       "norm_label": ".delete()"
     },
     {
+      "label": "TaxInvoiceApiController.php",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
+      "norm_label": "taxinvoiceapicontroller.php"
+    },
+    {
+      "label": "TaxInvoiceApiController",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": "taxinvoiceapicontroller"
+    },
+    {
+      "label": ".getCustomers()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getcustomers",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".getcustomers()"
+    },
+    {
+      "label": ".getInvoices()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoices",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".getinvoices()"
+    },
+    {
+      "label": ".getInvoiceData()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoicedata",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".getinvoicedata()"
+    },
+    {
+      "label": ".history()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_history",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".history()"
+    },
+    {
+      "label": "TaxInvoiceController.php",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
+      "norm_label": "taxinvoicecontroller.php"
+    },
+    {
+      "label": "TaxInvoiceController",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": "taxinvoicecontroller"
+    },
+    {
+      "label": ".generatePdf()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".generatepdf()"
+    },
+    {
+      "label": ".viewHistoryPdf()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".viewhistorypdf()"
+    },
+    {
+      "label": ".buildViewData()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L97",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".buildviewdata()"
+    },
+    {
+      "label": ".convertNumberToWords()",
+      "file_type": "code",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L136",
+      "_origin": "ast",
+      "id": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_convertnumbertowords",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".convertnumbertowords()"
+    },
+    {
       "label": "UnitTypeController.php",
       "file_type": "code",
       "source_file": "app/Http/Controllers/UnitTypeController.php",
@@ -1791,146 +1923,14 @@
       "norm_label": ".bydate()"
     },
     {
-      "label": "VatInvoiceApiController.php",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller",
-      "community": 2,
-      "community_name": "Laravel Controllers (Core)",
-      "norm_label": "vatinvoiceapicontroller.php"
-    },
-    {
-      "label": "VatInvoiceApiController",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
-      "norm_label": "vatinvoiceapicontroller"
-    },
-    {
-      "label": ".getCustomers()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getcustomers",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
-      "norm_label": ".getcustomers()"
-    },
-    {
-      "label": ".getInvoices()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoices",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
-      "norm_label": ".getinvoices()"
-    },
-    {
-      "label": ".getInvoiceData()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L36",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoicedata",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
-      "norm_label": ".getinvoicedata()"
-    },
-    {
-      "label": ".history()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L57",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_history",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
-      "norm_label": ".history()"
-    },
-    {
-      "label": "VatInvoiceController.php",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller",
-      "community": 2,
-      "community_name": "Laravel Controllers (Core)",
-      "norm_label": "vatinvoicecontroller.php"
-    },
-    {
-      "label": "VatInvoiceController",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": "vatinvoicecontroller"
-    },
-    {
-      "label": ".generatePdf()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L14",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".generatepdf()"
-    },
-    {
-      "label": ".viewHistoryPdf()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L73",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".viewhistorypdf()"
-    },
-    {
-      "label": ".buildViewData()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L97",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".buildviewdata()"
-    },
-    {
-      "label": ".convertNumberToWords()",
-      "file_type": "code",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L136",
-      "_origin": "ast",
-      "id": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_convertnumbertowords",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".convertnumbertowords()"
-    },
-    {
       "label": "HandleInertiaRequests.php",
       "file_type": "code",
       "source_file": "app/Http/Middleware/HandleInertiaRequests.php",
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_http_middleware_handleinertiarequests",
-      "community": 57,
-      "community_name": "2026_04_25_164647_unit_types",
+      "community": 43,
+      "community_name": "Expenses Category Controller",
       "norm_label": "handleinertiarequests.php"
     },
     {
@@ -1940,8 +1940,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_http_middleware_handleinertiarequests_handleinertiarequests",
-      "community": 57,
-      "community_name": "2026_04_25_164647_unit_types",
+      "community": 43,
+      "community_name": "Expenses Category Controller",
       "norm_label": "handleinertiarequests"
     },
     {
@@ -1951,8 +1951,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_http_middleware_handleinertiarequests_handleinertiarequests_version",
-      "community": 57,
-      "community_name": "2026_04_25_164647_unit_types",
+      "community": 43,
+      "community_name": "Expenses Category Controller",
       "norm_label": ".version()"
     },
     {
@@ -1962,8 +1962,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "app_http_middleware_handleinertiarequests_handleinertiarequests_share",
-      "community": 57,
-      "community_name": "2026_04_25_164647_unit_types",
+      "community": 43,
+      "community_name": "Expenses Category Controller",
       "norm_label": ".share()"
     },
     {
@@ -2292,8 +2292,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_models_grn_grn",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 9,
+      "community_name": "Auth & Business Entity Controllers",
       "norm_label": "grn"
     },
     {
@@ -2325,8 +2325,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "app_models_grn_grn_supplier",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".supplier()"
     },
     {
@@ -2336,8 +2336,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "app_models_grn_grn_user",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".user()"
     },
     {
@@ -2347,8 +2347,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "app_models_grn_grn_paymentmethod",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".paymentmethod()"
     },
     {
@@ -2358,8 +2358,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "app_models_grn_grn_depositaccount",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".depositaccount()"
     },
     {
@@ -2380,8 +2380,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_models_grn_items_grn_items",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": "grn_items"
     },
     {
@@ -2391,8 +2391,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_models_grn_items_grn_items_grn",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".grn()"
     },
     {
@@ -2402,8 +2402,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "app_models_grn_items_grn_items_product",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".product()"
     },
     {
@@ -2501,8 +2501,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "app_models_invoice_invoice_user",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".user()"
     },
     {
@@ -2556,8 +2556,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_models_invoiceitems_invoiceitems",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": "invoiceitems"
     },
     {
@@ -2567,8 +2567,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_models_invoiceitems_invoiceitems_stockbatch",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".stockbatch()"
     },
     {
@@ -2578,8 +2578,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_models_invoiceitems_invoiceitems_product",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".product()"
     },
     {
@@ -2589,8 +2589,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "app_models_invoiceitems_invoiceitems_invoice",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".invoice()"
     },
     {
@@ -2666,8 +2666,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_models_payment_payment_user",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".user()"
     },
     {
@@ -2699,8 +2699,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_models_payments",
-      "community": 49,
-      "community_name": "Payments",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
       "norm_label": "payments.php"
     },
     {
@@ -2710,8 +2710,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_models_payments_payments",
-      "community": 49,
-      "community_name": "Payments",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
       "norm_label": "payments"
     },
     {
@@ -2721,8 +2721,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "app_models_payments_payments_invoice",
-      "community": 49,
-      "community_name": "Payments",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
       "norm_label": ".invoice()"
     },
     {
@@ -2732,8 +2732,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "app_models_payments_php_belongsto",
-      "community": 49,
-      "community_name": "Payments",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
       "norm_label": "belongsto"
     },
     {
@@ -2952,8 +2952,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_models_receivable_receivable",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": "receivable"
     },
     {
@@ -2963,8 +2963,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_models_receivable_receivable_invoice",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".invoice()"
     },
     {
@@ -2974,8 +2974,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_models_receivable_receivable_paymentmethod",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".paymentmethod()"
     },
     {
@@ -2985,8 +2985,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_models_receivable_receivable_depositaccount",
-      "community": 8,
-      "community_name": "Base Controller & Dashboard",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": ".depositaccount()"
     },
     {
@@ -3177,6 +3177,50 @@
       "norm_label": "hasone"
     },
     {
+      "label": "TaxInvoice.php",
+      "file_type": "code",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_models_taxinvoice",
+      "community": 2,
+      "community_name": "Laravel Controllers (Core)",
+      "norm_label": "taxinvoice.php"
+    },
+    {
+      "label": "TaxInvoice",
+      "file_type": "code",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "app_models_taxinvoice_taxinvoice",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": "taxinvoice"
+    },
+    {
+      "label": ".invoice()",
+      "file_type": "code",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "app_models_taxinvoice_taxinvoice_invoice",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".invoice()"
+    },
+    {
+      "label": ".customer()",
+      "file_type": "code",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "app_models_taxinvoice_taxinvoice_customer",
+      "community": 8,
+      "community_name": "Base Controller & Dashboard",
+      "norm_label": ".customer()"
+    },
+    {
       "label": "UnitTypes.php",
       "file_type": "code",
       "source_file": "app/Models/UnitTypes.php",
@@ -3296,50 +3340,6 @@
       "community": 7,
       "community_name": "Deposit Accounts & Receivables",
       "norm_label": "vat"
-    },
-    {
-      "label": "VatInvoice.php",
-      "file_type": "code",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_models_vatinvoice",
-      "community": 2,
-      "community_name": "Laravel Controllers (Core)",
-      "norm_label": "vatinvoice.php"
-    },
-    {
-      "label": "VatInvoice",
-      "file_type": "code",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "app_models_vatinvoice_vatinvoice",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": "vatinvoice"
-    },
-    {
-      "label": ".invoice()",
-      "file_type": "code",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L22",
-      "_origin": "ast",
-      "id": "app_models_vatinvoice_vatinvoice_invoice",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".invoice()"
-    },
-    {
-      "label": ".customer()",
-      "file_type": "code",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "app_models_vatinvoice_vatinvoice_customer",
-      "community": 47,
-      "community_name": "alert",
-      "norm_label": ".customer()"
     },
     {
       "label": "AppServiceProvider.php",
@@ -8435,23 +8435,23 @@
       "norm_label": "wrappedsupplierspage()"
     },
     {
-      "label": "VATInvoicesPage.tsx",
+      "label": "TaxInvoicesPage.tsx",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage",
+      "id": "resources_js_pages_taxinvoicespage",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
-      "norm_label": "vatinvoicespage.tsx"
+      "norm_label": "taxinvoicespage.tsx"
     },
     {
       "label": "Customer",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_customer",
+      "id": "resources_js_pages_taxinvoicespage_customer",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "customer"
@@ -8459,10 +8459,10 @@
     {
       "label": "InvoiceRow",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L15",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_invoicerow",
+      "id": "resources_js_pages_taxinvoicespage_invoicerow",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "invoicerow"
@@ -8470,10 +8470,10 @@
     {
       "label": "InvoiceItem",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L16",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_invoiceitem",
+      "id": "resources_js_pages_taxinvoicespage_invoiceitem",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "invoiceitem"
@@ -8481,10 +8481,10 @@
     {
       "label": "InvoiceDetail",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L17",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_invoicedetail",
+      "id": "resources_js_pages_taxinvoicespage_invoicedetail",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "invoicedetail"
@@ -8492,10 +8492,10 @@
     {
       "label": "CustomerVat",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L18",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_customervat",
+      "id": "resources_js_pages_taxinvoicespage_customervat",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "customervat"
@@ -8503,24 +8503,24 @@
     {
       "label": "InvoiceDataResponse",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_invoicedataresponse",
+      "id": "resources_js_pages_taxinvoicespage_invoicedataresponse",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
       "norm_label": "invoicedataresponse"
     },
     {
-      "label": "VATInvoicesPage()",
+      "label": "TaxInvoicesPage()",
       "file_type": "code",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L22",
       "_origin": "ast",
-      "id": "resources_js_pages_vatinvoicespage_vatinvoicespage",
+      "id": "resources_js_pages_taxinvoicespage_taxinvoicespage",
       "community": 0,
       "community_name": "UI: Stat Cards & Badges",
-      "norm_label": "vatinvoicespage()"
+      "norm_label": "taxinvoicespage()"
     },
     {
       "label": "app.js",
@@ -12714,48 +12714,48 @@
       "norm_label": "nextadjnumber()"
     },
     {
-      "label": "VatInvoiceRecord",
+      "label": "TaxInvoiceRecord",
       "file_type": "code",
       "source_file": "resources/js/data/mockData.ts",
       "source_location": "L287",
       "_origin": "ast",
-      "id": "resources_js_data_mockdata_vatinvoicerecord",
+      "id": "resources_js_data_mockdata_taxinvoicerecord",
       "community": 6,
       "community_name": "Mock Data & Domain Types",
-      "norm_label": "vatinvoicerecord"
+      "norm_label": "taxinvoicerecord"
     },
     {
-      "label": "VatInvoice",
+      "label": "TaxInvoice",
       "file_type": "code",
       "source_file": "resources/js/data/mockData.ts",
       "source_location": "L295",
       "_origin": "ast",
-      "id": "resources_js_data_mockdata_vatinvoice",
+      "id": "resources_js_data_mockdata_taxinvoice",
       "community": 6,
       "community_name": "Mock Data & Domain Types",
-      "norm_label": "vatinvoice"
+      "norm_label": "taxinvoice"
     },
     {
-      "label": "initialVatInvoices",
+      "label": "initialTaxInvoices",
       "file_type": "code",
       "source_file": "resources/js/data/mockData.ts",
       "source_location": "L312",
       "_origin": "ast",
-      "id": "resources_js_data_mockdata_initialvatinvoices",
+      "id": "resources_js_data_mockdata_initialtaxinvoices",
       "community": 6,
       "community_name": "Mock Data & Domain Types",
-      "norm_label": "initialvatinvoices"
+      "norm_label": "initialtaxinvoices"
     },
     {
-      "label": "nextVatInvoiceNumber()",
+      "label": "nextTaxInvoiceNumber()",
       "file_type": "code",
       "source_file": "resources/js/data/mockData.ts",
       "source_location": "L315",
       "_origin": "ast",
-      "id": "resources_js_data_mockdata_nextvatinvoicenumber",
+      "id": "resources_js_data_mockdata_nexttaxinvoicenumber",
       "community": 6,
       "community_name": "Mock Data & Domain Types",
-      "norm_label": "nextvatinvoicenumber()"
+      "norm_label": "nexttaxinvoicenumber()"
     },
     {
       "label": "use-mobile.tsx",
@@ -13908,8 +13908,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "inertia_middleware",
-      "community": 57,
-      "community_name": "2026_04_25_164647_unit_types",
+      "community": 43,
+      "community_name": "Expenses Category Controller",
       "norm_label": "inertia\\middleware"
     },
     {
@@ -13952,8 +13952,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "illuminate_database_eloquent_relations_belongsto",
-      "community": 3,
-      "community_name": "GRN Controller & Actions",
+      "community": 23,
+      "community_name": "Stock / Inventory Controller",
       "norm_label": "illuminate\\database\\eloquent\\relations\\belongsto"
     },
     {
@@ -14066,8 +14066,8 @@
       "contributor": null,
       "community": 91,
       "norm_label": "inertia + react bridge",
-      "id": "merge_notes_inertia_react_bridge",
-      "community_name": "Inertia + React Bridge"
+      "community_name": "Inertia + React Bridge",
+      "id": "merge_notes_inertia_react_bridge"
     },
     {
       "label": "Mock Authentication (localStorage)",
@@ -14080,8 +14080,8 @@
       "contributor": null,
       "community": 92,
       "norm_label": "mock authentication (localstorage)",
-      "id": "merge_notes_mock_auth",
-      "community_name": "Mock Authentication (localStorage)"
+      "community_name": "Mock Authentication (localStorage)",
+      "id": "merge_notes_mock_auth"
     },
     {
       "label": "Manual Theme Toggle",
@@ -14094,8 +14094,8 @@
       "contributor": null,
       "community": 92,
       "norm_label": "manual theme toggle",
-      "id": "merge_notes_theme_toggle",
-      "community_name": "Mock Authentication (localStorage)"
+      "community_name": "Mock Authentication (localStorage)",
+      "id": "merge_notes_theme_toggle"
     },
     {
       "label": "Role-Based Demo Users (owner/admin/cashier)",
@@ -14108,8 +14108,8 @@
       "contributor": null,
       "community": 92,
       "norm_label": "role-based demo users (owner/admin/cashier)",
-      "id": "merge_notes_role_based_access",
-      "community_name": "Mock Authentication (localStorage)"
+      "community_name": "Mock Authentication (localStorage)",
+      "id": "merge_notes_role_based_access"
     },
     {
       "label": "Vite React Plugin Build",
@@ -14122,8 +14122,8 @@
       "contributor": null,
       "community": 91,
       "norm_label": "vite react plugin build",
-      "id": "merge_notes_vite_react_setup",
-      "community_name": "Inertia + React Bridge"
+      "community_name": "Inertia + React Bridge",
+      "id": "merge_notes_vite_react_setup"
     },
     {
       "label": "Laravel Framework",
@@ -14136,8 +14136,8 @@
       "contributor": null,
       "community": 91,
       "norm_label": "laravel framework",
-      "id": "readme_laravel_framework",
-      "community_name": "Inertia + React Bridge"
+      "community_name": "Inertia + React Bridge",
+      "id": "readme_laravel_framework"
     },
     {
       "label": "Graphify Knowledge Graph Workflow",
@@ -14150,8 +14150,8 @@
       "contributor": null,
       "community": 144,
       "norm_label": "graphify knowledge graph workflow",
-      "id": "claude_graphify_knowledge_graph",
-      "community_name": "Graphify Knowledge Graph Workflow"
+      "community_name": "Graphify Knowledge Graph Workflow",
+      "id": "claude_graphify_knowledge_graph"
     },
     {
       "label": "Kuruppu Brand Logo",
@@ -14164,8 +14164,8 @@
       "contributor": null,
       "community": 160,
       "norm_label": "kuruppu brand logo",
-      "id": "resources_assets_logo_kuruppu_brand",
-      "community_name": "Kuruppu Brand Logo"
+      "community_name": "Kuruppu Brand Logo",
+      "id": "resources_assets_logo_kuruppu_brand"
     },
     {
       "label": "Cookie Jar Export",
@@ -14178,8 +14178,8 @@
       "contributor": null,
       "community": 155,
       "norm_label": "cookie jar export",
-      "id": "cookies_session_export",
-      "community_name": "Cookie Jar Export"
+      "community_name": "Cookie Jar Export",
+      "id": "cookies_session_export"
     },
     {
       "label": "Robots Crawler Policy",
@@ -14192,8 +14192,8 @@
       "contributor": null,
       "community": 159,
       "norm_label": "robots crawler policy",
-      "id": "public_robots_crawler_policy",
-      "community_name": "Robots Crawler Policy"
+      "community_name": "Robots Crawler Policy",
+      "id": "public_robots_crawler_policy"
     }
   ],
   "links": [
@@ -15056,11 +15056,11 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
       "source_location": "L64",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
       "target": "app_http_controllers_cashflowcontroller_cashflowcontroller_pdf"
     },
     {
@@ -15068,11 +15068,11 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
       "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
       "target": "app_http_controllers_cashflowcontroller_cashflowcontroller_pdf"
     },
     {
@@ -15729,6 +15729,28 @@
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "target": "app_http_controllers_controller_controller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "target": "app_http_controllers_controller_controller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
       "source_file": "app/Http/Controllers/UnitTypeController.php",
       "source_location": "L8",
       "weight": 1.0,
@@ -15745,28 +15767,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_http_controllers_vatcontroller_vatcontroller",
-      "target": "app_http_controllers_controller_controller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "target": "app_http_controllers_controller_controller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
       "target": "app_http_controllers_controller_controller",
       "confidence_score": 1.0
     },
@@ -19843,6 +19843,404 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller",
+      "target": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller",
+      "target": "app_models_invoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller",
+      "target": "app_models_taxinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "routes/web.php",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "routes_web",
+      "target": "app_http_controllers_taxinvoiceapicontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "target": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getcustomers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "target": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoicedata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "target": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoices",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller",
+      "target": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoices",
+      "target": "app_models_invoice_invoice"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L20",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoices",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_getinvoicedata",
+      "target": "app_models_invoice_invoice"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_history",
+      "target": "app_models_invoice_invoice"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_history",
+      "target": "app_models_taxinvoice_taxinvoice"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceApiController.php",
+      "source_location": "L57",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoiceapicontroller_taxinvoiceapicontroller_history",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller",
+      "target": "app_models_businessentity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller",
+      "target": "app_models_invoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller",
+      "target": "app_models_taxinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "routes/web.php",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "routes_web",
+      "target": "app_http_controllers_taxinvoicecontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L97",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L136",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_convertnumbertowords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "target": "app_models_invoice_invoice"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "target": "app_models_taxinvoice_taxinvoice"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_generatepdf",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L82",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
+      "target": "app_models_taxinvoice_taxinvoice"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L73",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_viewhistorypdf",
+      "target": "illuminate_http_request",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L131",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "target": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_convertnumbertowords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/Http/Controllers/TaxInvoiceController.php",
+      "source_location": "L100",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_http_controllers_taxinvoicecontroller_taxinvoicecontroller_buildviewdata",
+      "target": "app_models_businessentity_businessentity"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/Http/Controllers/UnitTypeController.php",
       "source_location": "L8",
       "weight": 1.0,
@@ -20107,404 +20505,6 @@
       "source": "app_http_controllers_vatcontroller_vatcontroller_bydate",
       "target": "illuminate_http_request",
       "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller",
-      "target": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller",
-      "target": "app_models_invoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller",
-      "target": "app_models_vatinvoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "routes/web.php",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "routes_web",
-      "target": "app_http_controllers_vatinvoiceapicontroller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "target": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getcustomers",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L36",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "target": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoicedata",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "target": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoices",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L57",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller",
-      "target": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_history",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L28",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoices",
-      "target": "app_models_invoice_invoice"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L20",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoices",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L38",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_getinvoicedata",
-      "target": "app_models_invoice_invoice"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L67",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_history",
-      "target": "app_models_invoice_invoice"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L59",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_history",
-      "target": "app_models_vatinvoice_vatinvoice"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceApiController.php",
-      "source_location": "L57",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoiceapicontroller_vatinvoiceapicontroller_history",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller",
-      "target": "app_models_businessentity",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller",
-      "target": "app_models_invoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller",
-      "target": "app_models_vatinvoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "routes/web.php",
-      "source_location": "L26",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "routes_web",
-      "target": "app_http_controllers_vatinvoicecontroller",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L97",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L136",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_convertnumbertowords",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L14",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L73",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L64",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "target": "app_models_invoice_invoice"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L30",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "target": "app_models_vatinvoice_vatinvoice"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L14",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_generatepdf",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L82",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L77",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
-      "target": "app_models_vatinvoice_vatinvoice"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L73",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_viewhistorypdf",
-      "target": "illuminate_http_request",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L131",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "target": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_convertnumbertowords",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/Http/Controllers/VatInvoiceController.php",
-      "source_location": "L100",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_http_controllers_vatinvoicecontroller_vatinvoicecontroller_buildviewdata",
-      "target": "app_models_businessentity_businessentity"
     },
     {
       "relation": "contains",
@@ -23336,6 +23336,62 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_models_taxinvoice",
+      "target": "app_models_taxinvoice_taxinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_models_taxinvoice",
+      "target": "illuminate_database_eloquent_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_models_taxinvoice_taxinvoice",
+      "target": "app_models_taxinvoice_taxinvoice_customer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_models_taxinvoice_taxinvoice",
+      "target": "app_models_taxinvoice_taxinvoice_invoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/Models/TaxInvoice.php",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_models_taxinvoice_taxinvoice",
+      "target": "illuminate_database_eloquent_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/Models/UnitTypes.php",
       "source_location": "L8",
       "weight": 1.0,
@@ -23713,62 +23769,6 @@
       "_origin": "ast",
       "source": "database_seeders_vatpercentageseeder_vatpercentageseeder_run",
       "target": "app_models_vat_vat"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_models_vatinvoice",
-      "target": "app_models_vatinvoice_vatinvoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_models_vatinvoice",
-      "target": "illuminate_database_eloquent_model",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_models_vatinvoice_vatinvoice",
-      "target": "app_models_vatinvoice_vatinvoice_customer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_models_vatinvoice_vatinvoice",
-      "target": "app_models_vatinvoice_vatinvoice_invoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/Models/VatInvoice.php",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_models_vatinvoice_vatinvoice",
-      "target": "illuminate_database_eloquent_model",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -27747,11 +27747,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_appshell",
       "confidence_score": 1.0
     },
@@ -27963,11 +27963,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_appshell_appshell",
       "confidence_score": 1.0
     },
@@ -32524,11 +32524,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_badge",
       "confidence_score": 1.0
     },
@@ -32536,11 +32536,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_badge_badge",
       "confidence_score": 1.0
     },
@@ -32548,11 +32548,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_button",
       "confidence_score": 1.0
     },
@@ -32560,11 +32560,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_button_button",
       "confidence_score": 1.0
     },
@@ -32572,11 +32572,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card",
       "confidence_score": 1.0
     },
@@ -32584,11 +32584,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card_card",
       "confidence_score": 1.0
     },
@@ -32596,11 +32596,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card_cardcontent",
       "confidence_score": 1.0
     },
@@ -32608,11 +32608,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card_cardfooter",
       "confidence_score": 1.0
     },
@@ -32620,11 +32620,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card_cardheader",
       "confidence_score": 1.0
     },
@@ -32632,11 +32632,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_card_cardtitle",
       "confidence_score": 1.0
     },
@@ -32644,11 +32644,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_input",
       "confidence_score": 1.0
     },
@@ -32656,11 +32656,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_input_input",
       "confidence_score": 1.0
     },
@@ -32668,11 +32668,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_label",
       "confidence_score": 1.0
     },
@@ -32680,11 +32680,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_label_label",
       "confidence_score": 1.0
     },
@@ -32692,11 +32692,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_select",
       "confidence_score": 1.0
     },
@@ -32704,11 +32704,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_select_selectcontent",
       "confidence_score": 1.0
     },
@@ -32716,11 +32716,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_select_selectitem",
       "confidence_score": 1.0
     },
@@ -32728,11 +32728,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_select_selecttrigger",
       "confidence_score": 1.0
     },
@@ -32740,11 +32740,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_tabs",
       "confidence_score": 1.0
     },
@@ -32752,11 +32752,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_tabs_tabscontent",
       "confidence_score": 1.0
     },
@@ -32764,11 +32764,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_tabs_tabslist",
       "confidence_score": 1.0
     },
@@ -32776,89 +32776,89 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
       "target": "resources_js_components_ui_tabs_tabstrigger",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_customer",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_customer",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_customervat",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_customervat",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_invoicedataresponse",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_invoicedataresponse",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_invoicedetail",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_invoicedetail",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_invoiceitem",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_invoiceitem",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L15",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_invoicerow",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_invoicerow",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "resources/js/Pages/VATInvoicesPage.tsx",
+      "source_file": "resources/js/Pages/TaxInvoicesPage.tsx",
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "resources_js_pages_vatinvoicespage",
-      "target": "resources_js_pages_vatinvoicespage_vatinvoicespage",
+      "source": "resources_js_pages_taxinvoicespage",
+      "target": "resources_js_pages_taxinvoicespage_taxinvoicespage",
       "confidence_score": 1.0
     },
     {
@@ -39038,7 +39038,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "resources_js_data_mockdata",
-      "target": "resources_js_data_mockdata_initialvatinvoices",
+      "target": "resources_js_data_mockdata_initialtaxinvoices",
       "confidence_score": 1.0
     },
     {
@@ -39137,7 +39137,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "resources_js_data_mockdata",
-      "target": "resources_js_data_mockdata_nextvatinvoicenumber",
+      "target": "resources_js_data_mockdata_nexttaxinvoicenumber",
       "confidence_score": 1.0
     },
     {
@@ -39225,7 +39225,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "resources_js_data_mockdata",
-      "target": "resources_js_data_mockdata_vatinvoice",
+      "target": "resources_js_data_mockdata_taxinvoice",
       "confidence_score": 1.0
     },
     {
@@ -39236,7 +39236,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "resources_js_data_mockdata",
-      "target": "resources_js_data_mockdata_vatinvoicerecord",
+      "target": "resources_js_data_mockdata_taxinvoicerecord",
       "confidence_score": 1.0
     },
     {
@@ -40209,5 +40209,5 @@
       "source_file": "MERGE_NOTES.md"
     }
   ],
-  "built_at_commit": "c2ae93bb0f726c1d1c76a0bc1535bb2e03d6db59"
+  "built_at_commit": "1fd9976a61a167ec7202c9c064a519c8e8928cb2"
 }

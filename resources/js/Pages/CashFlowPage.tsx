@@ -37,6 +37,7 @@ interface AccountSummary {
 }
 
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1'];
+const OUTFLOW_COLORS = ['#ef4444', '#b91c1c', '#f87171', '#dc2626', '#fca5a5', '#991b1b', '#f43f5e', '#7f1d1d'];
 
 function CashFlowPage() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -221,7 +222,9 @@ function CashFlowPage() {
                                 <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
                                 <Tooltip
                                     formatter={(value: number) => `Rs. ${value.toLocaleString()}`}
-                                    contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card)', fontSize: '12px' }}
+                                    contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card)', fontSize: '12px', color: '#000' }}
+                                    labelStyle={{ color: '#000' }}
+                                    itemStyle={{ color: '#000' }}
                                 />
                                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="Inflow" fill="#22c55e" radius={[4, 4, 0, 0]} />
@@ -263,7 +266,7 @@ function CashFlowPage() {
                                                 paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                                 labelLine={false} style={{ fontSize: '9px' }}>
                                                 {outflowPieData.map((_, i) => (
-                                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                                    <Cell key={i} fill={OUTFLOW_COLORS[i % OUTFLOW_COLORS.length]} />
                                                 ))}
                                             </Pie>
                                             <Tooltip formatter={(value: number) => `Rs. ${value.toLocaleString()}`}

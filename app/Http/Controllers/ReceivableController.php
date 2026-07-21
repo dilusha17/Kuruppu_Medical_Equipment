@@ -80,11 +80,12 @@ class ReceivableController extends Controller
     public function recordPayment(Request $request)
     {
         $validated = $request->validate([
-            'reference_id' => 'required|exists:invoices,id',
-            'amount'       => 'required|numeric|min:0.01',
-            'date'         => 'required|date',
-            'notes'        => 'nullable|string',
-            'user_id'      => 'required|exists:users,id',
+            'reference_id'       => 'required|exists:invoices,id',
+            'amount'             => 'required|numeric|min:0.01',
+            'date'               => 'required|date',
+            'notes'              => 'nullable|string',
+            'user_id'            => 'required|exists:users,id',
+            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
         ]);
 
         $invoice = Invoice::findOrFail($validated['reference_id']);
@@ -99,10 +100,11 @@ class ReceivableController extends Controller
         }
 
         $receivable = Receivable::create([
-            'invoice_id' => $validated['reference_id'],
-            'amount'     => $validated['amount'],
-            'dateTime'   => $validated['date'],
-            'note'       => $validated['notes'] ?? 'Additional Payment',
+            'invoice_id'         => $validated['reference_id'],
+            'amount'             => $validated['amount'],
+            'dateTime'           => $validated['date'],
+            'note'               => $validated['notes'] ?? 'Additional Payment',
+            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
         ]);
 
         $newCollected = $collected + $validated['amount'];

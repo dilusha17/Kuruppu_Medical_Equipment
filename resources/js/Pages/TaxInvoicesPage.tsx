@@ -19,7 +19,7 @@ interface CustomerVat { company_name?: string; nick_name?: string; company_addre
 interface InvoiceDataResponse { invoice: InvoiceDetail; customer_vat: CustomerVat | null; vat_percentage: number; vat_amount: number; total_amount: number; }
 
 
-export default function VATInvoicesPage() {
+export default function TaxInvoicesPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
@@ -36,7 +36,7 @@ export default function VATInvoicesPage() {
   const [historySearch, setHistorySearch] = useState('');
 
   useEffect(() => {
-    axios.get('/vat-invoice/customers')
+    axios.get('/tax-invoice/customers')
       .then(res => setCustomers(Array.isArray(res.data) ? res.data : []))
       .catch(() => setCustomers([]));
     fetchHistory();
@@ -50,7 +50,7 @@ export default function VATInvoicesPage() {
     setSelectedInvoiceId('');
     setInvoiceData(null);
     try {
-      const res = await axios.post('/vat-invoice/search', {
+      const res = await axios.post('/tax-invoice/search', {
         customer_id: parseInt(selectedCustomerId),
         year: parseInt(selectedYear),
         month: parseInt(selectedMonth),
@@ -70,7 +70,7 @@ export default function VATInvoicesPage() {
     if (!id) return;
     setLoadingData(true);
     try {
-      const res = await axios.get<InvoiceDataResponse>('/vat-invoice/data/' + id);
+      const res = await axios.get<InvoiceDataResponse>('/tax-invoice/data/' + id);
       setInvoiceData(res.data);
     } catch (e) {
       console.error(e);
@@ -81,7 +81,7 @@ export default function VATInvoicesPage() {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('/vat-invoice/history', { params: { search: historySearch } });
+      const res = await axios.get('/tax-invoice/history', { params: { search: historySearch } });
       const data = res.data;
       setHistory(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
     } catch (e) {
@@ -121,7 +121,7 @@ export default function VATInvoicesPage() {
     if (!invoiceData || !selectedInvoiceId) return;
     setIsPrinting(true);
     try {
-      const response = await axios.post('/vat-invoice/generate',
+      const response = await axios.post('/tax-invoice/generate',
         { invoice_id: selectedInvoiceId },
         {
           responseType: 'blob',
@@ -144,9 +144,9 @@ export default function VATInvoicesPage() {
         fetchHistory();
       }, 500);
     } catch (error: any) {
-      console.error('Error generating VAT invoice:', error);
+      console.error('Error generating Tax invoice:', error);
       const msg = await readBlobError(error);
-      alert('Failed to generate VAT invoice: ' + msg);
+      alert('Failed to generate Tax invoice: ' + msg);
     } finally {
       setIsPrinting(false);
     }
@@ -155,7 +155,7 @@ export default function VATInvoicesPage() {
   const handleReprint = async (id: number) => {
     setReprintingId(id);
     try {
-      const response = await axios.post('/vat-invoice/reprint',
+      const response = await axios.post('/tax-invoice/reprint',
         { id },
         {
           responseType: 'blob',
@@ -170,9 +170,9 @@ export default function VATInvoicesPage() {
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (error: any) {
-      console.error('Error reprinting VAT invoice:', error);
+      console.error('Error reprinting Tax invoice:', error);
       const msg = await readBlobError(error);
-      alert('Failed to reprint VAT invoice: ' + msg);
+      alert('Failed to reprint Tax invoice: ' + msg);
     } finally {
       setReprintingId(null);
     }
@@ -189,12 +189,12 @@ export default function VATInvoicesPage() {
 
   return (
     <AppShell>
-      <Head title="VAT Invoices" />
+      <Head title="Tax Invoices" />
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold">VAT Invoices</h1>
+        <h1 className="text-3xl font-bold">Tax Invoices</h1>
         <Tabs defaultValue="generate" className="w-full">
           <TabsList>
-            <TabsTrigger value="generate">Generate VAT Invoice</TabsTrigger>
+            <TabsTrigger value="generate">Generate Tax Invoice</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
@@ -283,7 +283,7 @@ export default function VATInvoicesPage() {
                       <CardTitle>Step 3 — Customer &amp; Company Details</CardTitle>
                       {inv?.is_vat_invoice_issued && (
                         <Badge variant="secondary" className="flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> VAT Invoice Already Issued
+                          <CheckCircle2 className="w-3 h-3" /> Tax Invoice Already Issued
                         </Badge>
                       )}
                     </div>
@@ -369,11 +369,11 @@ export default function VATInvoicesPage() {
                     {inv?.is_vat_invoice_issued ? (
                       <div className="flex items-center gap-2 text-amber-600 text-sm w-full">
                         <AlertCircle className="w-4 h-4 shrink-0" />
-                        A VAT invoice has already been issued for this regular invoice.
+                        A Tax invoice has already been issued for this regular invoice.
                       </div>
                     ) : (
                       <Button onClick={handlePrint} disabled={isPrinting} className="w-full" size="lg">
-                        <Printer className="w-5 h-5 mr-2" /> {isPrinting ? 'Generating...' : 'Print VAT Invoice'}
+                        <Printer className="w-5 h-5 mr-2" /> {isPrinting ? 'Generating...' : 'Print Tax Invoice'}
                       </Button>
                     )}
                   </CardFooter>
@@ -387,9 +387,9 @@ export default function VATInvoicesPage() {
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Generated VAT Invoices</CardTitle>
+                  <CardTitle>Generated Tax Invoices</CardTitle>
                   <div className="w-64">
-                    <Input placeholder="Search by VAT invoice no…" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
+                    <Input placeholder="Search by Tax invoice no…" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
                   </div>
                 </div>
               </CardHeader>
@@ -399,7 +399,7 @@ export default function VATInvoicesPage() {
                     <thead>
                       <tr className="border-b bg-muted/50">
                         <th className="p-2">Date</th>
-                        <th className="p-2">VAT Invoice No</th>
+                        <th className="p-2">Tax Invoice No</th>
                         <th className="p-2">Regular Invoice No</th>
                         <th className="p-2">Customer</th>
                         <th className="p-2 text-right">Total (LKR)</th>
@@ -428,7 +428,7 @@ export default function VATInvoicesPage() {
                         </tr>
                       ))}
                       {history.length === 0 && (
-                        <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No VAT invoices found.</td></tr>
+                        <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No Tax invoices found.</td></tr>
                       )}
                     </tbody>
                   </table>

@@ -423,7 +423,7 @@
     </div>
 
     <!-- Signing Section -->
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 60px;">
         <table style="width: 80%; margin: 0 auto; border-collapse: collapse;">
             <tr>
                 <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>

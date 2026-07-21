@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1286 nodes · 2252 edges · 174 communities (114 shown, 60 thin omitted)
+- 1286 nodes · 2252 edges · 171 communities (114 shown, 57 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 181 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c2ae93bb`
+- Built from commit: `1fd9976a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -62,13 +62,10 @@
 - Notification Bell & Popover
 - vite-env.d
 - AppServiceProvider
-- alert
 - input-otp
-- Payments
 - accordion
 - avatar
 - 2026_04_24_123452_payment_methods
-- 2026_04_25_164647_unit_types
 - 2026_07_12_000003_add_payment_method_id_
 - Inertia + React Bridge
 - Mock Authentication (localStorage)
@@ -153,7 +150,7 @@
 ## Hyperedges (group relationships)
 - **localStorage-Persisted Frontend Demo State** — merge_notes_mock_auth, merge_notes_theme_toggle, merge_notes_role_based_access [INFERRED 0.75]
 
-## Communities (174 total, 60 thin omitted)
+## Communities (171 total, 57 thin omitted)
 
 ### Community 0 - "UI: Stat Cards & Badges"
 Cohesion: 0.05
@@ -164,12 +161,12 @@ Cohesion: 0.04
 Nodes (44): pestphp/pest-plugin, php-http/discovery, autoload, autoload-dev, psr-4, psr-4, config, allow-plugins (+36 more)
 
 ### Community 2 - "Laravel Controllers (Core)"
-Cohesion: 0.15
-Nodes (3): Payment, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes
+Cohesion: 0.13
+Nodes (5): Payment, Payments, BelongsTo, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes
 
 ### Community 3 - "GRN Controller & Actions"
-Cohesion: 0.11
-Nodes (7): DashboardController, GrnController, ProductController, Grn, Grn_items, Product, Illuminate\Database\Eloquent\Relations\BelongsTo
+Cohesion: 0.17
+Nodes (5): Controller, DashboardController, NotificationController, ProductController, Product
 
 ### Community 4 - "UI: Sheet Component"
 Cohesion: 0.07
@@ -188,12 +185,12 @@ Cohesion: 0.09
 Nodes (12): SettingsController, VatController, Settings, Vat, CustomerSeeder, DatabaseSeeder, DepositAccountSeeder, PaymentMethodSeeder (+4 more)
 
 ### Community 8 - "Base Controller & Dashboard"
-Cohesion: 0.09
-Nodes (6): InvoiceController, ReceivableController, VatInvoiceApiController, Invoice, InvoiceItems, Receivable
+Cohesion: 0.10
+Nodes (6): InvoiceController, ReceivableController, TaxInvoiceApiController, TaxInvoiceController, Invoice, TaxInvoice
 
 ### Community 9 - "Auth & Business Entity Controllers"
-Cohesion: 0.12
-Nodes (8): BusinessEntityController, CashFlowController, PayableController, ReportController, BusinessEntity, Expense, Payable, Illuminate\Http\Request
+Cohesion: 0.10
+Nodes (10): BusinessEntityController, CashFlowController, GrnController, PayableController, ReportController, BusinessEntity, Expense, Grn (+2 more)
 
 ### Community 10 - "App Shell & Layout"
 Cohesion: 0.09
@@ -248,16 +245,16 @@ Cohesion: 0.10
 Nodes (21): DatePicker(), SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger (+13 more)
 
 ### Community 23 - "Stock / Inventory Controller"
-Cohesion: 0.15
-Nodes (3): StockController, InventoryAdjustment, StockBatches
+Cohesion: 0.08
+Nodes (7): StockController, Grn_items, InventoryAdjustment, InvoiceItems, Receivable, StockBatches, Illuminate\Database\Eloquent\Relations\BelongsTo
 
 ### Community 24 - "Vite & Node TS Config"
 Cohesion: 0.11
 Nodes (17): ES2023, vite.config.ts, compilerOptions, allowImportingTsExtensions, isolatedModules, lib, module, moduleDetection (+9 more)
 
 ### Community 25 - "Confirm & Alert Dialogs"
-Cohesion: 0.29
-Nodes (3): CustomerController, Customers, PaymentMethod
+Cohesion: 0.23
+Nodes (4): CustomerController, PaymentMethodController, Customers, PaymentMethod
 
 ### Community 26 - "Date Pickers & Payables"
 Cohesion: 0.22
@@ -311,9 +308,9 @@ Nodes (14): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescr
 Cohesion: 0.33
 Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
 
-### Community 42 - "Company Profile Controller"
-Cohesion: 0.20
-Nodes (5): CompanyProfileController, Controller, NotificationController, PaymentMethodController, CompanyProfile
+### Community 43 - "Expenses Category Controller"
+Cohesion: 0.21
+Nodes (4): ExpensesCategoryController, HandleInertiaRequests, ExpensesCategory, Inertia\Middleware
 
 ### Community 44 - "Notification Bell & Popover"
 Cohesion: 0.22
@@ -346,7 +343,7 @@ Nodes (3): Mock Authentication (localStorage), Role-Based Demo Users (owner/admi
 ## Knowledge Gaps
 - **459 isolated node(s):** `$schema`, `name`, `type`, `description`, `laravel` (+454 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **60 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **57 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -364,4 +361,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `Composer Dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected._
 - **Should `Laravel Controllers (Core)` be split into smaller, more focused modules?**
-  _Cohesion score 0.1484480431848853 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1273532668881506 - nodes in this community are weakly interconnected._

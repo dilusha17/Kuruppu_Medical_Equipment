@@ -282,9 +282,9 @@ export const nextStockNumber = () => `STK-${String(++stockCounter).padStart(4, '
 let adjCounter = 1;
 export const nextAdjNumber = () => `ADJ-${String(++adjCounter).padStart(4, '0')}`;
 
-// ── VAT Invoices ──────────────────────────────────────────────────────────────
+// ── Tax Invoices ──────────────────────────────────────────────────────────────
 
-export interface VatInvoiceRecord {
+export interface TaxInvoiceRecord {
   refNo: string;
   invoiceItem: string;
   quantity: number;
@@ -292,7 +292,7 @@ export interface VatInvoiceRecord {
   amountExclVat: number;
 }
 
-export interface VatInvoice {
+export interface TaxInvoice {
   id: string;
   vatInvoiceNumber: string;
   customerId: string;
@@ -301,7 +301,7 @@ export interface VatInvoice {
   invoiceId: string;
   invoiceNumber: string;
   date: string;
-  records: VatInvoiceRecord[];
+  records: TaxInvoiceRecord[];
   subtotal: number;
   vatPercentage: number;
   vatAmount: number;
@@ -309,14 +309,14 @@ export interface VatInvoice {
   paymentMode: string;
 }
 
-export const initialVatInvoices: VatInvoice[] = [];
+export const initialTaxInvoices: TaxInvoice[] = [];
 
-let vatInvoiceCounter = 0;
-export const nextVatInvoiceNumber = (nickName: string): string => {
-  vatInvoiceCounter += 1;
+let taxInvoiceCounter = 0;
+export const nextTaxInvoiceNumber = (nickName: string): string => {
+  taxInvoiceCounter += 1;
   const now = new Date();
   const year = String(now.getFullYear()).slice(-2);
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const month = months[now.getMonth()];
-  return `${year}${month}_${nickName.toUpperCase()}_${String(vatInvoiceCounter).padStart(5, '0')}`;
+  return `${year}${month}_${nickName.toUpperCase()}_${String(taxInvoiceCounter).padStart(5, '0')}`;
 };

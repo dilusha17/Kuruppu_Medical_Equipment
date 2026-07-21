@@ -23,8 +23,8 @@ use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpensesCategoryController;
 use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\VatInvoiceController;
-use App\Http\Controllers\VatInvoiceApiController;
+use App\Http\Controllers\TaxInvoiceController;
+use App\Http\Controllers\TaxInvoiceApiController;
 use App\Http\Controllers\BusinessEntityController;
 use App\Http\Controllers\DepositAccountController;
 use App\Http\Controllers\NotificationController;
@@ -222,14 +222,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/batch-payment',  [ReceivableController::class, 'batchPayment']);
     });
 
-    // ── VAT Invoices ──────────────────────────────────────────────────────
-    Route::get('/vat-invoices',           fn() => Inertia::render('VATInvoicesPage'));
-    Route::get('/vat-invoice/customers',  [VatInvoiceApiController::class, 'getCustomers']);
-    Route::post('/vat-invoice/search',    [VatInvoiceApiController::class, 'getInvoices']);
-    Route::get('/vat-invoice/data/{id}',  [VatInvoiceApiController::class, 'getInvoiceData']);
-    Route::get('/vat-invoice/history',    [VatInvoiceApiController::class, 'history']);
-    Route::post('/vat-invoice/generate',  [VatInvoiceController::class, 'generatePdf']);
-    Route::post('/vat-invoice/reprint',   [VatInvoiceController::class, 'viewHistoryPdf']);
+    // ── Tax Invoices ──────────────────────────────────────────────────────
+    Route::get('/tax-invoices',           fn() => Inertia::render('TaxInvoicesPage'));
+    Route::get('/tax-invoice/customers',  [TaxInvoiceApiController::class, 'getCustomers']);
+    Route::post('/tax-invoice/search',    [TaxInvoiceApiController::class, 'getInvoices']);
+    Route::get('/tax-invoice/data/{id}',  [TaxInvoiceApiController::class, 'getInvoiceData']);
+    Route::get('/tax-invoice/history',    [TaxInvoiceApiController::class, 'history']);
+    Route::post('/tax-invoice/generate',  [TaxInvoiceController::class, 'generatePdf']);
+    Route::post('/tax-invoice/reprint',   [TaxInvoiceController::class, 'viewHistoryPdf']);
 
     // ── Business Entities ──────────────────────────────────────────────────
     Route::prefix('/business-entities')->group(function () {

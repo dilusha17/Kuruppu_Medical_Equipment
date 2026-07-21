@@ -414,6 +414,7 @@ function ReceivablesPage() {
     const [payDate,   setPayDate]   = useState(format(new Date(), 'yyyy-MM-dd'));
     const [payAmount, setPayAmount] = useState('');
     const [payNotes,  setPayNotes]  = useState('');
+    const [payDepositId, setPayDepositId] = useState<string>('');
 
     // Invoice detail modal
     const [invDetailOpen, setInvDetailOpen] = useState(false);
@@ -535,6 +536,7 @@ function ReceivablesPage() {
         setPayAmount(String(inv.outstanding));
         setPayDate(format(new Date(), 'yyyy-MM-dd'));
         setPayNotes('');
+        setPayDepositId('');
         setPayOpen(true);
     };
 
@@ -543,11 +545,12 @@ function ReceivablesPage() {
         setLoading(true);
         try {
             await axios.post('/receivables/payment', {
-                reference_id: payTarget.id,
-                amount:       Number(payAmount),
-                date:         payDate,
-                notes:        payNotes || null,
-                user_id:      user?.id,
+                reference_id:        payTarget.id,
+                amount:              Number(payAmount),
+                date:                payDate,
+                notes:               payNotes || null,
+                deposit_account_id:  payDepositId ? Number(payDepositId) : null,
+                user_id:             user?.id,
             });
             toast.success('Payment recorded!');
             setPayOpen(false);
@@ -774,6 +777,22 @@ function ReceivablesPage() {
                                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Amount (Rs.)</label>
                                 <Input type="number" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
                             </div>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Deposit To</label>
+                            <Select value={payDepositId || 'none'} onValueChange={(v) => setPayDepositId(v === 'none' ? '' : v)}>
+                                <SelectTrigger className="w-full h-9 text-sm">
+                                    <SelectValue placeholder="Select account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">— Select account —</SelectItem>
+                                    {depositAccounts.map((a) => (
+                                        <SelectItem key={a.id} value={String(a.id)}>
+                                            {a.name} ({a.type})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes (optional)</label>

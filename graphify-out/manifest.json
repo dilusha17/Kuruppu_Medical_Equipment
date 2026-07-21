@@ -144,16 +144,6 @@
     "ast_hash": "fd03b5e5a40e57ec5b88f328fba07a6a",
     "semantic_hash": "fd03b5e5a40e57ec5b88f328fba07a6a"
   },
-  "app/Http/Controllers/VatInvoiceApiController.php": {
-    "mtime": 1783775751.339208,
-    "ast_hash": "d48432e20fdcdec48ea1f79e99f66e5c",
-    "semantic_hash": "d48432e20fdcdec48ea1f79e99f66e5c"
-  },
-  "app/Http/Controllers/VatInvoiceController.php": {
-    "mtime": 1784610522.8591318,
-    "ast_hash": "bca734acd0cfe201bd8e5a501fdb1b89",
-    "semantic_hash": ""
-  },
   "app/Http/Middleware/HandleInertiaRequests.php": {
     "mtime": 1783775751.339208,
     "ast_hash": "d49db7e7da7ed0b5b7d44ab2489e1a96",
@@ -304,11 +294,6 @@
     "ast_hash": "95c12a77312c7b0bbb75b08290aac19d",
     "semantic_hash": "95c12a77312c7b0bbb75b08290aac19d"
   },
-  "app/Models/VatInvoice.php": {
-    "mtime": 1783775751.3432324,
-    "ast_hash": "8e1f05cb22f4c653ac50c09e80e7309f",
-    "semantic_hash": "8e1f05cb22f4c653ac50c09e80e7309f"
-  },
   "app/Providers/AppServiceProvider.php": {
     "mtime": 1783775751.3432324,
     "ast_hash": "c0094f35cad6bba7636002a62186dae4",
@@ -320,9 +305,9 @@
     "semantic_hash": "e66bb13691f6184c762c196427d8e685"
   },
   "bootstrap/app.php": {
-    "mtime": 1783775751.3442297,
-    "ast_hash": "93b81406b5878d35bc3a9872845b70cb",
-    "semantic_hash": "93b81406b5878d35bc3a9872845b70cb"
+    "mtime": 1784616900.9273944,
+    "ast_hash": "d35e215ebb60d0b7b537121d02956212",
+    "semantic_hash": ""
   },
   "bootstrap/providers.php": {
     "mtime": 1783775751.3442297,
@@ -629,11 +614,6 @@
     "ast_hash": "abf57ba7ae5bb8ffedd09919957a76e0",
     "semantic_hash": "abf57ba7ae5bb8ffedd09919957a76e0"
   },
-  "resources/js/Pages/VATInvoicesPage.tsx": {
-    "mtime": 1783775751.3613188,
-    "ast_hash": "245f4514d835a304f59767b64d429bc5",
-    "semantic_hash": "245f4514d835a304f59767b64d429bc5"
-  },
   "resources/js/app.js": {
     "mtime": 1783775751.3623166,
     "ast_hash": "1ccf2b9101110f40ecaab1608a6f91cf",
@@ -660,9 +640,9 @@
     "semantic_hash": "630b5c0b9c2cbc7ff05cd2c04691e0ef"
   },
   "resources/js/components/layout/AppLayout.tsx": {
-    "mtime": 1784579353.591068,
-    "ast_hash": "af50d2b6c5302b54353773bba014f6b0",
-    "semantic_hash": "af50d2b6c5302b54353773bba014f6b0"
+    "mtime": 1784616905.5395732,
+    "ast_hash": "99a9a1d6ee871b3ef74b06b3627b150e",
+    "semantic_hash": ""
   },
   "resources/js/components/layout/NotificationBell.tsx": {
     "mtime": 1783803370.8446167,
@@ -965,9 +945,9 @@
     "semantic_hash": "4a246c9ad0515bfa236c8818247e2af3"
   },
   "resources/js/data/mockData.ts": {
-    "mtime": 1783775751.3733737,
-    "ast_hash": "b0e7b35aaa6af55addf315ed6e85a436",
-    "semantic_hash": "b0e7b35aaa6af55addf315ed6e85a436"
+    "mtime": 1784616951.2549765,
+    "ast_hash": "f039334fd95e40d6d82a5c0eb7f8a9f3",
+    "semantic_hash": ""
   },
   "resources/js/hooks/use-mobile.tsx": {
     "mtime": 1783775751.3743672,
@@ -1070,9 +1050,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1784579342.5302365,
-    "ast_hash": "69967b2d34fc5f806c057388e527eebc",
-    "semantic_hash": "69967b2d34fc5f806c057388e527eebc"
+    "mtime": 1784616899.757035,
+    "ast_hash": "bd031f1e277b06c7c884f04fd2344cd6",
+    "semantic_hash": ""
   },
   "tailwind.config.ts": {
     "mtime": 1783775751.3793879,
@@ -1150,7 +1130,7 @@
     "semantic_hash": ""
   },
   "database/migrations/2026_04_25_170637_create_business_entities_table.php": {
-    "mtime": 1784609850.1543405,
+    "mtime": 1784615765.8091817,
     "ast_hash": "84fe8acb461327399a7e48c5922d0ab1",
     "semantic_hash": ""
   },
@@ -1187,6 +1167,26 @@
   "database/migrations/2026_05_28_061833_create_tax_invoice.php": {
     "mtime": 1784608766.5522182,
     "ast_hash": "c6125918e35f572845e2e51e71f26920",
+    "semantic_hash": ""
+  },
+  "app/Http/Controllers/TaxInvoiceApiController.php": {
+    "mtime": 1784616891.291715,
+    "ast_hash": "fbe0c294d970ecdabc4cdeb8d188c330",
+    "semantic_hash": ""
+  },
+  "app/Http/Controllers/TaxInvoiceController.php": {
+    "mtime": 1784616888.5097313,
+    "ast_hash": "b56dfe7006936b62bf575d12b393c558",
+    "semantic_hash": ""
+  },
+  "app/Models/TaxInvoice.php": {
+    "mtime": 1784616882.6242518,
+    "ast_hash": "9c48b14a92b256b2786fd7a24f19828f",
+    "semantic_hash": ""
+  },
+  "resources/js/Pages/TaxInvoicesPage.tsx": {
+    "mtime": 1784616937.340019,
+    "ast_hash": "3632c1e94a0507d3e7d27748726be3fc",
     "semantic_hash": ""
   }
 }
