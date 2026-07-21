@@ -17,8 +17,12 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->dateTime('dateTime')->useCurrent();
             $table->string('note');
+            $table->unsignedBigInteger('deposit_account_id');
 
             $table->foreign('grns_id')->references('id')->on('grns')->onDelete('cascade');
+            $table->foreign('deposit_account_id')->references('id')->on('deposit_accounts')->onDelete('cascade');
+            
+            $table->index('deposit_account_id');
         });
     }
 

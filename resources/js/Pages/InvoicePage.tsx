@@ -391,6 +391,7 @@ function InvoicePage() {
     const [pendingItem,     setPendingItem]     = useState<StockItem | null>(null);
     const [unitPriceInput,  setUnitPriceInput]  = useState('');
     const [qtyInput,        setQtyInput]        = useState('1');
+    const qtyInputRef   = useRef<HTMLInputElement>(null);
     const priceInputRef = useRef<HTMLInputElement>(null);
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -462,7 +463,7 @@ function InvoicePage() {
         setUnitPriceInput('');
         setQtyInput('1');
         setPriceModalOpen(true);
-        setTimeout(() => priceInputRef.current?.focus(), 50);
+        setTimeout(() => { qtyInputRef.current?.focus(); qtyInputRef.current?.select(); }, 50);
     };
 
     // Add to cart with an explicitly supplied unit price
@@ -850,30 +851,31 @@ function InvoicePage() {
                     <DialogTitle>Set Unit Selling Price</DialogTitle>
                 </DialogHeader>
                 {pendingItem && (
-                    <div className="space-y-4 py-2">
-                        <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                    <div className="space-y-3 pt-1 pb-2">
+                        <div className="bg-muted/50 rounded-lg px-3 py-2 space-y-0.5">
                             <p className="text-sm font-semibold">{pendingItem.generic_name}</p>
                             {pendingItem.brand && <p className="text-xs text-muted-foreground">{pendingItem.brand}</p>}
                             {pendingItem.batch_number && (
                                 <p className="text-xs text-muted-foreground font-mono">{pendingItem.batch_number}</p>
                             )}
-                            <p className="text-xs text-muted-foreground pt-1">In stock: {pendingItem.current_quantity}</p>
+                            <p className="text-xs text-muted-foreground">In stock: {pendingItem.current_quantity}</p>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Quantity</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium">Quantity</label>
                             <Input
+                                ref={qtyInputRef}
                                 type="number"
                                 placeholder="1"
                                 value={qtyInput}
                                 onChange={(e) => setQtyInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && priceInputRef.current?.focus()}
-                                className="text-right text-base font-semibold"
+                                className="text-right text-sm font-semibold h-9"
                                 min={1}
                                 max={pendingItem.current_quantity}
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Unit Selling Price (Rs.)</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium">Unit Selling Price (Rs.)</label>
                             <Input
                                 ref={priceInputRef}
                                 type="number"
@@ -881,7 +883,7 @@ function InvoicePage() {
                                 value={unitPriceInput}
                                 onChange={(e) => setUnitPriceInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && confirmPriceAndAdd()}
-                                className="text-right text-base font-semibold"
+                                className="text-right text-sm font-semibold h-9"
                                 min={0}
                             />
                         </div>

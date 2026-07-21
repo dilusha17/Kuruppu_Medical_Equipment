@@ -18,7 +18,7 @@ class CashFlowController extends Controller
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
 
-        $accounts = DepositAccount::where('is_active', true)->get();
+        $accounts = DepositAccount::where('status', true)->get();
 
         // --- Inflows (receivables) ---
         $inQuery = Receivable::with([
@@ -134,8 +134,8 @@ class CashFlowController extends Controller
     {
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
-        $company = BusinessEntity::where('is_active', true)->first();
-        $accounts = DepositAccount::where('is_active', true)->get();
+        $company = BusinessEntity::query()->first();
+        $accounts = DepositAccount::where('status', true)->get();
 
         // Inflows
         $inQuery = Receivable::with([

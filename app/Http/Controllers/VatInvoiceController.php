@@ -97,7 +97,7 @@ class VatInvoiceController extends Controller
     private function buildViewData($invoice, $vatInvoice, $customer, $customerVat, $totalAmount, $vatPercentage, $vatAmount, $subTotal): array
     {
         $entity = $invoice->businessEntity
-            ?? BusinessEntity::where('is_active', true)->first();
+            ?? BusinessEntity::query()->first();
 
         $records = $invoice->items->map(function ($item) use ($invoice) {
             $product       = $item->stockBatch?->product;

@@ -212,6 +212,7 @@ interface Customer {
 type FormData = {
     name:            string;
     contact_no:      string;
+    email:           string;
     address:         string;
     is_vat:          boolean;
     company_name:    string;
@@ -224,6 +225,7 @@ type FormData = {
 const emptyForm: FormData = {
     name:            '',
     contact_no:      '',
+    email:           '',
     address:         '',
     is_vat:          false,
     company_name:    '',
@@ -273,6 +275,7 @@ function CustomersPage() {
         setForm({
             name:            c.name,
             contact_no:      c.contact_no,
+            email:           c.email           || '',
             address:         c.address         || '',
             is_vat:          c.is_vat === 1,
             company_name:    c.company_name    || '',
@@ -446,6 +449,13 @@ function CustomersPage() {
                                 onChange={(e) => setForm({ ...form, contact_no: e.target.value })} />
                             {errors.contact_no && <p className="text-xs text-destructive mt-1">{errors.contact_no}</p>}
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                        <Input type="email" value={form.email}
+                            onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                        {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                     </div>
 
                     <div>

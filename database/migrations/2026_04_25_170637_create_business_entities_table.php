@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::create('business_entities', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 255);
             $table->text('address')->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('email')->nullable();
+            $table->boolean('is_vat_registered')->default(false);
             $table->string('vat_no', 50)->nullable();
+            $table->string('place_of_supply')->nullable();
             $table->string('logo_path')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

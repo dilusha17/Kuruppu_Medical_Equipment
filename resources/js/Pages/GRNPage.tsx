@@ -656,6 +656,8 @@ function GRNPage() {
     const [depositAccounts, setDepositAccounts] = useState<{ id: number; name: string; type: string }[]>([]);
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [businessEntities, setBusinessEntities] = useState<{ id: number; name: string; is_vat_registered: number; vat_no: string | null }[]>([]);
+    const [businessEntityId, setBusinessEntityId] = useState<string>('');
     const [saving, setSaving] = useState(false);
     const [showProductSearch, setShowProductSearch] = useState(false);
 
@@ -760,10 +762,15 @@ function GRNPage() {
 
     useEffect(() => {
         if (!grnDate) return;
+        const selectedEntity = businessEntities.find((e) => String(e.id) === businessEntityId);
+        if (selectedEntity && !selectedEntity.is_vat_registered) {
+            setVatRate(0);
+            return;
+        }
         axios.get('/vat/by-date', { params: { date: grnDate } })
             .then((res) => setVatRate(res.data ? Number(res.data.vat_percentage) : 0))
             .catch(() => setVatRate(0));
-    }, [grnDate]);
+    }, [grnDate, businessEntityId, businessEntities]);
 
     const fetchNextNumber = async () => {
         try {
@@ -782,6 +789,7 @@ function GRNPage() {
             setUnitTypes(res.data.unit_types || []);
             setPaymentMethods(res.data.payment_methods || []);
             setDepositAccounts(res.data.deposit_accounts || []);
+            if (Array.isArray(res.data.business_entities)) setBusinessEntities(res.data.business_entities);
             if (res.data.next_number) setGrnNum(res.data.next_number);
         } catch (e: any) { console.log(e.response?.data); }
     };
@@ -901,6 +909,7 @@ function GRNPage() {
         try {
             const res = await axios.post('/grn/store', {
                 supplier_id: Number(supplierId),
+                business_entity_id: businessEntityId ? Number(businessEntityId) : null,
                 supplier_invoice_no: invoiceNo || null,
                 received_date: grnDate,
                 sub_total: subTotal,
@@ -931,6 +940,7 @@ function GRNPage() {
             // Reset
             setItems([]);
             setSupplierId('');
+            setBusinessEntityId('');
             setInvoiceNo('');
             setDiscount('');
             setPaidAmount('');
@@ -1155,6 +1165,18 @@ function GRNPage() {
                             placeholder="Supplier invoice #" />
                     </div>
                 </div>
+                {businessEntities.length > 0 && (
+                    <div className="mt-3">
+                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Company</label>
+                        <Combobox
+                            options={businessEntities.map((e) => ({ value: String(e.id), label: e.name }))}
+                            value={businessEntityId}
+                            onValueChange={setBusinessEntityId}
+                            placeholder="Select company..."
+                            searchPlaceholder="Search companies..."
+                        />
+                    </div>
+                )}
                 <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
                     <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
                     Received by: <span className="font-medium text-foreground ml-0.5">{user?.name}</span>
@@ -1269,7 +1291,24 @@ function GRNPage() {
                     <div className="flex justify-end">
                         <div className="w-full max-w-md">
                             <div className="flex items-center justify-between py-2.5 border-b border-border/40">
-                                <span className="text-xs font-medium text-muted-foreground">Payment Account</span>
+                                <span className="text-xs font-medium text-muted-foreground">Payment Method</span>
+                                <div className="w-48">
+                                    <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
+                                        <SelectTrigger className="h-8 text-xs">
+                                            <SelectValue placeholder="Select method" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {paymentMethods.map((pm) => (
+                                                <SelectItem key={pm.id} value={String(pm.id)}>
+                                                    {pm.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between py-2.5 border-b border-border/40">
+                                <span className="text-xs font-medium text-muted-foreground">Deposit Account</span>
                                 <div className="w-48">
                                     <Select value={depositAccountId} onValueChange={setDepositAccountId}>
                                         <SelectTrigger className="h-8 text-xs">

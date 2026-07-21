@@ -16,6 +16,7 @@ class CustomerSeeder extends Seeder
         Customers::create([
             'id'         => 1,
             'name'       => 'Walk-in Customer',
+            'email'      => 'walking@example.com',
             'contact_no' => '0000000000',
             'address'    => 'N/A',
             'is_vat'     => 0,

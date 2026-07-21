@@ -60,7 +60,7 @@ class InvoiceController extends Controller
             $last       = Invoice::withTrashed()->latest()->first();
             $nextNum    = 'INV-' . str_pad(($last ? $last->id + 1 : 1), 4, '0', STR_PAD_LEFT);
 
-            $businessEntities = BusinessEntity::where('is_active', true)
+            $businessEntities = BusinessEntity::query()
                 ->get(['id', 'name', 'is_vat_registered', 'vat_no', 'address', 'phone', 'place_of_supply']);
 
             return response()->json([
@@ -262,7 +262,7 @@ class InvoiceController extends Controller
         ])->findOrFail($id);
 
         $entity = $invoice->businessEntity
-            ?? BusinessEntity::where('is_active', true)->first();
+            ?? BusinessEntity::query()->first();
 
         $company = (object) [
             'company_name'    => $entity?->name ?? '',

@@ -14,6 +14,7 @@ class Grn extends Model
     protected $fillable = [
         'grn_number',
         'supplier_id',
+        'business_entity_id',
         'user_id',
         'supplier_invoice_no',
         'received_date',

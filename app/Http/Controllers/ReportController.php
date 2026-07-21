@@ -151,7 +151,7 @@ class ReportController extends Controller
     {
         $period  = (int) ($request->period ?? 30);
         $cutoff  = Carbon::now()->subDays($period);
-        $company = BusinessEntity::where('is_active', true)->first();
+        $company = BusinessEntity::query()->first();
 
         $query = Invoice::with('customer')
             ->whereIn('status', ['unpaid', 'partial'])
@@ -202,7 +202,7 @@ class ReportController extends Controller
     {
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
-        $company = BusinessEntity::where('is_active', true)->first();
+        $company = BusinessEntity::query()->first();
 
         $revenue   = Invoice::whereBetween('invoice_date', [$from, $to])->sum('grand_total');
         $purchases = Grn::whereBetween('received_date', [$from, $to])->sum('total_amount');
@@ -240,7 +240,7 @@ class ReportController extends Controller
     {
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
-        $company = BusinessEntity::where('is_active', true)->first();
+        $company = BusinessEntity::query()->first();
 
         $query = Expense::with('category:id,name')
             ->whereBetween('date', [$from, $to]);
@@ -279,7 +279,7 @@ class ReportController extends Controller
     {
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
-        $company = BusinessEntity::where('is_active', true)->first();
+        $company = BusinessEntity::query()->first();
 
         $query = Grn::with('supplier:id,name')
             ->whereBetween('received_date', [$from, $to]);

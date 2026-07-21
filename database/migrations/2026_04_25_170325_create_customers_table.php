@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('contact_no');
+            $table->string('name', 255);
+            $table->string('email', 255)->unique();
+            $table->string('contact_no', 20);
             $table->text('address')->nullable();
             $table->boolean('is_vat')->default(0);
+            $table->string('vat_nick_name')->nullable();
             
             $table->decimal('balance_amount', 15, 2)->default(0);
             $table->timestamps();

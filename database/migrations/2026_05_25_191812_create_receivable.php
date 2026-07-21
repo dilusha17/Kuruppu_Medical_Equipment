@@ -17,9 +17,14 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->dateTime('dateTime');
             $table->string('note');
+            $table->string('reference_no')->nullable();
+            $table->unsignedBigInteger('deposit_account_id');
             $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->foreign('deposit_account_id')->references('id')->on('deposit_accounts')->onDelete('cascade');
+
+            $table->index('deposit_account_id');
         });
     }
 

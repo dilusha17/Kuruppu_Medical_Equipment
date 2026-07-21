@@ -20,6 +20,7 @@ class CustomerController extends Controller
                     'customers.id',
                     'customers.name',
                     'customers.contact_no',
+                    'customers.email',
                     'customers.address',
                     'customers.is_vat',
                     'customers.balance_amount',
@@ -43,6 +44,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
             'contact_no'      => 'required|string',
+            'email'           => 'nullable|email',
             'address'         => 'nullable|string',
             'is_vat'          => 'required|boolean',
             'company_name'    => 'nullable|required_if:is_vat,true|string',
@@ -55,6 +57,7 @@ class CustomerController extends Controller
         $customer = Customers::create([
             'name'       => $validated['name'],
             'contact_no' => $validated['contact_no'],
+            'email'      => $validated['email'] ?? null,
             'address'    => $validated['address'] ?? null,
             'is_vat'     => $validated['is_vat'],
         ]);
@@ -85,6 +88,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
             'contact_no'      => 'required|string',
+            'email'           => 'nullable|email',
             'address'         => 'nullable|string',
             'is_vat'          => 'required|boolean',
             'company_name'    => 'nullable|required_if:is_vat,true|string',
@@ -97,6 +101,7 @@ class CustomerController extends Controller
         $customer->update([
             'name'       => $validated['name'],
             'contact_no' => $validated['contact_no'],
+            'email'      => $validated['email'] ?? null,
             'address'    => $validated['address'] ?? null,
             'is_vat'     => $validated['is_vat'],
         ]);
@@ -141,6 +146,7 @@ class CustomerController extends Controller
                 'customers.id',
                 'customers.name',
                 'customers.contact_no',
+                'customers.email',
                 'customers.address',
                 'customers.is_vat',
                 'customers.balance_amount',

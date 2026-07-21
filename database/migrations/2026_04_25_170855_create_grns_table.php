@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('grn_number')->unique();
             $table->unsignedBigInteger('supplier_id');
+            $table->unsignedBigInteger('business_entity_id')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->string('supplier_invoice_no')->nullable();
             $table->dateTime('received_date');
@@ -26,16 +27,21 @@ return new class extends Migration
             $table->decimal('vat_amount', 15, 2)->default(0);
             $table->decimal('vat_percentage', 5, 2)->default(0);
             $table->unsignedBigInteger('payment_method_id')->nullable();
+            $table->unsignedBigInteger('deposit_account_id')->nullable();
             $table->enum('payment_status', ['paid', 'partial', 'unpaid'])->default('unpaid');
+            $table->text('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('payment_method_id')->references('id')->on('payment_methods')->onDelete('cascade');
+            $table->foreign('business_entity_id')->references('id')->on('business_entities')->onDelete('cascade');
+            $table->foreign('deposit_account_id')->references('id')->on('deposit_accounts')->onDelete('cascade');
 
             $table->index('supplier_id');
             $table->index('received_date');
+            $table->index('deposit_account_id');
         });
     }
 

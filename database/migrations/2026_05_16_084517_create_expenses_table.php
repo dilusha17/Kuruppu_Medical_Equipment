@@ -20,11 +20,13 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('deposit_account_id');
             $table->softDeletes();    
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('expenses_category')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('deposit_account_id')->references('id')->on('deposit_accounts')->onDelete('cascade');
         });
     }
 

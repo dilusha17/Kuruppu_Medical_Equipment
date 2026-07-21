@@ -9,7 +9,7 @@ class DepositAccountController extends Controller
 {
     public function all()
     {
-        return response()->json(DepositAccount::where('is_active', true)->get());
+        return response()->json(DepositAccount::where('status', true)->get());
     }
 
     public function store(Request $request)
@@ -52,7 +52,7 @@ class DepositAccountController extends Controller
     public function delete($id)
     {
         $account = DepositAccount::findOrFail($id);
-        $account->update(['is_active' => false]);
+        $account->update(['status' => false]);
         return response()->json(['message' => 'Account deactivated']);
     }
 }

@@ -63,21 +63,23 @@ class GrnController extends Controller
             $brands         = \App\Models\Brands::all(['id', 'name']);
             $unitTypes      = \App\Models\UnitTypes::all(['id', 'name']);
             $paymentMethods = PaymentMethod::orderBy('name')->get(['id', 'name']);
-            $depositAccounts = DepositAccount::where('is_active', true)->orderBy('name')->get(['id', 'name', 'type']);
+            $depositAccounts = DepositAccount::where('status', true)->orderBy('name')->get(['id', 'name', 'type']);
+            $businessEntities = BusinessEntity::orderBy('name')->get(['id', 'name', 'is_vat_registered', 'vat_no']);
 
             // Include next GRN number so GRNPage needs only one request on load
             $last       = Grn::withTrashed()->latest()->first();
             $nextNum    = 'GRN-' . str_pad(($last ? $last->id + 1 : 1), 4, '0', STR_PAD_LEFT);
 
             return response()->json([
-                'suppliers'        => $suppliers,
-                'products'         => $products,
-                'categories'       => $categories,
-                'brands'           => $brands,
-                'unit_types'       => $unitTypes,
-                'payment_methods'  => $paymentMethods,
-                'deposit_accounts' => $depositAccounts,
-                'next_number'      => $nextNum,
+                'suppliers'         => $suppliers,
+                'products'          => $products,
+                'categories'        => $categories,
+                'brands'            => $brands,
+                'unit_types'        => $unitTypes,
+                'payment_methods'   => $paymentMethods,
+                'deposit_accounts'  => $depositAccounts,
+                'business_entities' => $businessEntities,
+                'next_number'       => $nextNum,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -115,6 +117,7 @@ class GrnController extends Controller
 
         $validated = $request->validate([
             'supplier_id'            => 'required|exists:suppliers,id',
+            'business_entity_id'     => 'nullable|exists:business_entities,id',
             'supplier_invoice_no'    => 'nullable|string',
             'received_date'          => 'required|date',
             'sub_total'              => 'required|numeric',
@@ -155,6 +158,7 @@ class GrnController extends Controller
             $grn = Grn::create([
                 'grn_number'          => $grnNum,
                 'supplier_id'         => $validated['supplier_id'],
+                'business_entity_id'  => $validated['business_entity_id'] ?? null,
                 'user_id'             => $userId,
                 'supplier_invoice_no' => $validated['supplier_invoice_no'] ?? null,
                 'received_date'       => $validated['received_date'],
@@ -254,7 +258,7 @@ class GrnController extends Controller
             'depositAccount:id,name,type',
         ])->findOrFail($id);
 
-        $entity   = BusinessEntity::where('is_active', true)->first();
+        $entity   = BusinessEntity::query()->first();
         $company  = (object) [
             'company_name'    => $entity?->name ?? '',
             'company_address' => $entity?->address ?? '',

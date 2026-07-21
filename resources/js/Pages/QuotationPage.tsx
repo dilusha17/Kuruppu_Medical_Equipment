@@ -61,6 +61,7 @@ function QuotationPage() {
     const [pendingItem,     setPendingItem]     = useState<ProductItem | null>(null);
     const [unitPriceInput,  setUnitPriceInput]  = useState('');
     const [qtyInput,        setQtyInput]        = useState('1');
+    const qtyInputRef   = useRef<HTMLInputElement>(null);
     const priceInputRef = useRef<HTMLInputElement>(null);
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -117,7 +118,7 @@ function QuotationPage() {
         setUnitPriceInput('');
         setQtyInput('1');
         setPriceModalOpen(true);
-        setTimeout(() => priceInputRef.current?.focus(), 50);
+        setTimeout(() => { qtyInputRef.current?.focus(); qtyInputRef.current?.select(); }, 50);
     };
 
     const addToCart = (p: ProductItem, unitPrice: number, qty: number) => {
@@ -429,26 +430,27 @@ function QuotationPage() {
                     <DialogTitle>Set Unit Selling Price</DialogTitle>
                 </DialogHeader>
                 {pendingItem && (
-                    <div className="space-y-4 py-2">
-                        <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                    <div className="space-y-3 pt-1 pb-2">
+                        <div className="bg-muted/50 rounded-lg px-3 py-2 space-y-0.5">
                             <p className="text-sm font-semibold">{pendingItem.generic_name}</p>
                             {pendingItem.brand && <p className="text-xs text-muted-foreground">{pendingItem.brand}</p>}
                             {pendingItem.category && <p className="text-xs text-muted-foreground">{pendingItem.category}</p>}
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Quantity</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium">Quantity</label>
                             <Input
+                                ref={qtyInputRef}
                                 type="number"
                                 placeholder="1"
                                 value={qtyInput}
                                 onChange={(e) => setQtyInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && priceInputRef.current?.focus()}
-                                className="text-right text-base font-semibold"
+                                className="text-right text-sm font-semibold h-9"
                                 min={1}
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Unit Selling Price (Rs.)</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium">Unit Selling Price (Rs.)</label>
                             <Input
                                 ref={priceInputRef}
                                 type="number"
@@ -456,7 +458,7 @@ function QuotationPage() {
                                 value={unitPriceInput}
                                 onChange={(e) => setUnitPriceInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && confirmPriceAndAdd()}
-                                className="text-right text-base font-semibold"
+                                className="text-right text-sm font-semibold h-9"
                                 min={0}
                             />
                         </div>

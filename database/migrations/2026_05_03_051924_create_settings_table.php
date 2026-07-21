@@ -14,11 +14,6 @@ return new class extends Migration
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->boolean('theme')->default(false);
-            $table->string('company_name')->nullable();
-            $table->string('company_address')->nullable();
-            $table->string('company_phone')->nullable();
-            $table->string('company_vat_no')->nullable();
-            $table->string('place_of_supply')->nullable();
             $table->timestamps();
         });
     }

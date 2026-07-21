@@ -9,7 +9,7 @@ class BusinessEntityController extends Controller
 {
     public function all()
     {
-        return response()->json(BusinessEntity::where('is_active', true)->get());
+        return response()->json(BusinessEntity::query()->get());
     }
 
     public function store(Request $request)
@@ -70,7 +70,7 @@ class BusinessEntityController extends Controller
     public function delete($id)
     {
         $entity = BusinessEntity::findOrFail($id);
-        $entity->update(['is_active' => false]);
-        return response()->json(['message' => 'Business entity deactivated']);
+        $entity->delete();
+        return response()->json(['message' => 'Business entity deleted']);
     }
 }
