@@ -31,6 +31,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\CashFlowController;
+use App\Http\Controllers\CreditNoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/show/{id}',      [InvoiceController::class, 'show']);
         Route::post('/store',         [InvoiceController::class, 'store']);
         Route::delete('/delete/{id}', [InvoiceController::class, 'delete']);
+    });
+
+    // ── Credit Notes ──────────────────────────────────────────────────────
+    Route::get('/credit-note',            fn() => Inertia::render('CreditNotePage'));
+    Route::get('/credit-note-history',    fn() => Inertia::render('CreditNoteHistoryPage'));
+    Route::get('/credit-note/print/{id}', [CreditNoteController::class, 'printView']);
+    Route::prefix('/credit-note')->group(function () {
+        Route::get('/next-number',    [CreditNoteController::class, 'nextNumber']);
+        Route::get('/search-invoice', [CreditNoteController::class, 'searchInvoice']);
+        Route::get('/invoice/{id}',   [CreditNoteController::class, 'invoiceItems']);
+        Route::get('/all',            [CreditNoteController::class, 'all']);
+        Route::get('/show/{id}',      [CreditNoteController::class, 'show']);
+        Route::post('/store',         [CreditNoteController::class, 'store']);
+        Route::delete('/delete/{id}', [CreditNoteController::class, 'delete']);
     });
 
     // ── Quotation ──────────────────────────────────────────────────────────

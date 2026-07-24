@@ -11,7 +11,7 @@ class ReceivableController extends Controller
 {
     public function invoices(Request $request)
     {
-        $query = Invoice::with(['customer', 'receivables'])->latest();
+        $query = Invoice::with(['customer', 'receivables', 'creditNotes'])->latest();
 
         if ($request->filled('customer_id')) {
             $query->where('customer_id', $request->customer_id);
@@ -33,6 +33,7 @@ class ReceivableController extends Controller
 
         $paginated->getCollection()->transform(function ($inv) {
             $collected = $inv->receivables->sum('amount');
+            $credited  = $inv->creditNotes->sum('grand_total');
             return [
                 'id'             => $inv->id,
                 'invoice_number' => $inv->invoice_number,
@@ -41,7 +42,8 @@ class ReceivableController extends Controller
                 'customer_id'    => $inv->customer_id,
                 'grand_total'    => $inv->grand_total,
                 'collected'      => $collected,
-                'outstanding'    => max(0, $inv->grand_total - $collected),
+                'credited'       => $credited,
+                'outstanding'    => max(0, $inv->grand_total - $collected - $credited),
                 'status'         => $inv->status,
             ];
         });
@@ -57,14 +59,15 @@ class ReceivableController extends Controller
             $query->where('customer_id', $request->customer_id);
         }
 
-        $invoices = $query->with('receivables')->get();
+        $invoices = $query->with(['receivables', 'creditNotes'])->get();
         $totalInvoiced  = $invoices->sum('grand_total');
         $totalCollected = $invoices->sum(fn($i) => $i->receivables->sum('amount'));
+        $totalCredited  = $invoices->sum(fn($i) => $i->creditNotes->sum('grand_total'));
 
         return response()->json([
             'total_invoiced'    => $totalInvoiced,
             'total_collected'   => $totalCollected,
-            'total_outstanding' => $totalInvoiced - $totalCollected,
+            'total_outstanding' => max(0, $totalInvoiced - $totalCollected - $totalCredited),
         ]);
     }
 

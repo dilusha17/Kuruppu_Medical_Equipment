@@ -45,6 +45,10 @@ class Invoice extends Model
         return $this->hasMany(Receivable::class, 'invoice_id');
     }
 
+    public function creditNotes(): HasMany {
+        return $this->hasMany(CreditNote::class, 'invoice_id');
+    }
+
     public function businessEntity(): BelongsTo {
         return $this->belongsTo(BusinessEntity::class, 'business_entity_id');
     }

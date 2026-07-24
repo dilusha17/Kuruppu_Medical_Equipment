@@ -6,7 +6,7 @@ import {
   LayoutDashboard, FileText, Package, ShoppingCart,
   Truck, ClipboardList, Settings, LogOut,
   ChevronLeft, ChevronRight, Pill, Receipt, History,
-  UserCheck, Menu, TrendingUp, TrendingDown, BarChart3, Wallet, FileCheck,
+  UserCheck, Menu, TrendingUp, TrendingDown, BarChart3, Wallet, FileCheck, Undo2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from './NotificationBell';
@@ -22,6 +22,8 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['owner', 'admin', 'cashier'] },
   { label: 'Invoice (POS)', path: '/invoice', icon: ShoppingCart, roles: ['owner', 'admin', 'cashier'] },
   { label: 'Invoice History', path: '/invoice-history', icon: History, roles: ['owner', 'admin', 'cashier'] },
+  { label: 'Credit Notes', path: '/credit-note', icon: Undo2, roles: ['owner', 'admin', 'cashier'] },
+  { label: 'Credit Note History', path: '/credit-note-history', icon: FileText, roles: ['owner', 'admin', 'cashier'] },
   { label: 'Quotation', path: '/quotation', icon: FileCheck, roles: ['owner', 'admin', 'cashier'] },
   { label: 'Quotation History', path: '/quotation-history', icon: FileText, roles: ['owner', 'admin', 'cashier'] },
   { label: 'GRN', path: '/grn', icon: ClipboardList, roles: ['owner', 'admin'] },
