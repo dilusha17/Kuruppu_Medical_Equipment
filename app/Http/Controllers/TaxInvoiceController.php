@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\BusinessEntity;
@@ -24,19 +25,17 @@ class TaxInvoiceController extends Controller
             $customer    = $invoice->customer;
             $customerVat = DB::table('customers_vat_details')->where('customer_id', $customer->id)->first();
 
-            $currentYearPrefix = date('y');
-            $monthPrefix       = strtoupper(date('M'));
+            $vatInvoiceNumber = $this->generateTaxInvoiceNumber(
+                $request->input('from_date'),
+                $invoice->invoice_date,
+                $customerVat->nick_name ?? null
+            );
 
-            $latestVat = TaxInvoice::orderBy('id', 'desc')->first();
-            $nextNum   = 1;
-            if ($latestVat) {
-                $latestYear = substr($latestVat->vat_invoice_number, 0, 2);
-                if ($latestYear === $currentYearPrefix && preg_match('/_(\d+)$/', $latestVat->vat_invoice_number, $matches)) {
-                    $nextNum = intval($matches[1]) + 1;
-                }
+            if (TaxInvoice::where('vat_invoice_number', $vatInvoiceNumber)->exists()) {
+                return response()->json([
+                    'message' => 'Generated tax invoice number already exists. Please retry.'
+                ], 409);
             }
-
-            $vatInvoiceNumber = sprintf('%s%s_%05d', $currentYearPrefix, $monthPrefix, $nextNum);
 
             $vatSetting    = DB::table('vat_percentage')
                 ->where('from_date', '<=', $invoice->invoice_date)
@@ -65,6 +64,14 @@ class TaxInvoiceController extends Controller
                 $invoice, $vatInvoice, $customer, $customerVat,
                 $totalAmount, $vatPercentage, $vatAmount, $subTotal
             ))->setPaper([0, 0, 684, 792], 'portrait')->stream('TaxInvoice-' . $vatInvoiceNumber . '.pdf');
+        } catch (QueryException $e) {
+            // Unique constraint race: two requests generated the same number concurrently.
+            if ((int) $e->getCode() === 23000) {
+                return response()->json([
+                    'message' => 'Generated tax invoice number already exists. Please retry.'
+                ], 409);
+            }
+            return response()->json(['message' => $e->getMessage()], 500);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -92,6 +99,34 @@ class TaxInvoiceController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Format: {YY}{MON}_{NICK}_{SEQ} e.g. 26JUL_TAX_00014
+     *
+     * YY   - 2-digit year from $fromDate, falling back to $invoiceDate when $fromDate is empty.
+     * MON  - 3-letter month abbreviation of $invoiceDate specifically (never $fromDate).
+     * NICK - customer's nickname, or the literal "TAX" when the customer has none set.
+     * SEQ  - 5-digit running counter, global across all clients: reset to 1 when the last
+     *        generated number's year prefix differs from the current one, otherwise +1.
+     */
+    private function generateTaxInvoiceNumber(?string $fromDate, string $invoiceDate, ?string $nickName): string
+    {
+        $yearPrefix  = date('y', strtotime($fromDate ?: $invoiceDate));
+        $monthPrefix = strtoupper(date('M', strtotime($invoiceDate)));
+        $nick        = $nickName !== null && $nickName !== '' ? strtoupper($nickName) : 'TAX';
+
+        $lastInvoice = TaxInvoice::orderBy('id', 'desc')->first();
+        $nextSeq     = 1;
+        if ($lastInvoice) {
+            $lastYearPrefix = substr($lastInvoice->vat_invoice_number, 0, 2);
+            if ($lastYearPrefix === $yearPrefix) {
+                $lastSeq = (int) substr($lastInvoice->vat_invoice_number, -5);
+                $nextSeq = $lastSeq + 1;
+            }
+        }
+
+        return sprintf('%s%s_%s_%05d', $yearPrefix, $monthPrefix, $nick, $nextSeq);
     }
 
     private function buildViewData($invoice, $vatInvoice, $customer, $customerVat, $totalAmount, $vatPercentage, $vatAmount, $subTotal): array
