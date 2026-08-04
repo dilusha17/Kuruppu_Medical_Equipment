@@ -14,8 +14,8 @@
         .info-table { width: 100%; border-collapse: collapse; border-top: 1px solid #000; border-bottom: 1px solid #000; margin-bottom: 30px; }
         .info-table td { width: 50%; padding: 15px; vertical-align: top; }
         .info-table .right-col { border-left: 1px solid #000; }
-        .info-title { font-size: 11pt; font-weight: bold; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; }
-        .info-text { margin: 0 0 3px 0; }
+        .info-title { font-size: 13pt; font-weight: bold; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .info-text { font-size: 11pt; margin: 0 0 3px 0; }
         .items-tbl { width: 100%; border-collapse: collapse; margin-bottom: 30px; page-break-inside: auto; }
         .items-tbl thead { display: table-header-group; }
         .items-tbl tr { page-break-inside: avoid; page-break-after: auto; }
