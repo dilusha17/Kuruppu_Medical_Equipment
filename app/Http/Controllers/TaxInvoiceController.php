@@ -63,7 +63,9 @@ class TaxInvoiceController extends Controller
             return Pdf::loadView('pdf.tax-invoice', $this->buildViewData(
                 $invoice, $vatInvoice, $customer, $customerVat,
                 $totalAmount, $vatPercentage, $vatAmount, $subTotal
-            ))->setPaper([0, 0, 684, 792], 'portrait')->stream('TaxInvoice-' . $vatInvoiceNumber . '.pdf');
+            ))->setPaper([0, 0, 684, 792], 'portrait')
+                ->setOptions(['isPhpEnabled' => true])
+                ->stream('TaxInvoice-' . $vatInvoiceNumber . '.pdf');
         } catch (QueryException $e) {
             // Unique constraint race: two requests generated the same number concurrently.
             if ((int) $e->getCode() === 23000) {
@@ -95,7 +97,9 @@ class TaxInvoiceController extends Controller
                 $vatInvoice->vat_percentage,
                 $vatInvoice->vat_amount,
                 $vatInvoice->sub_total
-            ))->setPaper([0, 0, 684, 792], 'portrait')->stream('TaxInvoice-' . $vatInvoice->vat_invoice_number . '.pdf');
+            ))->setPaper([0, 0, 684, 792], 'portrait')
+                ->setOptions(['isPhpEnabled' => true])
+                ->stream('TaxInvoice-' . $vatInvoice->vat_invoice_number . '.pdf');
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -114,7 +118,7 @@ class TaxInvoiceController extends Controller
     {
         $yearPrefix  = date('y', strtotime($fromDate ?: $invoiceDate));
         $monthPrefix = strtoupper(date('M', strtotime($invoiceDate)));
-        $nick        = $nickName !== null && $nickName !== '' ? strtoupper($nickName) : 'TAX';
+        $nick        = $nickName !== null && $nickName !== '' ? strtoupper($nickName) : 'TAX01';
 
         $lastInvoice = TaxInvoice::orderBy('id', 'desc')->first();
         $nextSeq     = 1;
@@ -158,6 +162,7 @@ class TaxInvoiceController extends Controller
             'clientName'       => $customerVat?->company_name ?? $customer->name,
             'clientAddress'    => $customerVat?->company_address ?? $customer->address ?? '',
             'clientPhone'      => $customerVat?->company_contact ?? $customer->contact_no ?? '',
+            'poNumber'         => $invoice->po_number ?? null,
             'records'          => $records,
             'subtotal'         => $subTotal,
             'vatPercentage'    => $vatPercentage,

@@ -22,12 +22,14 @@ return new class extends Migration
             $table->string('designation')->nullable();
             $table->string('nic');
             $table->date('hiring_date')->nullable();
-            $table->enum('role', ['owner', 'admin', 'cashier'])->default('cashier');
+            $table->unsignedBigInteger('role_id');
             $table->tinyInteger('status')->default(1);
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -6,7 +6,7 @@ import {
   LayoutDashboard, FileText, Package, ShoppingCart,
   Truck, ClipboardList, Settings, LogOut,
   ChevronLeft, ChevronRight, Pill, Receipt, History,
-  UserCheck, Menu, TrendingUp, TrendingDown, BarChart3, Wallet, FileCheck, Undo2,
+  UserCheck, Menu, TrendingUp, TrendingDown, BarChart3, Wallet, FileCheck, Undo2, UserCog,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from './NotificationBell';
@@ -38,6 +38,7 @@ const navItems: NavItem[] = [
   { label: 'Reports', path: '/reports', icon: BarChart3, roles: ['owner', 'admin'] },
   { label: 'Cash Flow', path: '/cash-flow', icon: Wallet, roles: ['owner', 'admin'] },
   { label: 'Settings', path: '/settings', icon: Settings, roles: ['owner', 'admin'] },
+  { label: 'Manage Users', path: '/users', icon: UserCog, roles: ['owner'] },
 ];
 
 interface SidebarContentProps {

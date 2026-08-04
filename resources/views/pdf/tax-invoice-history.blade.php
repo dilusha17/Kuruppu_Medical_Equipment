@@ -128,6 +128,18 @@
             margin-bottom: 2px;
         }
 
+        /* Remark Box */
+        .remark-box {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 6px;
+            width: 100%;
+        }
+
+        .remark-box .po-no {
+            margin-left: 15px;
+        }
+
         /* Invoice Items Table */
         .items-table {
             width: 100%;
@@ -256,6 +268,7 @@
             .title-container,
             .info-header-table,
             .party-info-table,
+            .remark-box,
             .items-table,
             .totals-table,
             .bottom-box {
@@ -350,6 +363,11 @@
         </tr>
     </table>
 
+    <!-- Remark -->
+    <div class="remark-box">
+        Remark: Client Name - {{ $clientName }}@if(!empty($poNumber))<span class="po-no">PO No. - {{ $poNumber }}</span>@endif
+    </div>
+
     <!-- Items Table -->
     <table class="items-table">
         <thead>
@@ -426,11 +444,11 @@
     <div style="margin-top: 60px;">
         <table style="width: 80%; margin: 0 auto; border-collapse: collapse;">
             <tr>
-                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 40px; vertical-align: bottom;">&nbsp;</td>
                 <td style="width: 5%;">&nbsp;</td>
-                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 40px; vertical-align: bottom;">&nbsp;</td>
                 <td style="width: 5%;">&nbsp;</td>
-                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">&nbsp;</td>
+                <td style="width: 30%; text-align: center; border-bottom: 1px dotted #000; height: 40px; vertical-align: bottom;">&nbsp;</td>
             </tr>
             <tr>
                 <td style="text-align: center; font-size: 9pt; font-weight: bold; padding-top: 4px;">Prepared By</td>
@@ -446,7 +464,7 @@
     <div class="footer">
         <table>
             <tr>
-                <td class="text-left" width="70%" style="vertical-align:middle;">POWERED BY: DE CREATIONS<sup>&reg;</sup> | +94 70 300 4483 | decreations.lk
+                <td class="text-left" width="70%" style="vertical-align:middle;">Check should be in favour of {{ $companyName }} crossed and A/C payee only
                 </td>
                 <td class="text-right" width="30%" style="vertical-align:middle;">
                 </td>

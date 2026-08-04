@@ -814,6 +814,7 @@
 import { Head } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1238,6 +1239,7 @@ function CompaniesSection({ companies, onAdd, onEdit, onDelete }: {
 
 // ── MAIN SETTINGS PAGE ──
 function SettingsPage() {
+    const { user } = useAuth();
     const { isDark, setTheme } = useTheme();
 
     // VAT state
@@ -1264,13 +1266,24 @@ function SettingsPage() {
     const [depositForm,        setDepositForm]        = useState({ name: '', type: 'cash' as 'cash' | 'bank', bank_name: '', account_number: '' });
     const [depositDeleteId,    setDepositDeleteId]    = useState<number | null>(null);
 
+    // Roles & Permissions (owner only)
+    const [roles, setRoles] = useState<{ name: string; label: string; permissions: string[] }[]>([]);
+
     useEffect(() => {
         fetchTheme();
         fetchCurrentVat();
         fetchCrudData();
         fetchBusinessEntities();
         fetchDepositAccounts();
+        if (user?.role === 'owner') fetchRoles();
     }, []);
+
+    const fetchRoles = async () => {
+        try {
+            const res = await axios.get('/roles');
+            setRoles(res.data);
+        } catch (e) { console.log(e); }
+    };
 
     const fetchTheme = async () => {
         try {
@@ -1449,12 +1462,6 @@ function SettingsPage() {
         } catch (e) { toast.error('Failed to delete'); }
     };
 
-    const roles = [
-        { role: 'Owner',   permissions: ['Full Access', 'Manage Employees', 'View Reports', 'Settings', 'Billing', 'Products', 'Stock', 'GRN'] },
-        { role: 'Admin',   permissions: ['Manage Employees', 'Products', 'Stock', 'GRN', 'Customers', 'Suppliers', 'Billing'] },
-        { role: 'Cashier', permissions: ['Billing', 'View Customers', 'Invoice History'] },
-    ];
-
     return (
         <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
 
@@ -1475,24 +1482,26 @@ function SettingsPage() {
                 </div>
             </div>
 
-            {/* Roles & Permissions */}
-            <div className="bg-card rounded-xl border border-border p-5">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                    <Shield className="h-4 w-4" /> Roles & Permissions
-                </h3>
-                <div className="space-y-3">
-                    {roles.map((r) => (
-                        <div key={r.role} className="p-3 rounded-lg bg-muted/50">
-                            <p className="text-sm font-semibold mb-2">{r.role}</p>
-                            <div className="flex flex-wrap gap-1">
-                                {r.permissions.map((p) => (
-                                    <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground">{p}</span>
-                                ))}
+            {/* Roles & Permissions — owner only */}
+            {user?.role === 'owner' && (
+                <div className="bg-card rounded-xl border border-border p-5">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                        <Shield className="h-4 w-4" /> Roles & Permissions
+                    </h3>
+                    <div className="space-y-3">
+                        {roles.map((r) => (
+                            <div key={r.name} className="p-3 rounded-lg bg-muted/50">
+                                <p className="text-sm font-semibold mb-2">{r.label}</p>
+                                <div className="flex flex-wrap gap-1">
+                                    {(r.permissions || []).map((p) => (
+                                        <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground">{p}</span>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Business Entities */}
             <div className="bg-card rounded-xl border border-border p-5">

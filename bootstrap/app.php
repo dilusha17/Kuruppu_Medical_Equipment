@@ -13,9 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [\App\Http\Middleware\HandleInertiaRequests::class]);
-        $middleware->validateCsrfTokens(except: [
-            'tax-invoices/pdf',
-            'tax-invoices/pdf/history',
+        $middleware->alias([
+            'owner' => \App\Http\Middleware\EnsureOwner::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

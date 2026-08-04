@@ -29,9 +29,9 @@ class User extends Authenticatable
         'mobile', 
         'address', 
         'designation', 
-        'nic', 
-        'hiring_date', 
-        'role', 
+        'nic',
+        'hiring_date',
+        'role_id',
         'status'
     ];
 
@@ -68,5 +68,9 @@ class User extends Authenticatable
 
     public function grns(): HasMany {
         return $this->hasMany(Grn::class , 'user_id');
+    }
+
+    public function role(): BelongsTo {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

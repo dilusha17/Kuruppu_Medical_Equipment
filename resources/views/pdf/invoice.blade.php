@@ -192,7 +192,7 @@
     <div class="footer">
         <table class="footer-table">
             <tr>
-                <td class="footer-left">POWERED BY: DE CREATIONS®  |  decreations.lk  |  0703004483</td>
+                <td class="footer-left">Check should be in favour of {{ $company->company_name ?? 'COMPANY NAME' }} crossed and A/C payee only</td>
                 <td class="footer-right">Generated: {{ \Carbon\Carbon::now()->format('d M Y') }}</td>
             </tr>
         </table>

@@ -32,6 +32,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\CashFlowController;
 use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -207,6 +208,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/all',                    [SettingsController::class, 'all']);
         Route::post('/change_theme',          [SettingsController::class, 'change_theme']);
         Route::post('/update_vat_settings',   [SettingsController::class, 'update_vat_settings']);
+    });
+
+    // ── Roles (read-only, feeds Settings → Roles & Permissions) ─────────────
+    Route::get('/roles', [RoleController::class, 'index'])->middleware('owner');
+
+    // ── Manage Users (owner only) ────────────────────────────────────────────
+    Route::middleware('owner')->group(function () {
+        Route::get('/users', fn() => Inertia::render('UsersPage'));
+        Route::prefix('/users')->group(function () {
+            Route::get('/all',            [UserController::class, 'index']);
+            Route::post('/store',         [UserController::class, 'store']);
+            Route::post('/update/{id}',   [UserController::class, 'update']);
+            Route::delete('/delete/{id}', [UserController::class, 'delete']);
+            Route::post('/toggle/{id}',   [UserController::class, 'toggleStatus']);
+        });
     });
 
     // ── VAT ────────────────────────────────────────────────────────────────
