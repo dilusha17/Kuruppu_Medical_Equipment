@@ -64,7 +64,7 @@ class TaxInvoiceController extends Controller
                 $invoice, $vatInvoice, $customer, $customerVat,
                 $totalAmount, $vatPercentage, $vatAmount, $subTotal
             ))->setPaper([0, 0, 684, 792], 'portrait')
-                ->setOptions(['isPhpEnabled' => true])
+                ->setOption('isPhpEnabled', true)
                 ->stream('TaxInvoice-' . $vatInvoiceNumber . '.pdf');
         } catch (QueryException $e) {
             // Unique constraint race: two requests generated the same number concurrently.
@@ -98,7 +98,7 @@ class TaxInvoiceController extends Controller
                 $vatInvoice->vat_amount,
                 $vatInvoice->sub_total
             ))->setPaper([0, 0, 684, 792], 'portrait')
-                ->setOptions(['isPhpEnabled' => true])
+                ->setOption('isPhpEnabled', true)
                 ->stream('TaxInvoice-' . $vatInvoice->vat_invoice_number . '.pdf');
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -162,6 +162,7 @@ class TaxInvoiceController extends Controller
             'clientName'       => $customerVat?->company_name ?? $customer->name,
             'clientAddress'    => $customerVat?->company_address ?? $customer->address ?? '',
             'clientPhone'      => $customerVat?->company_contact ?? $customer->contact_no ?? '',
+            'remarkClientName' => $customer->name,
             'poNumber'         => $invoice->po_number ?? null,
             'records'          => $records,
             'subtotal'         => $subTotal,

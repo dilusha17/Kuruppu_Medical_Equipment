@@ -129,15 +129,18 @@
         }
 
         /* Remark Box */
+        .remark-table {
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
         .remark-box {
             border: 1px solid #000;
             padding: 8px;
-            margin-bottom: 6px;
-            width: 100%;
         }
 
         .remark-box .po-no {
-            margin-left: 15px;
+            margin-left: 30px;
         }
 
         /* Invoice Items Table */
@@ -268,7 +271,7 @@
             .title-container,
             .info-header-table,
             .party-info-table,
-            .remark-box,
+            .remark-table,
             .items-table,
             .totals-table,
             .bottom-box {
@@ -364,9 +367,13 @@
     </table>
 
     <!-- Remark -->
-    <div class="remark-box">
-        Remark: Client Name - {{ $clientName }}@if(!empty($poNumber))<span class="po-no">PO No. - {{ $poNumber }}</span>@endif
-    </div>
+    <table class="remark-table">
+        <tr>
+            <td class="remark-box">
+                Remark: Client Name - {{ $remarkClientName }}@if(!empty($poNumber))<span class="po-no">PO No. - {{ $poNumber }}</span>@endif
+            </td>
+        </tr>
+    </table>
 
     <!-- Items Table -->
     <table class="items-table">
