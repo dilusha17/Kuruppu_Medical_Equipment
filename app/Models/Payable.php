@@ -11,6 +11,12 @@ class Payable extends Model
 
     protected $table = 'payable';
 
+    // dateTime is a DATETIME column but only ever displayed as a date; this keeps
+    // every JSON response (payment history, GRN detail, cash flow) date-only.
+    protected $casts = [
+        'dateTime' => 'date:Y-m-d',
+    ];
+
     protected $fillable = [
         'grns_id',
         'amount',

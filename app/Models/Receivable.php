@@ -11,6 +11,12 @@ class Receivable extends Model
 
     protected $table = 'receivable';
 
+    // dateTime is a DATETIME column but only ever displayed as a date; this keeps
+    // every JSON response (payment history, invoice detail, cash flow) date-only.
+    protected $casts = [
+        'dateTime' => 'date:Y-m-d',
+    ];
+
     protected $fillable = [
         'invoice_id',
         'amount',

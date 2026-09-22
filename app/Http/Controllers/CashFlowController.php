@@ -35,7 +35,7 @@ class CashFlowController extends Controller
         $inflows = $inQuery->orderBy('dateTime', 'desc')->get()->map(function ($r) {
             return [
                 'id'              => 'R-' . $r->id,
-                'date'            => $r->dateTime,
+                'date'            => $r->dateTime?->format('Y-m-d'),
                 'type'            => 'inflow',
                 'description'     => $r->invoice?->invoice_number ?? 'Payment Received',
                 'party'           => $r->invoice?->customer?->name ?? 'Walk-in',
@@ -82,7 +82,7 @@ class CashFlowController extends Controller
         $payOutflows = $payQuery->orderBy('dateTime', 'desc')->get()->map(function ($p) {
             return [
                 'id'              => 'P-' . $p->id,
-                'date'            => $p->dateTime,
+                'date'            => $p->dateTime?->format('Y-m-d'),
                 'type'            => 'outflow',
                 'description'     => $p->grn?->grn_number ?? 'GRN Payment',
                 'party'           => $p->grn?->supplier?->name ?? 'Supplier',

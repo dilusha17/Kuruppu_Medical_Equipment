@@ -62,7 +62,7 @@ class PayableController extends Controller
                 ->map(fn ($p) => [
                     'id'     => $p->id,
                     'amount' => $p->amount,
-                    'date'   => $p->dateTime,
+                    'date'   => $p->dateTime?->format('Y-m-d'),
                     'notes'  => $p->note,
                     'user'   => null,
                 ]);
