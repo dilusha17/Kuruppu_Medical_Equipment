@@ -40,6 +40,28 @@ interface AccountSummary {
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1'];
 const OUTFLOW_COLORS = ['#ef4444', '#b91c1c', '#f87171', '#dc2626', '#fca5a5', '#991b1b', '#f43f5e', '#7f1d1d'];
 
+// Themed floating-card tooltip (uses the app's popover tokens so it tracks light/dark mode
+// automatically, instead of recharts' default plain/transparent tooltip box).
+function ChartTooltip({ active, payload, label }: any) {
+    if (!active || !payload?.length) return null;
+    return (
+        <div className="min-w-[140px] rounded-lg border border-border bg-popover text-popover-foreground shadow-lg px-3 py-2 text-xs space-y-1">
+            {label && <p className="font-medium text-[11px] text-foreground">{label}</p>}
+            {payload.map((entry: any, i: number) => (
+                <div key={i} className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                        {/* Bar series set color on the entry itself; Pie slices only carry it on their
+                            original datum (payload.fill), since recharts' Pie tooltip payload omits it. */}
+                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: entry.color ?? entry.payload?.fill }} />
+                        {entry.name}
+                    </span>
+                    <span className="font-semibold tabular-nums">Rs. {Number(entry.value).toLocaleString()}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function CashFlowPage() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [accountSummaries, setAccountSummaries] = useState<AccountSummary[]>([]);
@@ -102,14 +124,16 @@ function CashFlowPage() {
         Balance: Number(acc.balance),
     }));
 
-    // Pie chart data for inflow distribution
+    // Pie chart data for inflow/outflow distribution. `fill` is carried on the datum itself
+    // (not just the <Cell>) so the tooltip — which reads payload.fill, not the Cell — can
+    // show the matching color dot; recharts' Pie tooltip payload doesn't expose Cell colors.
     const inflowPieData = accountSummaries
         .filter((a) => Number(a.inflow) > 0)
-        .map((a) => ({ name: a.name, value: Number(a.inflow) }));
+        .map((a, i) => ({ name: a.name, value: Number(a.inflow), fill: COLORS[i % COLORS.length] }));
 
     const outflowPieData = accountSummaries
         .filter((a) => Number(a.outflow) > 0)
-        .map((a) => ({ name: a.name, value: Number(a.outflow) }));
+        .map((a, i) => ({ name: a.name, value: Number(a.outflow), fill: OUTFLOW_COLORS[i % OUTFLOW_COLORS.length] }));
 
     return (
         <div className="space-y-5 animate-fade-in">
@@ -224,12 +248,7 @@ function CashFlowPage() {
                                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                                 <XAxis dataKey="name" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
                                 <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-                                <Tooltip
-                                    formatter={(value: number) => `Rs. ${value.toLocaleString()}`}
-                                    contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card)', fontSize: '12px', color: '#000' }}
-                                    labelStyle={{ color: '#000' }}
-                                    itemStyle={{ color: '#000' }}
-                                />
+                                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }} />
                                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="Inflow" fill="#22c55e" radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="Outflow" fill="#ef4444" radius={[4, 4, 0, 0]} />
@@ -249,12 +268,11 @@ function CashFlowPage() {
                                             <Pie data={inflowPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={70}
                                                 paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                                 labelLine={false} style={{ fontSize: '9px' }}>
-                                                {inflowPieData.map((_, i) => (
-                                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                                {inflowPieData.map((entry, i) => (
+                                                    <Cell key={i} fill={entry.fill} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip formatter={(value: number) => `Rs. ${value.toLocaleString()}`}
-                                                contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card)', fontSize: '11px' }} />
+                                            <Tooltip content={<ChartTooltip />} />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 ) : (
@@ -269,12 +287,11 @@ function CashFlowPage() {
                                             <Pie data={outflowPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={70}
                                                 paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                                 labelLine={false} style={{ fontSize: '9px' }}>
-                                                {outflowPieData.map((_, i) => (
-                                                    <Cell key={i} fill={OUTFLOW_COLORS[i % OUTFLOW_COLORS.length]} />
+                                                {outflowPieData.map((entry, i) => (
+                                                    <Cell key={i} fill={entry.fill} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip formatter={(value: number) => `Rs. ${value.toLocaleString()}`}
-                                                contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card)', fontSize: '11px' }} />
+                                            <Tooltip content={<ChartTooltip />} />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 ) : (
