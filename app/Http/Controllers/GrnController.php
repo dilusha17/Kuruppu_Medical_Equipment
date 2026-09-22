@@ -139,6 +139,10 @@ class GrnController extends Controller
             'items.*.mfd_date'       => 'nullable|date',
         ]);
 
+        if ($validated['paid_amount'] > 0 && empty($validated['deposit_account_id'])) {
+            return response()->json(['message' => 'Please select a deposit account for the payment.'], 422);
+        }
+
         // Calculate payment status
         $status = 'unpaid';
         if ($validated['paid_amount'] >= $validated['total_amount']) {
@@ -213,6 +217,11 @@ class GrnController extends Controller
                     'note'               => $note,
                     'deposit_account_id' => $validated['deposit_account_id'] ?? null,
                 ]);
+
+                if (!empty($validated['deposit_account_id'])) {
+                    DepositAccount::where('id', $validated['deposit_account_id'])
+                        ->decrement('current_balance', $validated['paid_amount']);
+                }
             }
 
             return $grn;

@@ -375,6 +375,8 @@ function InvoicePage() {
     const [selectedCustomer, setSelectedCustomer] = useState<string>('');
     const [paymentMethod,  setPaymentMethod]  = useState<number>(0);
     const [paymentMethods, setPaymentMethods] = useState<{ id: number; name: string }[]>([]);
+    const [depositAccountId, setDepositAccountId] = useState<string>('');
+    const [depositAccounts,  setDepositAccounts]  = useState<{ id: number; name: string; type: string }[]>([]);
     const [paidAmount,     setPaidAmount]     = useState('');
     const [discount,       setDiscount]       = useState('');
     const [barcodeInput,   setBarcodeInput]   = useState('');
@@ -455,6 +457,7 @@ function InvoicePage() {
             setCustomers(formRes.data.customers);
             if (Array.isArray(formRes.data.payment_methods)) setPaymentMethods(formRes.data.payment_methods);
             if (Array.isArray(formRes.data.business_entities)) setBusinessEntities(formRes.data.business_entities);
+            axios.get('/deposit-accounts/all').then((res) => setDepositAccounts(res.data)).catch(() => {});
 
             let stock: StockItem[] = formRes.data.stock || [];
 
@@ -631,6 +634,10 @@ function InvoicePage() {
         if (!selectedCustomer) { toast.error('Please select a customer.'); return; }
         if (cart.length === 0) { toast.error('Please add at least one product.'); return; }
         if (!paymentMethod) { toast.error('Please select a payment method.'); return; }
+        if (!editId && Number(paidAmount || 0) > 0 && !depositAccountId) {
+            toast.error('Please select a deposit account for the payment.');
+            return;
+        }
 
         setSaving(true);
         const toastId = toast.loading(
@@ -663,7 +670,11 @@ function InvoicePage() {
                 return;
             }
 
-            const res = await axios.post('/invoice/store', { ...payload, paid_amount: Number(paidAmount || 0) });
+            const res = await axios.post('/invoice/store', {
+                ...payload,
+                paid_amount:         Number(paidAmount || 0),
+                deposit_account_id:  depositAccountId ? Number(depositAccountId) : null,
+            });
 
             toast.success('Invoice saved successfully!', { id: toastId });
 
@@ -679,6 +690,7 @@ function InvoicePage() {
             setDiscount('');
             setPaidAmount('');
             setPaymentMethod(0);
+            setDepositAccountId('');
             await fetchNextNumber();
             await fetchFormData();
 
@@ -910,6 +922,22 @@ function InvoicePage() {
                             </span>
                         </div>
                     </div>
+
+                    {/* Deposit To — only relevant for a new invoice taking an actual payment */}
+                    {!editId && Number(paidAmount || 0) > 0 && (
+                        <Select value={depositAccountId} onValueChange={setDepositAccountId}>
+                            <SelectTrigger className={`w-full h-9 text-xs font-medium ${!depositAccountId ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                                <SelectValue placeholder="Deposit to..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {depositAccounts.map((a) => (
+                                    <SelectItem key={a.id} value={String(a.id)}>
+                                        {a.name} ({a.type})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
 
                     {/* Payment Method dropdown + Action Buttons */}
                     <div className="flex gap-2 pt-1">

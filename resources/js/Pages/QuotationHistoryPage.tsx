@@ -60,11 +60,14 @@ function QuotationHistoryPage() {
     const [paymentMethods,  setPaymentMethods]  = useState<{ id: number; name: string }[]>([]);
     const [issuePayMethod,  setIssuePayMethod]  = useState<string>('');
     const [issuePaidAmount, setIssuePaidAmount]  = useState('');
+    const [issueDepositId,  setIssueDepositId]  = useState<string>('');
+    const [depositAccounts, setDepositAccounts] = useState<{ id: number; name: string; type: string }[]>([]);
     const [issuing,         setIssuing]         = useState(false);
 
     useEffect(() => {
         axios.get('/business-entities/all').then((res) => setBusinessEntities(res.data)).catch(() => {});
         axios.get('/payment-methods/all').then((res) => setPaymentMethods(res.data)).catch(() => {});
+        axios.get('/deposit-accounts/all').then((res) => setDepositAccounts(res.data)).catch(() => {});
     }, []);
 
     const fetchQuotations = async (pg: number, s: string, d: string, entityId?: string) => {
@@ -112,11 +115,16 @@ function QuotationHistoryPage() {
         setIssueQtn(qtn);
         setIssuePayMethod('');
         setIssuePaidAmount('');
+        setIssueDepositId('');
     };
 
     const handleIssueInvoice = async () => {
         if (!issueQtn || !issuePayMethod) {
             toast.error('Please select a payment method.');
+            return;
+        }
+        if (Number(issuePaidAmount || 0) > 0 && !issueDepositId) {
+            toast.error('Please select a deposit account for the payment.');
             return;
         }
 
@@ -125,9 +133,10 @@ function QuotationHistoryPage() {
 
         try {
             const res = await axios.post('/quotation/issue-invoice', {
-                quotation_id:   issueQtn.id,
-                payment_method: Number(issuePayMethod),
-                paid_amount:    Number(issuePaidAmount || 0),
+                quotation_id:        issueQtn.id,
+                payment_method:      Number(issuePayMethod),
+                paid_amount:         Number(issuePaidAmount || 0),
+                deposit_account_id:  issueDepositId ? Number(issueDepositId) : null,
             });
 
             toast.success('Invoice created successfully!', { id: toastId });
@@ -428,6 +437,24 @@ function QuotationHistoryPage() {
                                     min={0}
                                 />
                             </div>
+
+                            {Number(issuePaidAmount || 0) > 0 && (
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium">Deposit To</label>
+                                    <Select value={issueDepositId} onValueChange={setIssueDepositId}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select deposit account" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {depositAccounts.map((a) => (
+                                                <SelectItem key={a.id} value={String(a.id)}>
+                                                    {a.name} ({a.type})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                         </div>
                     )}
                     <DialogFooter>

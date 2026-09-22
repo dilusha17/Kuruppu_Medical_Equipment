@@ -12,15 +12,26 @@ class DepositAccount extends Model
         'type',
         'bank_name',
         'account_number',
-        'is_active',
+        'status',
+        'current_balance',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'status' => 'boolean',
     ];
 
     public function receivables(): HasMany
     {
         return $this->hasMany(Receivable::class, 'deposit_account_id');
+    }
+
+    public function payables(): HasMany
+    {
+        return $this->hasMany(Payable::class, 'deposit_account_id');
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'deposit_account_id');
     }
 }

@@ -14,7 +14,7 @@ interface CreditNoteItem {
     id: number;
     quantity: number;
     unit_price: number;
-    reason: 'shortage' | 'damage' | 'excess';
+    reason: 'shortage' | 'damage' | 'excess' | 'return' | 'cancelled';
     restock_action: 'restocked' | 'written_off' | 'deducted';
     stock_batch?: { batch_number: string; product?: { generic_name: string } };
 }
@@ -24,6 +24,7 @@ interface CreditNoteRow {
     credit_note_number: string;
     credit_note_date: string;
     grand_total: number;
+    notes: string | null;
     invoice?: { invoice_number: string };
     customer?: { name: string };
     items: CreditNoteItem[];
@@ -32,6 +33,8 @@ interface CreditNoteRow {
 const reasonBadge = (reason: string) => {
     if (reason === 'shortage') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
     if (reason === 'excess') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+    if (reason === 'return') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+    if (reason === 'cancelled') return 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400';
     return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
 };
 
@@ -188,6 +191,12 @@ function CreditNoteHistoryPage() {
                                 </tbody>
                             </table>
                         </div>
+                        {viewRow.notes && (
+                            <div className="text-sm bg-muted/50 rounded-lg p-3">
+                                <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
+                                <p>{viewRow.notes}</p>
+                            </div>
+                        )}
                         <div className="flex justify-between items-center pt-2 border-t text-sm">
                             <span className="text-muted-foreground">Total Credit</span>
                             <span className="font-bold text-destructive">Rs. {Number(viewRow.grand_total).toLocaleString()}</span>

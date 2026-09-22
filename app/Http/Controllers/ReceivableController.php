@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Receivable;
+use App\Models\DepositAccount;
 use Illuminate\Support\Facades\DB;
 
 class ReceivableController extends Controller
@@ -88,7 +89,8 @@ class ReceivableController extends Controller
             'date'               => 'required|date',
             'notes'              => 'nullable|string',
             'user_id'            => 'required|exists:users,id',
-            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
+            'payment_method_id'  => 'required|exists:payment_methods,id',
+            'deposit_account_id' => 'required|exists:deposit_accounts,id',
         ]);
 
         $invoice = Invoice::findOrFail($validated['reference_id']);
@@ -103,15 +105,23 @@ class ReceivableController extends Controller
             ], 422);
         }
 
-        $receivable = Receivable::create([
-            'invoice_id'         => $validated['reference_id'],
-            'amount'             => $validated['amount'],
-            'dateTime'           => $validated['date'],
-            'note'               => $validated['notes'] ?? 'Additional Payment',
-            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
-        ]);
+        $receivable = DB::transaction(function () use ($validated, $invoice) {
+            $receivable = Receivable::create([
+                'invoice_id'         => $validated['reference_id'],
+                'amount'             => $validated['amount'],
+                'dateTime'           => $validated['date'],
+                'note'               => $validated['notes'] ?? 'Additional Payment',
+                'payment_method_id'  => $validated['payment_method_id'],
+                'deposit_account_id' => $validated['deposit_account_id'],
+            ]);
 
-        $invoice->syncPaymentStatus();
+            DepositAccount::where('id', $validated['deposit_account_id'])
+                ->increment('current_balance', $validated['amount']);
+
+            $invoice->syncPaymentStatus();
+
+            return $receivable;
+        });
 
         return response()->json($receivable, 201);
     }
@@ -147,6 +157,9 @@ class ReceivableController extends Controller
                     'deposit_account_id' => $validated['deposit_account_id'],
                     'reference_no'       => $validated['reference_no'] ?? null,
                 ]);
+
+                DepositAccount::where('id', $validated['deposit_account_id'])
+                    ->increment('current_balance', $outstanding);
 
                 $invoice->syncPaymentStatus();
             }

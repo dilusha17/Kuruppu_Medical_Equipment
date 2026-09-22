@@ -133,7 +133,7 @@ class CreditNoteController extends Controller
             'items'                           => 'required|array|min:1',
             'items.*.invoice_item_id'        => 'required|exists:invoice_items,id',
             'items.*.quantity'                => 'required|integer|min:1',
-            'items.*.reason'                  => 'required|in:shortage,damage,excess',
+            'items.*.reason'                  => 'required|in:shortage,damage,excess,return,cancelled',
             'items.*.restock_action'          => 'required_if:items.*.reason,damage|nullable|in:restock,write_off',
         ]);
 
@@ -167,28 +167,33 @@ class CreditNoteController extends Controller
                     throw new \Exception('Invoice item does not belong to the selected invoice.');
                 }
 
-                $alreadyCredited = CreditNoteItem::where('invoice_item_id', $invoiceItem->id)->sum('quantity');
-                $creditableQty   = $invoiceItem->quantity - $alreadyCredited;
+                $reason = $row['reason'];
 
-                if ($row['quantity'] > $creditableQty) {
-                    throw new \Exception("Credit quantity exceeds creditable amount for: " . $invoiceItem->stockBatch?->product?->generic_name);
+                // Excess isn't capped by the invoiced quantity — those units were never on the
+                // invoice to begin with, so the only real limit is available stock (checked below).
+                if ($reason !== 'excess') {
+                    $alreadyCredited = CreditNoteItem::where('invoice_item_id', $invoiceItem->id)->sum('quantity');
+                    $creditableQty   = $invoiceItem->quantity - $alreadyCredited;
+
+                    if ($row['quantity'] > $creditableQty) {
+                        throw new \Exception("Credit quantity exceeds creditable amount for: " . $invoiceItem->stockBatch?->product?->generic_name);
+                    }
                 }
 
-                $reason = $row['reason'];
-                $batch  = StockBatches::findOrFail($invoiceItem->stock_batch_id);
+                $batch = StockBatches::findOrFail($invoiceItem->stock_batch_id);
 
-                // Shortage: goods never left the warehouse, so deduct stock.
-                // Excess: extra goods were returned, so restock.
+                // Shortage/Return/Cancelled: the goods never actually left (or came back), so restock.
+                // Excess: extra goods beyond what was invoiced went out, so deduct stock for them.
                 // Damage: user chooses whether the returned goods go back to stock or are written off.
-                if ($reason === 'shortage') {
+                if ($reason === 'shortage' || $reason === 'return' || $reason === 'cancelled') {
+                    $batch->update(['current_quantity' => $batch->current_quantity + $row['quantity']]);
+                    $storedRestockAction = 'restocked';
+                } elseif ($reason === 'excess') {
                     if ($row['quantity'] > $batch->current_quantity) {
                         throw new \Exception("Cannot reduce stock below 0 for: " . ($invoiceItem->stockBatch?->product?->generic_name ?? 'item') . ". Current stock: {$batch->current_quantity}");
                     }
                     $batch->update(['current_quantity' => $batch->current_quantity - $row['quantity']]);
                     $storedRestockAction = 'deducted';
-                } elseif ($reason === 'excess') {
-                    $batch->update(['current_quantity' => $batch->current_quantity + $row['quantity']]);
-                    $storedRestockAction = 'restocked';
                 } else {
                     $userAction = $row['restock_action'] ?? 'write_off';
                     if ($userAction === 'restock') {

@@ -15,10 +15,11 @@ class DepositAccountController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
-            'type'           => 'required|in:cash,bank',
-            'bank_name'      => 'nullable|string|max:255',
-            'account_number' => 'nullable|string|max:50',
+            'name'            => 'required|string|max:255',
+            'type'            => 'required|in:cash,bank',
+            'bank_name'       => 'nullable|string|max:255',
+            'account_number'  => 'nullable|string|max:50',
+            'current_balance' => 'nullable|numeric',
         ]);
 
         if ($validated['type'] === 'cash') {
@@ -34,10 +35,11 @@ class DepositAccountController extends Controller
         $account = DepositAccount::findOrFail($id);
 
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
-            'type'           => 'required|in:cash,bank',
-            'bank_name'      => 'nullable|string|max:255',
-            'account_number' => 'nullable|string|max:50',
+            'name'            => 'required|string|max:255',
+            'type'            => 'required|in:cash,bank',
+            'bank_name'       => 'nullable|string|max:255',
+            'account_number'  => 'nullable|string|max:50',
+            'current_balance' => 'nullable|numeric',
         ]);
 
         if ($validated['type'] === 'cash') {

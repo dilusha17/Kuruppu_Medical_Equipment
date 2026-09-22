@@ -826,6 +826,7 @@ function PayablesPage() {
     // Record payment
     const handleRecordPayment = async () => {
         if (!payTarget || !payAmount) return;
+        if (!payDepositId) { toast.error('Select a deposit account.'); return; }
         setLoading(true);
         try {
             await axios.post('/payables/payment', {
@@ -835,7 +836,7 @@ function PayablesPage() {
                 date:                payDate,
                 notes:               payNotes || null,
                 user_id:             user?.id,
-                deposit_account_id:  payDepositId ? Number(payDepositId) : null,
+                deposit_account_id:  Number(payDepositId),
             });
             toast.success('Payment recorded!');
             setPayOpen(false);
@@ -874,6 +875,11 @@ function PayablesPage() {
     const handleAddExpense = async () => {
         if (!expDate || !expDesc || !expCategory || !expAmount) {
             toast.error('Please fill all required fields.');
+            return;
+        }
+        const effectivePaid = expPaid !== '' ? Number(expPaid) : Number(expAmount);
+        if (effectivePaid > 0 && !expDepositId) {
+            toast.error('Select a deposit account for the payment.');
             return;
         }
         setLoading(true);

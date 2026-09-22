@@ -827,7 +827,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 
-interface DepositAccount { id: number; name: string; type: 'cash' | 'bank'; bank_name: string | null; account_number: string | null; is_active: boolean; }
+interface DepositAccount { id: number; name: string; type: 'cash' | 'bank'; bank_name: string | null; account_number: string | null; status: boolean; current_balance: number; }
 interface Category  { id: number; name: string; description?: string; }
 interface Brand          { id: number; name: string; }
 interface UnitType       { id: number; name: string; }
@@ -1263,7 +1263,7 @@ function SettingsPage() {
     const [depositAccounts,    setDepositAccounts]    = useState<DepositAccount[]>([]);
     const [depositModal,       setDepositModal]       = useState(false);
     const [editingDeposit,     setEditingDeposit]     = useState<DepositAccount | null>(null);
-    const [depositForm,        setDepositForm]        = useState({ name: '', type: 'cash' as 'cash' | 'bank', bank_name: '', account_number: '' });
+    const [depositForm,        setDepositForm]        = useState({ name: '', type: 'cash' as 'cash' | 'bank', bank_name: '', account_number: '', current_balance: '' });
     const [depositDeleteId,    setDepositDeleteId]    = useState<number | null>(null);
 
     // Roles & Permissions (owner only)
@@ -1426,10 +1426,10 @@ function SettingsPage() {
     const openDepositModal = (acc?: DepositAccount) => {
         if (acc) {
             setEditingDeposit(acc);
-            setDepositForm({ name: acc.name, type: acc.type, bank_name: acc.bank_name || '', account_number: acc.account_number || '' });
+            setDepositForm({ name: acc.name, type: acc.type, bank_name: acc.bank_name || '', account_number: acc.account_number || '', current_balance: String(acc.current_balance ?? 0) });
         } else {
             setEditingDeposit(null);
-            setDepositForm({ name: '', type: 'cash', bank_name: '', account_number: '' });
+            setDepositForm({ name: '', type: 'cash', bank_name: '', account_number: '', current_balance: '' });
         }
         setDepositModal(true);
     };
@@ -1437,12 +1437,13 @@ function SettingsPage() {
     const handleDepositSave = async () => {
         if (!depositForm.name.trim()) { toast.error('Name is required'); return; }
         try {
+            const payload = { ...depositForm, current_balance: depositForm.current_balance === '' ? undefined : Number(depositForm.current_balance) };
             if (editingDeposit) {
-                const res = await axios.post(`/deposit-accounts/update/${editingDeposit.id}`, depositForm);
+                const res = await axios.post(`/deposit-accounts/update/${editingDeposit.id}`, payload);
                 setDepositAccounts((p) => p.map((a) => a.id === editingDeposit.id ? res.data : a));
                 toast.success('Account updated');
             } else {
-                const res = await axios.post('/deposit-accounts/store', depositForm);
+                const res = await axios.post('/deposit-accounts/store', payload);
                 setDepositAccounts((p) => [...p, res.data]);
                 toast.success('Account added');
             }
@@ -1642,13 +1643,21 @@ function SettingsPage() {
                                     )}
                                 </div>
                             </div>
-                            <div className="flex gap-1">
-                                <button onClick={() => openDepositModal(acc)} className="p-1 rounded hover:bg-muted">
-                                    <Edit className="h-3.5 w-3.5 text-muted-foreground" />
-                                </button>
-                                <button onClick={() => setDepositDeleteId(acc.id)} className="p-1 rounded hover:bg-destructive/10">
-                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                                </button>
+                            <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                    <p className="text-[10px] text-muted-foreground">Balance</p>
+                                    <p className={`text-sm font-semibold ${Number(acc.current_balance) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                                        Rs. {Number(acc.current_balance ?? 0).toLocaleString()}
+                                    </p>
+                                </div>
+                                <div className="flex gap-1">
+                                    <button onClick={() => openDepositModal(acc)} className="p-1 rounded hover:bg-muted">
+                                        <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                                    </button>
+                                    <button onClick={() => setDepositDeleteId(acc.id)} className="p-1 rounded hover:bg-destructive/10">
+                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -1691,6 +1700,17 @@ function SettingsPage() {
                                 </div>
                             </div>
                         )}
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Current Balance (Rs.)</label>
+                            <Input type="number" value={depositForm.current_balance}
+                                onChange={(e) => setDepositForm((f) => ({ ...f, current_balance: e.target.value }))}
+                                placeholder="0.00" />
+                            <p className="text-[11px] text-muted-foreground mt-1">
+                                {editingDeposit
+                                    ? 'Adjust to correct/reconcile. The app keeps this updated automatically as payments are recorded.'
+                                    : 'Enter the account’s opening balance. The app will keep it updated automatically from here.'}
+                            </p>
+                        </div>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setDepositModal(false)}>Cancel</Button>

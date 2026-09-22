@@ -12,6 +12,7 @@ use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\Receivable;
 use App\Models\StockBatches;
+use App\Models\DepositAccount;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -251,10 +252,15 @@ class QuotationController extends Controller
     public function issueInvoice(Request $request)
     {
         $validated = $request->validate([
-            'quotation_id'   => 'required|exists:quotations,id',
-            'payment_method' => 'required|exists:payment_methods,id',
-            'paid_amount'    => 'required|numeric|min:0',
+            'quotation_id'       => 'required|exists:quotations,id',
+            'payment_method'     => 'required|exists:payment_methods,id',
+            'paid_amount'        => 'required|numeric|min:0',
+            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
         ]);
+
+        if ($validated['paid_amount'] > 0 && empty($validated['deposit_account_id'])) {
+            return response()->json(['message' => 'Please select a deposit account for the payment.'], 422);
+        }
 
         $quotation = Quotation::with('items.product')->findOrFail($validated['quotation_id']);
 
@@ -316,11 +322,18 @@ class QuotationController extends Controller
                     : $invNum . ' First Payment';
 
                 Receivable::create([
-                    'invoice_id' => $invoice->id,
-                    'amount'     => $validated['paid_amount'],
-                    'dateTime'   => now()->toDateString(),
-                    'note'       => $note,
+                    'invoice_id'         => $invoice->id,
+                    'amount'             => $validated['paid_amount'],
+                    'dateTime'           => now()->toDateString(),
+                    'note'               => $note,
+                    'payment_method_id'  => $validated['payment_method'],
+                    'deposit_account_id' => $validated['deposit_account_id'] ?? null,
                 ]);
+
+                if (!empty($validated['deposit_account_id'])) {
+                    DepositAccount::where('id', $validated['deposit_account_id'])
+                        ->increment('current_balance', $validated['paid_amount']);
+                }
             }
 
             $quotation->update([

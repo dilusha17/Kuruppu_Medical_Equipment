@@ -9,6 +9,7 @@ use App\Models\InvoiceItems;
 use App\Models\PaymentMethod;
 use App\Models\Receivable;
 use App\Models\StockBatches;
+use App\Models\DepositAccount;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -159,12 +160,17 @@ class InvoiceController extends Controller
             'grand_total'        => 'required|numeric',
             'paid_amount'        => 'required|numeric|min:0',
             'payment_method'     => 'required|exists:payment_methods,id',
+            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
             'items'              => 'required|array|min:1',
             'items.*.stock_batch_id' => 'required|exists:stock_batches,id',
             'items.*.quantity'   => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
-        ]);  
-        
+        ]);
+
+        if ($validated['paid_amount'] > 0 && empty($validated['deposit_account_id'])) {
+            return response()->json(['message' => 'Please select a deposit account for the payment.'], 422);
+        }
+
         // Payment status
         $status = 'unpaid';
         if ($validated['paid_amount'] >= $validated['grand_total']) {
@@ -219,11 +225,18 @@ class InvoiceController extends Controller
                     : $invNum . ' First Payment';
 
                 Receivable::create([
-                    'invoice_id' => $invoice->id,
-                    'amount'     => $validated['paid_amount'],
-                    'dateTime'   => $validated['invoice_date'],
-                    'note'       => $note,
+                    'invoice_id'         => $invoice->id,
+                    'amount'             => $validated['paid_amount'],
+                    'dateTime'           => $validated['invoice_date'],
+                    'note'               => $note,
+                    'payment_method_id'  => $validated['payment_method'],
+                    'deposit_account_id' => $validated['deposit_account_id'] ?? null,
                 ]);
+
+                if (!empty($validated['deposit_account_id'])) {
+                    DepositAccount::where('id', $validated['deposit_account_id'])
+                        ->increment('current_balance', $validated['paid_amount']);
+                }
             }
 
             return $invoice;

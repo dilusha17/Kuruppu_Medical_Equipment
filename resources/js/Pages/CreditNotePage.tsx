@@ -40,7 +40,7 @@ interface CreditItemRow {
     already_credited: number;
     creditable_qty: number;
     credit_qty: string;
-    reason: 'shortage' | 'damage' | 'excess';
+    reason: 'shortage' | 'damage' | 'excess' | 'return' | 'cancelled';
     restock_action: 'restock' | 'write_off';
 }
 
@@ -124,7 +124,9 @@ function CreditNotePage() {
         if (!selectedInvoice) { toast.error('Select an invoice first.'); return; }
         if (includedItems.length === 0) { toast.error('Enter a credit quantity for at least one item.'); return; }
         for (const it of includedItems) {
-            if (Number(it.credit_qty) > it.creditable_qty) {
+            // Excess isn't capped by the invoiced quantity — the extra units were never on
+            // the invoice to begin with. Available stock (checked server-side) is the real limit.
+            if (it.reason !== 'excess' && Number(it.credit_qty) > it.creditable_qty) {
                 toast.error(`Credit qty for ${it.product_name} exceeds creditable amount.`);
                 return;
             }
@@ -216,10 +218,9 @@ function CreditNotePage() {
                                     <th className="text-left text-xs font-medium text-muted-foreground px-3 py-2">Product</th>
                                     <th className="text-left text-xs font-medium text-muted-foreground px-3 py-2">Batch</th>
                                     <th className="text-right text-xs font-medium text-muted-foreground px-3 py-2">Invoiced</th>
-                                    <th className="text-right text-xs font-medium text-muted-foreground px-3 py-2">Creditable</th>
                                     <th className="text-right text-xs font-medium text-muted-foreground px-3 py-2 w-24">Credit Qty</th>
                                     <th className="text-left text-xs font-medium text-muted-foreground px-3 py-2 w-36">Reason</th>
-                                    <th className="text-left text-xs font-medium text-muted-foreground px-3 py-2 w-36">Stock Action</th>
+                                    <th className="text-left text-xs font-medium text-muted-foreground px-3 py-2 w-52">Stock Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -228,17 +229,16 @@ function CreditNotePage() {
                                         <td className="px-3 py-2 font-medium">{it.product_name}</td>
                                         <td className="px-3 py-2 font-mono text-xs">{it.batch_number}</td>
                                         <td className="px-3 py-2 text-right">{it.invoiced_qty}</td>
-                                        <td className="px-3 py-2 text-right">{it.creditable_qty}</td>
                                         <td className="px-3 py-2">
                                             <Input
                                                 type="number"
                                                 min={0}
-                                                max={it.creditable_qty}
-                                                disabled={it.creditable_qty === 0}
+                                                max={it.reason === 'excess' ? undefined : it.creditable_qty}
+                                                disabled={it.reason !== 'excess' && it.creditable_qty === 0}
                                                 value={it.credit_qty}
                                                 onChange={(e) => {
                                                     let v = e.target.value;
-                                                    if (v !== '' && Number(v) > it.creditable_qty) v = String(it.creditable_qty);
+                                                    if (it.reason !== 'excess' && v !== '' && Number(v) > it.creditable_qty) v = String(it.creditable_qty);
                                                     updateItem(it.invoice_item_id, { credit_qty: v });
                                                 }}
                                                 className="h-8 text-xs text-right"
@@ -248,14 +248,15 @@ function CreditNotePage() {
                                         <td className="px-3 py-2">
                                             <Select
                                                 value={it.reason}
-                                                onValueChange={(v) => updateItem(it.invoice_item_id, { reason: v as 'shortage' | 'damage' | 'excess' })}
-                                                disabled={it.creditable_qty === 0}
+                                                onValueChange={(v) => updateItem(it.invoice_item_id, { reason: v as 'shortage' | 'damage' | 'excess' | 'return' | 'cancelled' })}
                                             >
                                                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="shortage">Shortage</SelectItem>
                                                     <SelectItem value="excess">Excess</SelectItem>
                                                     <SelectItem value="damage">Damage</SelectItem>
+                                                    <SelectItem value="return">Return</SelectItem>
+                                                    <SelectItem value="cancelled">Cancelled</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </td>
@@ -272,12 +273,12 @@ function CreditNotePage() {
                                                     </SelectContent>
                                                 </Select>
                                             ) : it.reason === 'excess' ? (
-                                                <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                                    Auto-restocked
-                                                </span>
-                                            ) : (
                                                 <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                                                     Deducted from stock
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                                    Auto-restocked
                                                 </span>
                                             )}
                                         </td>

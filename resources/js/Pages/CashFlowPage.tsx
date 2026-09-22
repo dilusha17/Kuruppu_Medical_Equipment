@@ -247,7 +247,7 @@ function CashFlowPage() {
                             <BarChart data={barChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                                 <XAxis dataKey="name" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
-                                <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
+                                <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" tickFormatter={(v) => `${Math.round(v / 1000).toLocaleString()}K`} />
                                 <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }} />
                                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="Inflow" fill="#22c55e" radius={[4, 4, 0, 0]} />

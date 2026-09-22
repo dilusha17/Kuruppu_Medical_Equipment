@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Grn;
 use App\Models\Expense;
 use App\Models\Payable;
+use App\Models\DepositAccount;
+use Illuminate\Support\Facades\DB;
 
 class PayableController extends Controller
 {
@@ -87,25 +89,38 @@ class PayableController extends Controller
             'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
         ]);
 
-        // expense number
-        $last = Expense::withTrashed()->latest()->first();
-        $next = $last ? ($last->id + 1) : 1;
-        $expNumber = 'EXP-' . str_pad($next, 4, '0', STR_PAD_LEFT);
-
         $paidAmount = $validated['paid_amount'] ?? $validated['amount'];
 
-        $expense = Expense::create([
-            'expense_number'     => $expNumber,
-            'date'               => $validated['date'],
-            'description'        => $validated['description'],
-            'category_id'        => $validated['category_id'],
-            'amount'             => $validated['amount'],
-            'paid_amount'        => $paidAmount,
-            'balance'            => $validated['amount'] - $paidAmount,
-            'notes'              => $validated['notes'] ?? null,
-            'user_id'            => $validated['user_id'],
-            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
-        ]);
+        if ($paidAmount > 0 && empty($validated['deposit_account_id'])) {
+            return response()->json(['message' => 'Please select a deposit account for the payment.'], 422);
+        }
+
+        $expense = DB::transaction(function () use ($validated, $paidAmount) {
+            // expense number
+            $last = Expense::withTrashed()->latest()->first();
+            $next = $last ? ($last->id + 1) : 1;
+            $expNumber = 'EXP-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+
+            $expense = Expense::create([
+                'expense_number'     => $expNumber,
+                'date'               => $validated['date'],
+                'description'        => $validated['description'],
+                'category_id'        => $validated['category_id'],
+                'amount'             => $validated['amount'],
+                'paid_amount'        => $paidAmount,
+                'balance'            => $validated['amount'] - $paidAmount,
+                'notes'              => $validated['notes'] ?? null,
+                'user_id'            => $validated['user_id'],
+                'deposit_account_id' => $validated['deposit_account_id'] ?? null,
+            ]);
+
+            if ($paidAmount > 0 && !empty($validated['deposit_account_id'])) {
+                DepositAccount::where('id', $validated['deposit_account_id'])
+                    ->decrement('current_balance', $paidAmount);
+            }
+
+            return $expense;
+        });
 
         return response()->json($expense, 201);
     }
@@ -133,7 +148,7 @@ class PayableController extends Controller
             'date'               => 'required|date',
             'notes'              => 'nullable|string',
             'user_id'            => 'required|exists:users,id',
-            'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
+            'deposit_account_id' => 'required|exists:deposit_accounts,id',
         ]);
 
         if ($validated['reference_type'] === 'grn') {
@@ -158,15 +173,23 @@ class PayableController extends Controller
         $grn          = $ref;
         $newTotalPaid = $totalPaid + $validated['amount'];
         $newStatus    = $newTotalPaid >= $grn->total_amount ? 'paid' : 'partial';
-        $grn->update(['payment_status' => $newStatus]);
 
-        $payable = Payable::create([
-            'grns_id'            => $validated['reference_id'],
-            'amount'             => $validated['amount'],
-            'dateTime'           => $validated['date'],
-            'note'               => $validated['notes'] ?? 'Additional Payment',
-            'deposit_account_id' => $validated['deposit_account_id'] ?? null,
-        ]);
+        $payable = DB::transaction(function () use ($validated, $grn, $newStatus) {
+            $grn->update(['payment_status' => $newStatus]);
+
+            $payable = Payable::create([
+                'grns_id'            => $validated['reference_id'],
+                'amount'             => $validated['amount'],
+                'dateTime'           => $validated['date'],
+                'note'               => $validated['notes'] ?? 'Additional Payment',
+                'deposit_account_id' => $validated['deposit_account_id'],
+            ]);
+
+            DepositAccount::where('id', $validated['deposit_account_id'])
+                ->decrement('current_balance', $validated['amount']);
+
+            return $payable;
+        });
 
         return response()->json($payable, 201);
     }
