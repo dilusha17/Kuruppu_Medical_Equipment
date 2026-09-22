@@ -315,6 +315,200 @@ class ReportController extends Controller
         return $pdf->stream('Purchases-Report.pdf');
     }
 
+    // ── CSV Export Methods ──────────────────────────────────────────
+
+    public function outstandingCsv(Request $request): StreamedResponse
+    {
+        $period = (int) ($request->period ?? 30);
+        $cutoff = Carbon::now()->subDays($period);
+
+        $query = Invoice::with('customer')
+            ->whereIn('status', ['unpaid', 'partial'])
+            ->where('invoice_date', '<=', $cutoff);
+
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        $invoices = $query->latest('invoice_date')->get();
+
+        $data = $invoices->map(function ($inv) {
+            $collected   = $inv->receivables()->sum('amount');
+            $outstanding = max(0, $inv->grand_total - $collected);
+            return [
+                'invoice_number' => $inv->invoice_number,
+                'invoice_date'   => $inv->invoice_date,
+                'customer'       => $inv->customer?->name ?? 'Walk-in Customer',
+                'grand_total'    => $inv->grand_total,
+                'collected'      => $collected,
+                'outstanding'    => $outstanding,
+                'days_overdue'   => (int) Carbon::parse($inv->invoice_date)->diffInDays(Carbon::now()),
+            ];
+        })->filter(fn($i) => $i['outstanding'] > 0)->values();
+
+        $filename = 'outstanding-report-' . now()->format('Y-m-d') . '.csv';
+
+        return new StreamedResponse(function () use ($data) {
+            $h = fopen('php://output', 'w');
+            fwrite($h, "\xEF\xBB\xBF");
+            fputcsv($h, ['#', 'Invoice #', 'Date', 'Customer', 'Total', 'Collected', 'Outstanding', 'Days Overdue']);
+
+            foreach ($data as $i => $row) {
+                fputcsv($h, [
+                    $i + 1,
+                    $row['invoice_number'],
+                    $row['invoice_date'],
+                    $row['customer'],
+                    number_format($row['grand_total'], 2, '.', ''),
+                    number_format($row['collected'], 2, '.', ''),
+                    number_format($row['outstanding'], 2, '.', ''),
+                    $row['days_overdue'],
+                ]);
+            }
+            fputcsv($h, ['', '', '', 'TOTAL',
+                number_format($data->sum('grand_total'), 2, '.', ''),
+                number_format($data->sum('collected'), 2, '.', ''),
+                number_format($data->sum('outstanding'), 2, '.', ''),
+                '',
+            ]);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    public function profitLossCsv(Request $request): StreamedResponse
+    {
+        $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
+        $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
+
+        // Cash-basis figures: actual money received/paid in the date range, not invoiced/billed totals.
+        $revenue   = Receivable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $purchases = Payable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $expenses  = Expense::whereBetween('date', [$from, $to])->sum('paid_amount');
+        $profit    = $revenue - $purchases - $expenses;
+
+        $categorySummary = Expense::whereBetween('date', [$from, $to])
+            ->selectRaw('category_id, SUM(paid_amount) as total')
+            ->groupBy('category_id')
+            ->with('category:id,name')
+            ->get()
+            ->map(fn($e) => [
+                'category' => $e->category?->name ?? 'Uncategorized',
+                'total'    => $e->total,
+            ]);
+
+        $filename = 'profit-loss-report-' . $from . '-to-' . $to . '.csv';
+
+        return new StreamedResponse(function () use ($revenue, $purchases, $expenses, $categorySummary, $profit, $from, $to) {
+            $h = fopen('php://output', 'w');
+            fwrite($h, "\xEF\xBB\xBF");
+            fputcsv($h, ['Profit & Loss Statement']);
+            fputcsv($h, [$from . ' to ' . $to]);
+            fputcsv($h, []);
+            fputcsv($h, ['Revenue (Collected)', number_format($revenue, 2, '.', '')]);
+            fputcsv($h, ['Purchases (Paid)', number_format($purchases, 2, '.', '')]);
+            fputcsv($h, ['Expenses', number_format($expenses, 2, '.', '')]);
+            foreach ($categorySummary as $cat) {
+                fputcsv($h, ['  ' . $cat['category'], number_format($cat['total'], 2, '.', '')]);
+            }
+            fputcsv($h, []);
+            fputcsv($h, ['Net Profit / (Loss)', number_format($profit, 2, '.', '')]);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    public function expensesCsv(Request $request): StreamedResponse
+    {
+        $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
+        $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
+
+        $query = Expense::with('category:id,name')
+            ->whereBetween('date', [$from, $to]);
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $expenses    = $query->latest('date')->get();
+        $totalAmount = $expenses->sum('amount');
+
+        $filename = 'expenses-report-' . $from . '-to-' . $to . '.csv';
+
+        return new StreamedResponse(function () use ($expenses, $totalAmount) {
+            $h = fopen('php://output', 'w');
+            fwrite($h, "\xEF\xBB\xBF");
+            fputcsv($h, ['#', 'Expense #', 'Date', 'Category', 'Description', 'Amount']);
+
+            foreach ($expenses as $i => $exp) {
+                fputcsv($h, [
+                    $i + 1,
+                    $exp->expense_number,
+                    $exp->date,
+                    $exp->category?->name ?? 'Uncategorized',
+                    $exp->description,
+                    number_format($exp->amount, 2, '.', ''),
+                ]);
+            }
+            fputcsv($h, ['', '', '', '', 'TOTAL', number_format($totalAmount, 2, '.', '')]);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    public function purchasesCsv(Request $request): StreamedResponse
+    {
+        $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
+        $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
+
+        $query = Grn::with('supplier:id,name')
+            ->whereBetween('received_date', [$from, $to]);
+
+        if ($request->filled('supplier_id')) {
+            $query->where('supplier_id', $request->supplier_id);
+        }
+
+        $grns        = $query->latest('received_date')->get();
+        $totalAmount = $grns->sum('total_amount');
+
+        $filename = 'purchases-report-' . $from . '-to-' . $to . '.csv';
+
+        return new StreamedResponse(function () use ($grns, $totalAmount) {
+            $h = fopen('php://output', 'w');
+            fwrite($h, "\xEF\xBB\xBF");
+            fputcsv($h, ['#', 'GRN #', 'Date', 'Supplier', 'Tax Invoice No.', 'Amount', 'Status']);
+
+            foreach ($grns as $i => $grn) {
+                fputcsv($h, [
+                    $i + 1,
+                    $grn->grn_number,
+                    // received_date is date-cast (Carbon instance), so format explicitly —
+                    // letting fputcsv stringify it would fall back to Carbon's full datetime string.
+                    $grn->received_date?->format('Y-m-d'),
+                    $grn->supplier?->name ?? '—',
+                    $grn->supplier_invoice_no ?: '—',
+                    number_format($grn->total_amount, 2, '.', ''),
+                    strtoupper($grn->payment_status ?? 'UNPAID'),
+                ]);
+            }
+            fputcsv($h, ['', '', '', '', 'TOTAL', number_format($totalAmount, 2, '.', ''), '']);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
     // ── Invoice Summary (Output Tax) ──────────────────────────────────
 
     public function invoiceSummary(Request $request)

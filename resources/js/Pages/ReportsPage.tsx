@@ -97,6 +97,10 @@ function OutstandingReport() {
                     onClick={() => window.open(`/reports/outstanding/pdf?period=${period}${customerId ? `&customer_id=${customerId}` : ''}`, '_blank')}>
                     <Printer className="h-3.5 w-3.5" /> Print
                 </Button>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
+                    onClick={() => window.open(`/reports/outstanding/csv?period=${period}${customerId ? `&customer_id=${customerId}` : ''}`, '_blank')}>
+                    <Download className="h-3.5 w-3.5" /> Export Excel
+                </Button>
             </div>
 
             {data && (
@@ -193,6 +197,10 @@ function ProfitLossReport() {
                 <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
                     onClick={() => window.open(`/reports/profit-loss/pdf?date_from=${dateFrom}&date_to=${dateTo}`, '_blank')}>
                     <Printer className="h-3.5 w-3.5" /> Print
+                </Button>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
+                    onClick={() => window.open(`/reports/profit-loss/csv?date_from=${dateFrom}&date_to=${dateTo}`, '_blank')}>
+                    <Download className="h-3.5 w-3.5" /> Export Excel
                 </Button>
             </div>
 
@@ -309,10 +317,14 @@ function ExpensesReport() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="flex items-end">
+                <div className="flex items-end gap-2">
                     <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
                         onClick={() => window.open(`/reports/expenses/pdf?date_from=${dateFrom}&date_to=${dateTo}${categoryId ? `&category_id=${categoryId}` : ''}`, '_blank')}>
                         <Printer className="h-3.5 w-3.5" /> Print
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
+                        onClick={() => window.open(`/reports/expenses/csv?date_from=${dateFrom}&date_to=${dateTo}${categoryId ? `&category_id=${categoryId}` : ''}`, '_blank')}>
+                        <Download className="h-3.5 w-3.5" /> Export Excel
                     </Button>
                 </div>
             </div>
@@ -427,10 +439,14 @@ function PurchasesReport() {
                     <Combobox options={supplierOptions} value={supplierId} onValueChange={(v) => setSupplierId(v === 'all' ? '' : v)}
                         placeholder="All Suppliers" searchPlaceholder="Search..." className="h-9 text-sm" />
                 </div>
-                <div className="flex items-end">
+                <div className="flex items-end gap-2">
                     <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
                         onClick={() => window.open(`/reports/purchases/pdf?date_from=${dateFrom}&date_to=${dateTo}${supplierId ? `&supplier_id=${supplierId}` : ''}`, '_blank')}>
                         <Printer className="h-3.5 w-3.5" /> Print
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"
+                        onClick={() => window.open(`/reports/purchases/csv?date_from=${dateFrom}&date_to=${dateTo}${supplierId ? `&supplier_id=${supplierId}` : ''}`, '_blank')}>
+                        <Download className="h-3.5 w-3.5" /> Export Excel
                     </Button>
                 </div>
             </div>

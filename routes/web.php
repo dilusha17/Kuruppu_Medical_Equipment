@@ -304,6 +304,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/profit-loss/pdf',  [ReportController::class, 'profitLossPdf']);
         Route::get('/expenses/pdf',     [ReportController::class, 'expensesPdf']);
         Route::get('/purchases/pdf',    [ReportController::class, 'purchasesPdf']);
+        Route::get('/outstanding/csv',  [ReportController::class, 'outstandingCsv']);
+        Route::get('/profit-loss/csv',  [ReportController::class, 'profitLossCsv']);
+        Route::get('/expenses/csv',     [ReportController::class, 'expensesCsv']);
+        Route::get('/purchases/csv',    [ReportController::class, 'purchasesCsv']);
         Route::get('/invoice-summary',      [ReportController::class, 'invoiceSummary']);
         Route::get('/invoice-summary/csv',  [ReportController::class, 'invoiceSummaryCsv']);
         Route::get('/purchase-summary',     [ReportController::class, 'purchaseSummary']);
