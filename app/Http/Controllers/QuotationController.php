@@ -118,6 +118,60 @@ class QuotationController extends Controller
         return response()->json(['message' => 'Quotation saved successfully', 'id' => $quotation->id], 201);
     }
 
+    public function update(Request $request, $id)
+    {
+        $this->authorizeAnyRole([1, 2]);
+
+        $quotation = Quotation::with('items')->findOrFail($id);
+
+        if ($quotation->status === 'invoiced') {
+            return response()->json(['message' => 'This quotation cannot be edited because it has already been invoiced.'], 422);
+        }
+
+        $validated = $request->validate([
+            'business_entity_id' => 'nullable|exists:business_entities,id',
+            'customer_id'        => 'required|exists:customers,id',
+            'po_number'          => 'nullable|string|max:100',
+            'quotation_date'     => 'required|date',
+            'sub_total'          => 'required|numeric',
+            'discount'           => 'required|numeric|min:0',
+            'vat_percentage'     => 'sometimes|numeric|min:0',
+            'grand_total'        => 'required|numeric',
+            'notes'              => 'nullable|string',
+            'items'              => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity'   => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        DB::transaction(function () use ($quotation, $validated) {
+            $quotation->items()->delete();
+
+            foreach ($validated['items'] as $item) {
+                QuotationItem::create([
+                    'quotation_id' => $quotation->id,
+                    'product_id'   => $item['product_id'],
+                    'quantity'     => $item['quantity'],
+                    'unit_price'   => $item['unit_price'],
+                ]);
+            }
+
+            $quotation->update([
+                'business_entity_id' => $validated['business_entity_id'] ?? null,
+                'po_number'          => $validated['po_number'] ?? null,
+                'customer_id'        => $validated['customer_id'],
+                'quotation_date'     => $validated['quotation_date'],
+                'sub_total'          => $validated['sub_total'],
+                'discount'           => $validated['discount'],
+                'vat_percentage'     => $validated['vat_percentage'] ?? 0,
+                'grand_total'        => $validated['grand_total'],
+                'notes'              => $validated['notes'] ?? null,
+            ]);
+        });
+
+        return response()->json(['message' => 'Quotation updated successfully', 'id' => $quotation->id]);
+    }
+
     public function all(Request $request)
     {
         $query = Quotation::with([

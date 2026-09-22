@@ -237,7 +237,7 @@
 
 // (WrappedInvoiceHistoryPage as any).layout = (page: React.ReactNode) => <AppShell>{page}</AppShell>;
 
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchBar from '@/components/shared/SearchBar';
@@ -246,10 +246,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Separator } from '@/components/ui/separator';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Printer, Eye, Trash2 } from 'lucide-react';
+import { Printer, Eye, Trash2, Pencil } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 import NumberedPagination from '@/components/shared/NumberedPagination';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface InvoiceItem {
     id:         number;
@@ -274,10 +275,14 @@ interface Invoice {
     paid_amount:    number;
     payment_method: string;
     status:         string;
+    is_vat_invoice_issued: boolean;
+    credit_notes_count: number;
     items:          InvoiceItem[];
 }
 
 function InvoiceHistoryPage() {
+    const { user } = useAuth();
+    const canEdit = user?.role === 'owner' || user?.role === 'admin';
     const [invoices,    setInvoices]    = useState<Invoice[]>([]);
     const [search,      setSearch]      = useState('');
     const [dateFilter,  setDateFilter]  = useState('');
@@ -333,8 +338,8 @@ function InvoiceHistoryPage() {
             setDeleteId(null);
             setTotal((t) => t - 1);
             toast.success('Invoice deleted.');
-        } catch (e) {
-            toast.error('Failed to delete invoice.');
+        } catch (e: any) {
+            toast.error(e.response?.data?.message || 'Failed to delete invoice.');
         }
     };
 
@@ -418,8 +423,27 @@ function InvoiceHistoryPage() {
                                                 className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                                                 <Printer className="h-3.5 w-3.5" />
                                             </button>
+                                            {canEdit && (
+                                                <button
+                                                    onClick={() => router.visit(`/invoice/edit/${inv.id}`)}
+                                                    disabled={inv.is_vat_invoice_issued || inv.credit_notes_count > 0}
+                                                    title={inv.is_vat_invoice_issued
+                                                        ? 'Cannot edit: a tax invoice has been issued for this invoice'
+                                                        : inv.credit_notes_count > 0
+                                                            ? 'Cannot edit: a credit note has been issued against this invoice'
+                                                            : 'Edit invoice'}
+                                                    className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+                                                    <Pencil className="h-3.5 w-3.5" />
+                                                </button>
+                                            )}
                                             <button onClick={() => setDeleteId(inv.id)}
-                                                className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive">
+                                                disabled={inv.is_vat_invoice_issued || inv.credit_notes_count > 0}
+                                                title={inv.is_vat_invoice_issued
+                                                    ? 'Cannot delete: a tax invoice has been issued for this invoice'
+                                                    : inv.credit_notes_count > 0
+                                                        ? 'Cannot delete: a credit note has been issued against this invoice'
+                                                        : 'Delete invoice'}
+                                                className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent">
                                                 <Trash2 className="h-3.5 w-3.5" />
                                             </button>
                                         </div>

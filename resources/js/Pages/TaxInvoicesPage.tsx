@@ -371,7 +371,7 @@ export default function TaxInvoicesPage() {
                 <div className="flex justify-between items-center">
                   <CardTitle>Generated Tax Invoices</CardTitle>
                   <div className="w-64">
-                    <Input placeholder="Search by Tax invoice no…" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
+                    <Input placeholder="Search by tax invoice no. or customer…" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
                   </div>
                 </div>
               </CardHeader>

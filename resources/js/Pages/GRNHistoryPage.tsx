@@ -227,7 +227,7 @@
 
 // (WrappedGRNHistoryPage as any).layout = (page: React.ReactNode) => <AppShell>{page}</AppShell>;
 
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchBar from '@/components/shared/SearchBar';
@@ -235,10 +235,11 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Printer, Eye, Trash2 } from 'lucide-react';
+import { Printer, Eye, Trash2, Pencil } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 import NumberedPagination from '@/components/shared/NumberedPagination';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface GrnItem {
     id:           number;
@@ -274,6 +275,8 @@ interface Grn {
 }
 
 function GRNHistoryPage() {
+    const { user } = useAuth();
+    const canEdit = user?.role === 'owner' || user?.role === 'admin';
     const [grns,       setGrns]       = useState<Grn[]>([]);
     const [search,     setSearch]     = useState('');
     const [dateFilter, setDateFilter] = useState('');
@@ -390,6 +393,13 @@ function GRNHistoryPage() {
                                                 className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                                                 <Printer className="h-3.5 w-3.5" />
                                             </button>
+                                            {canEdit && (
+                                                <button onClick={() => router.visit(`/grn/edit/${g.id}`)}
+                                                    className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"
+                                                    title="Edit GRN">
+                                                    <Pencil className="h-3.5 w-3.5" />
+                                                </button>
+                                            )}
                                             <button onClick={() => setDeleteId(g.id)}
                                                 className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive">
                                                 <Trash2 className="h-3.5 w-3.5" />
@@ -446,7 +456,7 @@ function GRNHistoryPage() {
                                 </div>
                                 {viewGrn.supplier_invoice_no && (
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Invoice No.</span>
+                                        <span className="text-muted-foreground">Tax Invoice No.</span>
                                         <span className="font-medium">{viewGrn.supplier_invoice_no}</span>
                                     </div>
                                 )}

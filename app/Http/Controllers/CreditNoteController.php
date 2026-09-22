@@ -133,7 +133,7 @@ class CreditNoteController extends Controller
             'items'                           => 'required|array|min:1',
             'items.*.invoice_item_id'        => 'required|exists:invoice_items,id',
             'items.*.quantity'                => 'required|integer|min:1',
-            'items.*.reason'                  => 'required|in:shortage,damage',
+            'items.*.reason'                  => 'required|in:shortage,damage,excess',
             'items.*.restock_action'          => 'required_if:items.*.reason,damage|nullable|in:restock,write_off',
         ]);
 
@@ -174,9 +174,30 @@ class CreditNoteController extends Controller
                     throw new \Exception("Credit quantity exceeds creditable amount for: " . $invoiceItem->stockBatch?->product?->generic_name);
                 }
 
-                $reason        = $row['reason'];
-                $restockAction = $reason === 'shortage' ? 'restock' : ($row['restock_action'] ?? 'write_off');
-                $shouldRestock = $restockAction === 'restock';
+                $reason = $row['reason'];
+                $batch  = StockBatches::findOrFail($invoiceItem->stock_batch_id);
+
+                // Shortage: goods never left the warehouse, so deduct stock.
+                // Excess: extra goods were returned, so restock.
+                // Damage: user chooses whether the returned goods go back to stock or are written off.
+                if ($reason === 'shortage') {
+                    if ($row['quantity'] > $batch->current_quantity) {
+                        throw new \Exception("Cannot reduce stock below 0 for: " . ($invoiceItem->stockBatch?->product?->generic_name ?? 'item') . ". Current stock: {$batch->current_quantity}");
+                    }
+                    $batch->update(['current_quantity' => $batch->current_quantity - $row['quantity']]);
+                    $storedRestockAction = 'deducted';
+                } elseif ($reason === 'excess') {
+                    $batch->update(['current_quantity' => $batch->current_quantity + $row['quantity']]);
+                    $storedRestockAction = 'restocked';
+                } else {
+                    $userAction = $row['restock_action'] ?? 'write_off';
+                    if ($userAction === 'restock') {
+                        $batch->update(['current_quantity' => $batch->current_quantity + $row['quantity']]);
+                        $storedRestockAction = 'restocked';
+                    } else {
+                        $storedRestockAction = 'written_off';
+                    }
+                }
 
                 CreditNoteItem::create([
                     'credit_note_id'   => $creditNote->id,
@@ -185,13 +206,8 @@ class CreditNoteController extends Controller
                     'quantity'         => $row['quantity'],
                     'unit_price'       => $invoiceItem->unit_price,
                     'reason'           => $reason,
-                    'restock_action'   => $shouldRestock ? 'restocked' : 'written_off',
+                    'restock_action'   => $storedRestockAction,
                 ]);
-
-                if ($shouldRestock) {
-                    $batch = StockBatches::findOrFail($invoiceItem->stock_batch_id);
-                    $batch->update(['current_quantity' => $batch->current_quantity + $row['quantity']]);
-                }
 
                 $subTotal += $row['quantity'] * $invoiceItem->unit_price;
             }
@@ -205,16 +221,10 @@ class CreditNoteController extends Controller
                 'grand_total' => $grandTotal,
             ]);
 
-            // Recompute invoice status now that a credit note has been issued against it
-            $collected   = $invoice->receivables()->sum('amount');
-            $credited    = $invoice->creditNotes()->sum('grand_total');
-            $outstanding = $invoice->grand_total - $collected - $credited;
-
-            if ($outstanding <= 0) {
-                $invoice->update(['status' => 'paid']);
-            } elseif ($collected + $credited > 0) {
-                $invoice->update(['status' => 'partial']);
-            }
+            // Recompute invoice status now that a credit note has been issued against it.
+            // A credit note reduces what is owed, it is not cash received, so an invoice
+            // with no payments stays 'unpaid' even after a credit note is issued.
+            $invoice->syncPaymentStatus();
 
             return $creditNote;
         });
@@ -252,9 +262,16 @@ class CreditNoteController extends Controller
 
     public function delete($id) {
 
-        $creditNote = CreditNote::findOrFail($id);
-        $creditNote->items()->delete();
-        $creditNote->delete();
+        DB::transaction(function () use ($id) {
+            $creditNote = CreditNote::findOrFail($id);
+            $invoice    = Invoice::findOrFail($creditNote->invoice_id);
+
+            $creditNote->items()->delete();
+            $creditNote->delete();
+
+            $invoice->syncPaymentStatus();
+        });
+
         return response()->json(['message' => 'Credit note deleted']);
     }
 }

@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,6 +40,7 @@ const WALK_IN_ID = 1;
 
 function QuotationPage() {
     const { user } = useAuth();
+    const { editId } = usePage().props as { editId?: number };
 
     const [quotationNum,   setQuotationNum]   = useState('QTN-0001');
     const [poNumber,       setPoNumber]       = useState('');
@@ -56,6 +57,7 @@ function QuotationPage() {
     const [notes,          setNotes]          = useState('');
     const [businessEntities, setBusinessEntities] = useState<{ id: number; name: string; is_vat_registered: number; vat_no: string | null }[]>([]);
     const [businessEntityId, setBusinessEntityId] = useState<string>('');
+    const [formLoaded,     setFormLoaded]     = useState(false);
 
     const [priceModalOpen,  setPriceModalOpen]  = useState(false);
     const [pendingItem,     setPendingItem]     = useState<ProductItem | null>(null);
@@ -72,11 +74,12 @@ function QuotationPage() {
     const grandTotal      = discountedTotal + vatAmount;
 
     useEffect(() => {
-        fetchFormData();
-        inputRef.current?.focus();
+        loadInitialData();
     }, []);
 
     useEffect(() => {
+        // In edit mode the quotation keeps its originally stored VAT rate.
+        if (editId) return;
         if (!quotationDate) return;
         const selectedEntity = businessEntities.find((e) => String(e.id) === businessEntityId);
         if (selectedEntity && !selectedEntity.is_vat_registered) {
@@ -86,7 +89,7 @@ function QuotationPage() {
         axios.get('/vat/by-date', { params: { date: quotationDate } })
             .then((res) => setVatRate(res.data ? Number(res.data.vat_percentage) : 0))
             .catch(() => setVatRate(0));
-    }, [quotationDate, businessEntityId, businessEntities]);
+    }, [quotationDate, businessEntityId, businessEntities, editId]);
 
     const fetchFormData = async () => {
         try {
@@ -99,6 +102,45 @@ function QuotationPage() {
             }
         } catch (e: any) {
             console.log('Form data error:', e.response?.data);
+        }
+    };
+
+    // Load form data, and — when editing — the existing quotation on top of it
+    const loadInitialData = async () => {
+        try {
+            const formRes = await axios.get('/quotation/form-data');
+            setCustomers(formRes.data.customers);
+            setProducts(formRes.data.products);
+            if (Array.isArray(formRes.data.business_entities)) setBusinessEntities(formRes.data.business_entities);
+
+            if (editId) {
+                const res = await axios.get(`/quotation/show/${editId}`);
+                const qtn = res.data.quotation;
+
+                setQuotationNum(qtn.quotation_number);
+                setPoNumber(qtn.po_number || '');
+                setQuotationDate(qtn.quotation_date ? String(qtn.quotation_date).slice(0, 10) : format(new Date(), 'yyyy-MM-dd'));
+                setSelectedCustomer(String(qtn.customer_id));
+                setBusinessEntityId(qtn.business_entity_id ? String(qtn.business_entity_id) : '');
+                setDiscount(qtn.discount ? String(qtn.discount) : '');
+                setVatRate(Number(qtn.vat_percentage || 0));
+                setNotes(qtn.notes || '');
+                setCart((qtn.items || []).map((it: any) => ({
+                    product_id: it.product_id,
+                    name:       it.product?.generic_name ?? 'N/A',
+                    brand:      null,
+                    qty:        it.quantity,
+                    price:      Number(it.unit_price),
+                })));
+            } else if (formRes.data.next_number) {
+                setQuotationNum(formRes.data.next_number);
+                inputRef.current?.focus();
+            }
+        } catch (e: any) {
+            console.log('Form data error:', e.response?.data);
+            if (editId) toast.error('Failed to load quotation for editing.');
+        } finally {
+            setFormLoaded(true);
         }
     };
 
@@ -193,10 +235,12 @@ function QuotationPage() {
         if (cart.length === 0) { toast.error('Please add at least one product.'); return; }
 
         setSaving(true);
-        const toastId = toast.loading(printAfterSave ? 'Saving & preparing print...' : 'Saving quotation...');
+        const toastId = toast.loading(
+            editId ? 'Updating quotation...' : (printAfterSave ? 'Saving & preparing print...' : 'Saving quotation...')
+        );
 
         try {
-            const res = await axios.post('/quotation/store', {
+            const payload = {
                 business_entity_id: businessEntityId ? Number(businessEntityId) : null,
                 customer_id:    Number(selectedCustomer),
                 user_id:        user?.id,
@@ -212,7 +256,16 @@ function QuotationPage() {
                     quantity:   i.qty,
                     unit_price: i.price,
                 })),
-            });
+            };
+
+            if (editId) {
+                await axios.post(`/quotation/update/${editId}`, payload);
+                toast.success('Quotation updated successfully!', { id: toastId });
+                router.visit('/quotation-history');
+                return;
+            }
+
+            const res = await axios.post('/quotation/store', payload);
 
             toast.success('Quotation saved successfully!', { id: toastId });
 
@@ -229,7 +282,7 @@ function QuotationPage() {
             await fetchFormData();
 
         } catch (error: any) {
-            const msg = error.response?.data?.message || 'Failed to save quotation.';
+            const msg = error.response?.data?.message || (editId ? 'Failed to update quotation.' : 'Failed to save quotation.');
             toast.error(msg, { id: toastId });
         } finally {
             setSaving(false);
@@ -289,6 +342,11 @@ function QuotationPage() {
                         <div className="flex items-center gap-2 shrink-0">
                             <ShoppingCart className="h-4 w-4 text-primary" />
                             <span className="text-sm font-semibold font-mono">{quotationNum}</span>
+                            {editId && (
+                                <span className="text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-0.5">
+                                    Editing
+                                </span>
+                            )}
                         </div>
                         <Input
                             value={poNumber}
@@ -409,15 +467,25 @@ function QuotationPage() {
                     />
 
                     <div className="flex gap-2 pt-1">
-                        <Button onClick={() => handleSave(false)} disabled={cart.length === 0 || saving}
-                            className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-                            <Save className="h-4 w-4" />
-                            {saving ? 'Saving...' : 'Save'}
-                        </Button>
-                        <Button onClick={() => handleSave(true)} disabled={cart.length === 0 || saving}
-                            className="flex-1 gap-2">
-                            <Printer className="h-4 w-4" /> Save & Print
-                        </Button>
+                        {editId ? (
+                            <Button onClick={() => handleSave(false)} disabled={!formLoaded || cart.length === 0 || saving}
+                                className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                                <Save className="h-4 w-4" />
+                                {saving ? 'Updating...' : 'Update Quotation'}
+                            </Button>
+                        ) : (
+                            <>
+                                <Button onClick={() => handleSave(false)} disabled={cart.length === 0 || saving}
+                                    className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                                    <Save className="h-4 w-4" />
+                                    {saving ? 'Saving...' : 'Save'}
+                                </Button>
+                                <Button onClick={() => handleSave(true)} disabled={cart.length === 0 || saving}
+                                    className="flex-1 gap-2">
+                                    <Printer className="h-4 w-4" /> Save & Print
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

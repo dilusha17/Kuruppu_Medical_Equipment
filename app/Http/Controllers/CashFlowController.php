@@ -66,7 +66,8 @@ class CashFlowController extends Controller
                 'account_type'    => $e->depositAccount?->type ?? null,
                 'account_id'      => $e->deposit_account_id,
                 'reference_no'    => null,
-                'amount'          => $e->amount,
+                // Cash flow reflects what was actually paid out, not the full expense amount
+                'amount'          => $e->paid_amount,
             ];
         });
 
@@ -103,7 +104,7 @@ class CashFlowController extends Controller
             $totalIn = Receivable::where('deposit_account_id', $acc->id)
                 ->whereBetween('dateTime', [$from, $to])->sum('amount');
             $totalExpOut = Expense::where('deposit_account_id', $acc->id)
-                ->whereBetween('date', [$from, $to])->sum('amount');
+                ->whereBetween('date', [$from, $to])->sum('paid_amount');
             $totalPayOut = Payable::where('deposit_account_id', $acc->id)
                 ->whereBetween('dateTime', [$from, $to])->sum('amount');
 
@@ -177,7 +178,7 @@ class CashFlowController extends Controller
             $totalIn = Receivable::where('deposit_account_id', $acc->id)
                 ->whereBetween('dateTime', [$from, $to])->sum('amount');
             $totalExpOut = Expense::where('deposit_account_id', $acc->id)
-                ->whereBetween('date', [$from, $to])->sum('amount');
+                ->whereBetween('date', [$from, $to])->sum('paid_amount');
             $totalPayOut = Payable::where('deposit_account_id', $acc->id)
                 ->whereBetween('dateTime', [$from, $to])->sum('amount');
 
@@ -191,7 +192,7 @@ class CashFlowController extends Controller
         }
 
         $totalInflow  = $inflows->sum('amount');
-        $totalOutflow = $expOutflows->sum('amount') + $payOutflows->sum('amount');
+        $totalOutflow = $expOutflows->sum('paid_amount') + $payOutflows->sum('amount');
 
         $accountName = null;
         if ($request->filled('deposit_account_id')) {

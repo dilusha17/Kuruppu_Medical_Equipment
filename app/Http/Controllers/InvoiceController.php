@@ -123,6 +123,7 @@ class InvoiceController extends Controller
                 'items.stockBatch:id,batch_number,product_id',
                 'items.stockBatch.product:id,generic_name',
             ])
+            ->withCount('creditNotes')
             ->latest();
 
         if ($request->filled('search')) {
@@ -231,6 +232,90 @@ class InvoiceController extends Controller
         return response()->json(['message' => 'Invoice saved successfully', 'id' => $invoice->id], 201);
     }
 
+    public function update(Request $request, $id) {
+
+        $this->authorizeAnyRole([1, 2]);
+
+        $invoice = Invoice::with('items')->findOrFail($id);
+
+        if ($invoice->is_vat_invoice_issued) {
+            return response()->json(['message' => 'This invoice cannot be edited because a tax invoice has already been issued for it.'], 422);
+        }
+
+        if ($invoice->creditNotes()->exists()) {
+            return response()->json(['message' => 'This invoice cannot be edited because a credit note has been issued against it.'], 422);
+        }
+
+        $validated = $request->validate([
+            'business_entity_id' => 'nullable|exists:business_entities,id',
+            'customer_id'        => 'required|exists:customers,id',
+            'po_number'          => 'nullable|string|max:100',
+            'invoice_date'       => 'required|date',
+            'sub_total'          => 'required|numeric',
+            'discount'           => 'required|numeric|min:0',
+            'vat_percentage'     => 'sometimes|numeric|min:0',
+            'grand_total'        => 'required|numeric',
+            'payment_method'     => 'sometimes|exists:payment_methods,id',
+            'items'              => 'required|array|min:1',
+            'items.*.stock_batch_id' => 'required|exists:stock_batches,id',
+            'items.*.quantity'   => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        $collected = $invoice->receivables()->sum('amount');
+        if ($validated['grand_total'] < $collected) {
+            return response()->json([
+                'message' => "New grand total cannot be less than the amount already received (Rs. {$collected})."
+            ], 422);
+        }
+
+        DB::transaction(function () use ($invoice, $validated) {
+
+            // Restore stock consumed by the invoice's current items before applying the new lines
+            foreach ($invoice->items as $oldItem) {
+                $batch = StockBatches::find($oldItem->stock_batch_id);
+                if ($batch) {
+                    $batch->update(['current_quantity' => $batch->current_quantity + $oldItem->quantity]);
+                }
+            }
+            $invoice->items()->delete();
+
+            foreach ($validated['items'] as $item) {
+                InvoiceItems::create([
+                    'invoice_id'     => $invoice->id,
+                    'stock_batch_id' => $item['stock_batch_id'],
+                    'quantity'       => $item['quantity'],
+                    'unit_price'     => $item['unit_price'],
+                ]);
+
+                $batch = StockBatches::findOrFail($item['stock_batch_id']);
+                $newQty = $batch->current_quantity - $item['quantity'];
+                if ($newQty < 0) {
+                    throw new \Exception("Insufficient stock for: " . $batch->product?->generic_name);
+                }
+                $batch->update(['current_quantity' => $newQty]);
+            }
+
+            $invoice->update([
+                'business_entity_id' => $validated['business_entity_id'] ?? null,
+                'po_number'          => $validated['po_number'] ?? null,
+                'customer_id'        => $validated['customer_id'],
+                'invoice_date'       => $validated['invoice_date'],
+                'sub_total'          => $validated['sub_total'],
+                'discount'           => $validated['discount'],
+                'vat_percentage'     => $validated['vat_percentage'] ?? 0,
+                'grand_total'        => $validated['grand_total'],
+                'payment_method'     => $validated['payment_method'] ?? $invoice->payment_method,
+            ]);
+
+            // paid_amount and invoice_number are intentionally left untouched, and no
+            // receivable rows are modified — the invoice number and cash history stay fixed.
+            $invoice->syncPaymentStatus();
+        });
+
+        return response()->json(['message' => 'Invoice updated successfully', 'id' => $invoice->id]);
+    }
+
     public function show($id)
     {
         $invoice = Invoice::with([
@@ -297,6 +382,15 @@ class InvoiceController extends Controller
     public function delete($id) {
 
         $invoice = Invoice::findOrFail($id);
+
+        if ($invoice->is_vat_invoice_issued) {
+            return response()->json(['message' => 'This invoice cannot be deleted because a tax invoice has already been issued for it.'], 422);
+        }
+
+        if ($invoice->creditNotes()->exists()) {
+            return response()->json(['message' => 'This invoice cannot be deleted because a credit note has been issued against it.'], 422);
+        }
+
         $invoice->items()->delete();
         $invoice->delete();
         return response()->json(['message' => 'Invoice deleted']);

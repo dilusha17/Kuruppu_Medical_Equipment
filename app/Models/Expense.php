@@ -16,6 +16,8 @@ class Expense extends Model
         'description',
         'category_id',
         'amount',
+        'paid_amount',
+        'balance',
         'notes',
         'user_id',
         'deposit_account_id',

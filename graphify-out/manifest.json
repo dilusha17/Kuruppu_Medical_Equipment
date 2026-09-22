@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "app/Http/Controllers/CashFlowController.php": {
-    "mtime": 1784610439.4519544,
-    "ast_hash": "4510ea62ddf5200dcedcc4eaa0ae624f",
+    "mtime": 1790053187.5151346,
+    "ast_hash": "34dd730691bfa7438df2b96e3cada7c4",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CategoryController.php": {
@@ -75,13 +75,13 @@
     "semantic_hash": "309bbe53e9a2aa8e56e27b25c0b6b87e"
   },
   "app/Http/Controllers/GrnController.php": {
-    "mtime": 1784610446.4153354,
-    "ast_hash": "17ba12987eca106d8ac06cba0805d368",
+    "mtime": 1790052974.568994,
+    "ast_hash": "71fb2d00d4a37afe91b9f78041a7f10c",
     "semantic_hash": ""
   },
   "app/Http/Controllers/InvoiceController.php": {
-    "mtime": 1784610470.3457143,
-    "ast_hash": "843734f2d130aa7d891e45194e5e92eb",
+    "mtime": 1790052681.8227,
+    "ast_hash": "eb5b7804e2245bab72c9d0a1ff9244f9",
     "semantic_hash": ""
   },
   "app/Http/Controllers/NotificationController.php": {
@@ -90,9 +90,9 @@
     "semantic_hash": "62bb93fcadc21574af5a234835216698"
   },
   "app/Http/Controllers/PayableController.php": {
-    "mtime": 1783895756.648958,
-    "ast_hash": "b7d3458c4a56b25bf7e6f05a76b966f4",
-    "semantic_hash": "b7d3458c4a56b25bf7e6f05a76b966f4"
+    "mtime": 1790053112.7932527,
+    "ast_hash": "a361d30b83d1d4441f2c6d2b24f0faf2",
+    "semantic_hash": ""
   },
   "app/Http/Controllers/PaymentMethodController.php": {
     "mtime": 1783775751.3372135,
@@ -105,18 +105,18 @@
     "semantic_hash": "bad0eade34522e6a23789e10e055f7ec"
   },
   "app/Http/Controllers/QuotationController.php": {
-    "mtime": 1784610484.2825336,
-    "ast_hash": "5f6724d1109340ef6a3423afbb9c592a",
+    "mtime": 1790052851.9542189,
+    "ast_hash": "7b67247b078adeb1c83feacc9fd36212",
     "semantic_hash": ""
   },
   "app/Http/Controllers/ReceivableController.php": {
-    "mtime": 1784925690.2031443,
-    "ast_hash": "ecaae754a1040512066ec9b5323615b4",
+    "mtime": 1790052549.1419177,
+    "ast_hash": "318509f9a15b7cfdf9c6830bba242744",
     "semantic_hash": ""
   },
   "app/Http/Controllers/ReportController.php": {
-    "mtime": 1784610505.0144236,
-    "ast_hash": "b0817068f8163f8310cc1d0798926edf",
+    "mtime": 1790052364.0963712,
+    "ast_hash": "5427800431b25e4b8bcfb3fc337fb056",
     "semantic_hash": ""
   },
   "app/Http/Controllers/SettingsController.php": {
@@ -125,14 +125,14 @@
     "semantic_hash": "e8e8e8befc8213902b4e42b4f88ac5c4"
   },
   "app/Http/Controllers/StockController.php": {
-    "mtime": 1784612874.9933052,
-    "ast_hash": "d4f7c37ce5a76c91281cae9bf9922269",
+    "mtime": 1790052459.882581,
+    "ast_hash": "5e380167972d9760847bc0b8dbac31a7",
     "semantic_hash": ""
   },
   "app/Http/Controllers/SupplierController.php": {
-    "mtime": 1783775751.3382108,
-    "ast_hash": "2952533ec66fbb80fb5437999410a507",
-    "semantic_hash": "2952533ec66fbb80fb5437999410a507"
+    "mtime": 1790052509.349743,
+    "ast_hash": "d980ee075235cb7aecc75401a4405694",
+    "semantic_hash": ""
   },
   "app/Http/Controllers/UnitTypeController.php": {
     "mtime": 1783775751.3382108,
@@ -175,8 +175,8 @@
     "semantic_hash": "4c2a64e49d87405bbdbd6af687a698a3"
   },
   "app/Models/Customers.php": {
-    "mtime": 1784584649.9802513,
-    "ast_hash": "1e6172dcd8027be271dec5af17ed362a",
+    "mtime": 1789683373.7466702,
+    "ast_hash": "76f3f13e75820bef06db65c5a2471a00",
     "semantic_hash": ""
   },
   "app/Models/DepositAccount.php": {
@@ -185,9 +185,9 @@
     "semantic_hash": "e3863487f83d1e338637573486d0fa45"
   },
   "app/Models/Expense.php": {
-    "mtime": 1783895723.9014554,
-    "ast_hash": "e10cd88d6f41da7da526c577972aac5e",
-    "semantic_hash": "e10cd88d6f41da7da526c577972aac5e"
+    "mtime": 1790053098.3144362,
+    "ast_hash": "8a61e5cffda16ffc0df4520c4648bd62",
+    "semantic_hash": ""
   },
   "app/Models/ExpensesCategory.php": {
     "mtime": 1783775751.3402054,
@@ -210,8 +210,8 @@
     "semantic_hash": "87fd8dae9c1025f44acdadf14ffac16a"
   },
   "app/Models/Invoice.php": {
-    "mtime": 1784925642.830125,
-    "ast_hash": "f5a7afa49d5b48083b14e95a508ab16a",
+    "mtime": 1790052525.4485946,
+    "ast_hash": "0d16d1863fb39d0c65294000eb2b460a",
     "semantic_hash": ""
   },
   "app/Models/InvoiceItems.php": {
@@ -540,23 +540,23 @@
     "semantic_hash": "4f8d16ad8c132d9bda040fbb2c871305"
   },
   "resources/js/Pages/GRNHistoryPage.tsx": {
-    "mtime": 1783803394.630175,
-    "ast_hash": "a38cb1c96514b92c7b7c2fe1cc59147c",
-    "semantic_hash": "a38cb1c96514b92c7b7c2fe1cc59147c"
+    "mtime": 1790053085.7426217,
+    "ast_hash": "9768318466be6b5a93d9e75c03e72ffc",
+    "semantic_hash": ""
   },
   "resources/js/Pages/GRNPage.tsx": {
-    "mtime": 1784610138.459998,
-    "ast_hash": "f66bcf3c0a9fbc14010d2807ed8f6d6c",
+    "mtime": 1790053061.730272,
+    "ast_hash": "b630e42ca17c9b87a7abe2483d2a2208",
     "semantic_hash": ""
   },
   "resources/js/Pages/InvoiceHistoryPage.tsx": {
-    "mtime": 1783803627.251683,
-    "ast_hash": "e1433319704b4167883bcb2938643a24",
-    "semantic_hash": "e1433319704b4167883bcb2938643a24"
+    "mtime": 1790052839.2153459,
+    "ast_hash": "ca276cb9db8a1e591afa825a8b1f4b4d",
+    "semantic_hash": ""
   },
   "resources/js/Pages/InvoicePage.tsx": {
-    "mtime": 1784583561.5529199,
-    "ast_hash": "452f515ecd3e4c6cda0a2db00c160c20",
+    "mtime": 1790052807.246392,
+    "ast_hash": "1d83beaa6a12178d313c92bba4794651",
     "semantic_hash": ""
   },
   "resources/js/Pages/LoginPage.tsx": {
@@ -570,9 +570,9 @@
     "semantic_hash": "441ba9ae726b9faf6a75cdee5f490b48"
   },
   "resources/js/Pages/PayablesPage.tsx": {
-    "mtime": 1783895965.5253909,
-    "ast_hash": "bb48de894758afd664f0d5704d92045a",
-    "semantic_hash": "bb48de894758afd664f0d5704d92045a"
+    "mtime": 1790053158.1903744,
+    "ast_hash": "c3932a5d8115bf56b1698972b0971c4c",
+    "semantic_hash": ""
   },
   "resources/js/Pages/ProductsPage.tsx": {
     "mtime": 1783775751.3602898,
@@ -580,13 +580,13 @@
     "semantic_hash": "e73a2616fd643ee830920e7800864471"
   },
   "resources/js/Pages/QuotationHistoryPage.tsx": {
-    "mtime": 1784579497.3150837,
-    "ast_hash": "f9eab3e5a33ff73f39557fbecdf4d483",
-    "semantic_hash": "f9eab3e5a33ff73f39557fbecdf4d483"
+    "mtime": 1790052914.4879537,
+    "ast_hash": "474bd3d7c0f17383eafa02bece4d4e18",
+    "semantic_hash": ""
   },
   "resources/js/Pages/QuotationPage.tsx": {
-    "mtime": 1784583592.909159,
-    "ast_hash": "312839120b18a9009dfef72074c72a72",
+    "mtime": 1790052894.4163096,
+    "ast_hash": "66c7a911ff1cd459c2fec32f4ebe4015",
     "semantic_hash": ""
   },
   "resources/js/Pages/ReceivablesPage.tsx": {
@@ -595,9 +595,9 @@
     "semantic_hash": ""
   },
   "resources/js/Pages/ReportsPage.tsx": {
-    "mtime": 1783890324.8477712,
-    "ast_hash": "3f420299ec664444b45dec6d70d88224",
-    "semantic_hash": "3f420299ec664444b45dec6d70d88224"
+    "mtime": 1790052422.096857,
+    "ast_hash": "eba7043746751e49bb80f9395d770555",
+    "semantic_hash": ""
   },
   "resources/js/Pages/SettingsPage.tsx": {
     "mtime": 1785739968.2357993,
@@ -605,14 +605,14 @@
     "semantic_hash": ""
   },
   "resources/js/Pages/StockPage.tsx": {
-    "mtime": 1784613007.2648134,
-    "ast_hash": "d3c1c4464c7ffceb956567c1a245d89a",
+    "mtime": 1790052450.3949616,
+    "ast_hash": "ff939df133d6f1cdd3ff5fde4d5f1fb8",
     "semantic_hash": ""
   },
   "resources/js/Pages/SuppliersPage.tsx": {
-    "mtime": 1783775751.3613188,
-    "ast_hash": "abf57ba7ae5bb8ffedd09919957a76e0",
-    "semantic_hash": "abf57ba7ae5bb8ffedd09919957a76e0"
+    "mtime": 1790052504.2107682,
+    "ast_hash": "a53360bba762cc2b572ebab1a557461a",
+    "semantic_hash": ""
   },
   "resources/js/app.js": {
     "mtime": 1783775751.3623166,
@@ -990,8 +990,8 @@
     "semantic_hash": "db03daf42873bcb6771c7b885a7c90f6"
   },
   "resources/views/pdf/invoice.blade.php": {
-    "mtime": 1785734081.948323,
-    "ast_hash": "edde115e114affeea27e82843747983d",
+    "mtime": 1785820539.711954,
+    "ast_hash": "0cd445e19deb4efcf61fd9d9e20e824b",
     "semantic_hash": ""
   },
   "resources/views/pdf/quotation.blade.php": {
@@ -1000,9 +1000,9 @@
     "semantic_hash": "b4bbb3fb9aff67ccff3c8d5ca88b9dbb"
   },
   "resources/views/pdf/report-cashflow.blade.php": {
-    "mtime": 1783895824.3907835,
-    "ast_hash": "c1e6e01ef7d575d0e5f0964def87a290",
-    "semantic_hash": "c1e6e01ef7d575d0e5f0964def87a290"
+    "mtime": 1790053195.5272038,
+    "ast_hash": "facd19c9052d3aa573bac4040b794199",
+    "semantic_hash": ""
   },
   "resources/views/pdf/report-expenses.blade.php": {
     "mtime": 1783890377.3996212,
@@ -1025,13 +1025,13 @@
     "semantic_hash": "554531fd86d9a3db66c16f6fd473431a"
   },
   "resources/views/pdf/tax-invoice-history.blade.php": {
-    "mtime": 1785738779.039325,
-    "ast_hash": "fac7579ddd06e7c8433aa19ce634e7c2",
+    "mtime": 1785817496.4024217,
+    "ast_hash": "ed9066eeda9bee8addcb0190fec28776",
     "semantic_hash": ""
   },
   "resources/views/pdf/tax-invoice.blade.php": {
-    "mtime": 1785738768.9674964,
-    "ast_hash": "302a5b37b5946f52740143acbb0a7ccb",
+    "mtime": 1785817490.1631718,
+    "ast_hash": "d51a331c725a0a65b365e5d2a099eae1",
     "semantic_hash": ""
   },
   "resources/views/welcome.blade.php": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1785739705.8595436,
-    "ast_hash": "7b79ef1e2355cbd9993a63b77e6ad5f8",
+    "mtime": 1790052665.5065918,
+    "ast_hash": "c198ad43884ae379a94a269f8dcb1fd6",
     "semantic_hash": ""
   },
   "tailwind.config.ts": {
@@ -1170,13 +1170,13 @@
     "semantic_hash": ""
   },
   "app/Http/Controllers/TaxInvoiceApiController.php": {
-    "mtime": 1784929605.2783673,
-    "ast_hash": "84028fc81400d65e711e497049358c1d",
+    "mtime": 1790052471.0785804,
+    "ast_hash": "d4af729914d79b6d1e2b5c4692774adb",
     "semantic_hash": ""
   },
   "app/Http/Controllers/TaxInvoiceController.php": {
-    "mtime": 1785738947.7998292,
-    "ast_hash": "b2d077d86298696570b70a5d4a598342",
+    "mtime": 1785818610.833923,
+    "ast_hash": "033d60e9e765a456e9da2d30daab9649",
     "semantic_hash": ""
   },
   "app/Models/TaxInvoice.php": {
@@ -1185,13 +1185,13 @@
     "semantic_hash": ""
   },
   "resources/js/Pages/TaxInvoicesPage.tsx": {
-    "mtime": 1784932932.193256,
-    "ast_hash": "d5cdf7662e50a5017f24dd84fcf25bfe",
+    "mtime": 1790052476.5016816,
+    "ast_hash": "20f8fb0ad257f6c949db3b90033a23c6",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CreditNoteController.php": {
-    "mtime": 1784926148.179489,
-    "ast_hash": "612a3dfb33d190a8ec8550cd422fb54d",
+    "mtime": 1790052589.915766,
+    "ast_hash": "2a3deb0da5222740bb22705e4322d5a2",
     "semantic_hash": ""
   },
   "app/Http/Controllers/RoleController.php": {
@@ -1245,13 +1245,13 @@
     "semantic_hash": ""
   },
   "resources/js/Pages/CreditNoteHistoryPage.tsx": {
-    "mtime": 1784925833.993007,
-    "ast_hash": "13ff6e50b32dbdb4bc74efa95e5b8729",
+    "mtime": 1790052616.9326892,
+    "ast_hash": "44ea2538d5bd106490c07e108ac8887e",
     "semantic_hash": ""
   },
   "resources/js/Pages/CreditNotePage.tsx": {
-    "mtime": 1784925790.3286684,
-    "ast_hash": "03a61e336cb07da9abafb81e3ea2ed73",
+    "mtime": 1790052607.1942568,
+    "ast_hash": "6b44f6c7ca5af8cf84d7ef8bd78cb7ad",
     "semantic_hash": ""
   },
   "resources/js/Pages/UsersPage.tsx": {
@@ -1260,8 +1260,33 @@
     "semantic_hash": ""
   },
   "resources/views/pdf/credit-note.blade.php": {
-    "mtime": 1784925865.277462,
-    "ast_hash": "374fc96e55c5bab6452fb7e33ecc9ee0",
+    "mtime": 1790052622.887915,
+    "ast_hash": "b50d977fce009f7430291642ac34d5b5",
+    "semantic_hash": ""
+  },
+  "app/Models/CustomerVatDetail.php": {
+    "mtime": 1789683370.1798546,
+    "ast_hash": "e1c9d36f6beb4581f59fd023bbf0f9f4",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_09_22_000001_resync_invoice_status_for_credit_notes.php": {
+    "mtime": 1790052558.253901,
+    "ast_hash": "a687139c596b8623b239552427323902",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_09_22_000002_add_excess_to_credit_note_items_reason.php": {
+    "mtime": 1790052566.604772,
+    "ast_hash": "6dbbc1c5d1f0f2b77b9aa35671ac86b6",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_09_22_000003_add_paid_amount_and_balance_to_expenses_table.php": {
+    "mtime": 1790053096.0891063,
+    "ast_hash": "920c9054744a4eee2e70dd9587529046",
+    "semantic_hash": ""
+  },
+  "resources/views/pdf/report-sales.blade.php": {
+    "mtime": 1790052380.3148615,
+    "ast_hash": "68afd9c4eb45ef4fcff648190a4a7264",
     "semantic_hash": ""
   }
 }

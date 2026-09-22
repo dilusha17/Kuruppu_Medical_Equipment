@@ -139,7 +139,7 @@
                 <td>{{ $e->description }}</td>
                 <td>{{ $e->category?->name ?? '—' }}</td>
                 <td>{{ $e->depositAccount?->name ?? 'Unassigned' }}</td>
-                <td class="r out">{{ number_format($e->amount, 2) }}</td>
+                <td class="r out">{{ number_format($e->paid_amount, 2) }}</td>
             </tr>
             @empty
             <tr><td colspan="7" style="text-align:center;padding:10px;color:#999;">No expense records.</td></tr>
@@ -149,7 +149,7 @@
         <tfoot>
             <tr>
                 <td colspan="6">TOTAL EXPENSES</td>
-                <td class="r out">Rs. {{ number_format($expOutflows->sum('amount'), 2) }}</td>
+                <td class="r out">Rs. {{ number_format($expOutflows->sum('paid_amount'), 2) }}</td>
             </tr>
         </tfoot>
         @endif

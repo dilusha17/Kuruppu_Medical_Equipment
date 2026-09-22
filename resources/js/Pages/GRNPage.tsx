@@ -577,7 +577,7 @@
 
 // (WrappedGRNPage as any).layout = (page: React.ReactNode) => <AppShell>{page}</AppShell>;
 
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -640,6 +640,7 @@ const spinnerOff = '[appearance:textfield] [&::-webkit-outer-spin-button]:appear
 
 function GRNPage() {
     const { user } = useAuth();
+    const { editId } = usePage().props as { editId?: number };
 
     const [grnNum, setGrnNum] = useState('GRN-0001');
     const [grnDate, setGrnDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -660,6 +661,8 @@ function GRNPage() {
     const [businessEntityId, setBusinessEntityId] = useState<string>('');
     const [saving, setSaving] = useState(false);
     const [showProductSearch, setShowProductSearch] = useState(false);
+    const [alreadyPaid, setAlreadyPaid] = useState(0);
+    const [formLoaded, setFormLoaded] = useState(false);
 
     // New product registration dialog
     const [showNewProduct, setShowNewProduct] = useState(false);
@@ -750,17 +753,18 @@ function GRNPage() {
     const [vatRate, setVatRate] = useState(0);
     const selectedSupplierIsVat = suppliers.find((s) => String(s.id) === supplierId)?.is_vat === 1;
     const vatAmount  = selectedSupplierIsVat && vatRate > 0
-        ? Math.round((discountedTotal / 100) * vatRate)
+        ? (discountedTotal / 100) * vatRate
         : 0;
     const grandTotal = discountedTotal + vatAmount;
-    const balance    = grandTotal - Number(paidAmount || 0);
+    const balance    = grandTotal - (editId ? alreadyPaid : Number(paidAmount || 0));
 
     useEffect(() => {
-        fetchFormData();
-        inputRef.current?.focus();
+        loadInitialData();
     }, []);
 
     useEffect(() => {
+        // In edit mode the GRN keeps its originally stored VAT rate.
+        if (editId) return;
         if (!grnDate) return;
         const selectedEntity = businessEntities.find((e) => String(e.id) === businessEntityId);
         if (selectedEntity && !selectedEntity.is_vat_registered) {
@@ -770,7 +774,7 @@ function GRNPage() {
         axios.get('/vat/by-date', { params: { date: grnDate } })
             .then((res) => setVatRate(res.data ? Number(res.data.vat_percentage) : 0))
             .catch(() => setVatRate(0));
-    }, [grnDate, businessEntityId, businessEntities]);
+    }, [grnDate, businessEntityId, businessEntities, editId]);
 
     const fetchNextNumber = async () => {
         try {
@@ -792,6 +796,55 @@ function GRNPage() {
             if (Array.isArray(res.data.business_entities)) setBusinessEntities(res.data.business_entities);
             if (res.data.next_number) setGrnNum(res.data.next_number);
         } catch (e: any) { console.log(e.response?.data); }
+    };
+
+    // Load form data, and — when editing — the existing GRN on top of it
+    const loadInitialData = async () => {
+        try {
+            const res = await axios.get('/grn/form-data');
+            setSuppliers(res.data.suppliers);
+            setProducts(res.data.products);
+            setCategories(res.data.categories || []);
+            setBrands(res.data.brands || []);
+            setUnitTypes(res.data.unit_types || []);
+            setPaymentMethods(res.data.payment_methods || []);
+            setDepositAccounts(res.data.deposit_accounts || []);
+            if (Array.isArray(res.data.business_entities)) setBusinessEntities(res.data.business_entities);
+
+            if (editId) {
+                const showRes = await axios.get(`/grn/show/${editId}`);
+                const grn = showRes.data.grn;
+                const payments = showRes.data.payments || [];
+
+                setGrnNum(grn.grn_number);
+                setGrnDate(grn.received_date ? String(grn.received_date).slice(0, 10) : format(new Date(), 'yyyy-MM-dd'));
+                setSupplierId(String(grn.supplier_id));
+                setBusinessEntityId(grn.business_entity_id ? String(grn.business_entity_id) : '');
+                setInvoiceNo(grn.supplier_invoice_no || '');
+                setDiscount(grn.discount ? String(grn.discount) : '');
+                setVatRate(Number(grn.vat_percentage || 0));
+                setPaymentMethodId(grn.payment_method_id ? String(grn.payment_method_id) : '');
+                setDepositAccountId(grn.deposit_account_id ? String(grn.deposit_account_id) : '');
+                setAlreadyPaid(payments.reduce((s: number, p: any) => s + Number(p.amount), 0));
+                setItems((grn.items || []).map((it: any) => ({
+                    productId:   it.product_id,
+                    name:        it.product?.generic_name ?? 'N/A',
+                    qty:         it.quantity,
+                    unitPrice:   Number(it.unit_price),
+                    batchNumber: it.batch_number || '',
+                    expiryDate:  it.expiry_date ? String(it.expiry_date).slice(0, 10) : '',
+                    mfdDate:     it.mfd_date ? String(it.mfd_date).slice(0, 10) : '',
+                })));
+            } else if (res.data.next_number) {
+                setGrnNum(res.data.next_number);
+                inputRef.current?.focus();
+            }
+        } catch (e: any) {
+            console.log(e.response?.data);
+            if (editId) toast.error('Failed to load GRN for editing.');
+        } finally {
+            setFormLoaded(true);
+        }
     };
 
     // Auto generate batch number
@@ -904,10 +957,10 @@ function GRNPage() {
         }
 
         setSaving(true);
-        const toastId = toast.loading('Saving GRN...');
+        const toastId = toast.loading(editId ? 'Updating GRN...' : 'Saving GRN...');
 
         try {
-            const res = await axios.post('/grn/store', {
+            const payload = {
                 supplier_id: Number(supplierId),
                 business_entity_id: businessEntityId ? Number(businessEntityId) : null,
                 supplier_invoice_no: invoiceNo || null,
@@ -915,7 +968,6 @@ function GRNPage() {
                 sub_total: subTotal,
                 discount: discountNum,
                 total_amount: grandTotal,
-                paid_amount: Number(paidAmount || 0),
                 payment_method_id: paymentMethodId ? Number(paymentMethodId) : null,
                 deposit_account_id: depositAccountId ? Number(depositAccountId) : null,
                 is_vat: selectedSupplierIsVat ? 1 : 0,
@@ -929,7 +981,16 @@ function GRNPage() {
                     expiry_date: i.expiryDate || null,
                     mfd_date: i.mfdDate || null,
                 })),
-            });
+            };
+
+            if (editId) {
+                await axios.post(`/grn/update/${editId}`, payload);
+                toast.success('GRN updated successfully!', { id: toastId });
+                router.visit('/grn-history');
+                return;
+            }
+
+            const res = await axios.post('/grn/store', { ...payload, paid_amount: Number(paidAmount || 0) });
 
             toast.success('GRN saved successfully!', { id: toastId });
 
@@ -949,7 +1010,7 @@ function GRNPage() {
             await fetchNextNumber();
 
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to save GRN.', { id: toastId });
+            toast.error(error.response?.data?.message || (editId ? 'Failed to update GRN.' : 'Failed to save GRN.'), { id: toastId });
             console.log(error.response?.data);
         } finally {
             setSaving(false);
@@ -1021,7 +1082,7 @@ function GRNPage() {
             <span class="meta-value">${data.supplier}</span>
         </div>
         <div class="meta-item">
-            <span class="meta-label">Supplier Invoice No.</span>
+            <span class="meta-label">Tax Invoice No.</span>
             <span class="meta-value">${data.invoice_no || '—'}</span>
         </div>
         <div class="meta-item">
@@ -1113,20 +1174,29 @@ function GRNPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Purchase</p>
-                    <h1 className="text-xl font-bold tracking-tight">New Goods Received Note</h1>
+                    <h1 className="text-xl font-bold tracking-tight">{editId ? 'Edit Goods Received Note' : 'New Goods Received Note'}</h1>
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="text-xs font-mono bg-muted px-3 py-1.5 rounded-lg border font-semibold tracking-wide">
                         {grnNum}
                     </span>
-                    <Button onClick={() => handleSave(false)} disabled={saving}
-                        variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/5">
-                        <Save className="h-4 w-4" />
-                        {saving ? 'Saving...' : 'Save GRN'}
-                    </Button>
-                    <Button onClick={() => handleSave(true)} disabled={saving} className="gap-2">
-                        <Printer className="h-4 w-4" /> Save & Print
-                    </Button>
+                    {editId ? (
+                        <Button onClick={() => handleSave(false)} disabled={!formLoaded || saving} className="gap-2">
+                            <Save className="h-4 w-4" />
+                            {saving ? 'Updating...' : 'Update GRN'}
+                        </Button>
+                    ) : (
+                        <>
+                            <Button onClick={() => handleSave(false)} disabled={saving}
+                                variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/5">
+                                <Save className="h-4 w-4" />
+                                {saving ? 'Saving...' : 'Save GRN'}
+                            </Button>
+                            <Button onClick={() => handleSave(true)} disabled={saving} className="gap-2">
+                                <Printer className="h-4 w-4" /> Save & Print
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -1158,7 +1228,7 @@ function GRNPage() {
                     </div>
                     <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                            Invoice No. <span className="text-muted-foreground/60">(optional)</span>
+                            Tax Invoice No. <span className="text-muted-foreground/60">(optional)</span>
                         </label>
                         <Input value={invoiceNo}
                             onChange={(e) => setInvoiceNo(e.target.value)}
@@ -1326,7 +1396,7 @@ function GRNPage() {
                             </div>
                             <div className="flex items-center justify-between py-2.5 border-b border-border/40">
                                 <span className="text-xs text-muted-foreground">Sub Total</span>
-                                <span className="text-sm font-medium tabular-nums">Rs. {subTotal.toLocaleString()}</span>
+                                <span className="text-sm font-medium tabular-nums">Rs. {subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                             <div className="flex items-center justify-between py-2.5 border-b border-border/40">
                                 <span className="text-xs text-muted-foreground">Discount (Rs.)</span>
@@ -1342,21 +1412,25 @@ function GRNPage() {
                                     {selectedSupplierIsVat && vatRate > 0 ? `VAT (${vatRate.toFixed(2)}%)` : 'VAT'}
                                 </span>
                                 <span className={`text-sm tabular-nums ${selectedSupplierIsVat ? 'font-medium' : 'text-muted-foreground/40'}`}>
-                                    Rs. {vatAmount.toLocaleString()}
+                                    Rs. {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-sm font-semibold">Grand Total</span>
-                                <span className="text-base font-bold tabular-nums">Rs. {grandTotal.toLocaleString()}</span>
+                                <span className="text-base font-bold tabular-nums">Rs. {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                             <div className="flex items-center justify-between py-2.5 border-b border-border/40">
-                                <span className="text-xs text-muted-foreground">Paid Amount (Rs.)</span>
-                                <div className="w-32">
-                                    <Input type="number" value={paidAmount}
-                                        onChange={(e) => setPaidAmount(e.target.value)}
-                                        className={`h-8 text-right text-xs ${spinnerOff}`}
-                                        placeholder="0" />
-                                </div>
+                                <span className="text-xs text-muted-foreground">{editId ? 'Already Paid (Rs.)' : 'Paid Amount (Rs.)'}</span>
+                                {editId ? (
+                                    <span className="text-sm font-semibold tabular-nums">Rs. {alreadyPaid.toLocaleString()}</span>
+                                ) : (
+                                    <div className="w-32">
+                                        <Input type="number" value={paidAmount}
+                                            onChange={(e) => setPaidAmount(e.target.value)}
+                                            className={`h-8 text-right text-xs ${spinnerOff}`}
+                                            placeholder="0" />
+                                    </div>
+                                )}
                             </div>
                             <div className={`flex items-center justify-between py-3 rounded-lg px-3 mt-2 ${
                                 balance > 0
@@ -1377,15 +1451,24 @@ function GRNPage() {
 
             {/* ── Action Buttons ── */}
             <div className="flex justify-end gap-3 pb-6">
-                <Button onClick={() => handleSave(false)} disabled={saving}
-                    size="lg" variant="outline"
-                    className="gap-2 border-primary/30 text-primary hover:bg-primary/5 px-8">
-                    <Save className="h-4 w-4" />
-                    {saving ? 'Saving...' : 'Save GRN'}
-                </Button>
-                <Button onClick={() => handleSave(true)} disabled={saving} size="lg" className="gap-2 px-8">
-                    <Printer className="h-4 w-4" /> Save & Print GRN
-                </Button>
+                {editId ? (
+                    <Button onClick={() => handleSave(false)} disabled={!formLoaded || saving} size="lg" className="gap-2 px-8">
+                        <Save className="h-4 w-4" />
+                        {saving ? 'Updating...' : 'Update GRN'}
+                    </Button>
+                ) : (
+                    <>
+                        <Button onClick={() => handleSave(false)} disabled={saving}
+                            size="lg" variant="outline"
+                            className="gap-2 border-primary/30 text-primary hover:bg-primary/5 px-8">
+                            <Save className="h-4 w-4" />
+                            {saving ? 'Saving...' : 'Save GRN'}
+                        </Button>
+                        <Button onClick={() => handleSave(true)} disabled={saving} size="lg" className="gap-2 px-8">
+                            <Printer className="h-4 w-4" /> Save & Print GRN
+                        </Button>
+                    </>
+                )}
             </div>
 
             {/* ✅ Product Search Dialog */}

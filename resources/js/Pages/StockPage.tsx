@@ -480,7 +480,6 @@ import AppShell from '@/AppShell';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import SearchBar from '@/components/shared/SearchBar';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { FloatingInput } from '@/components/ui/floating-input';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
@@ -488,7 +487,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Trash2, AlertTriangle, ArrowUpDown, Plus } from 'lucide-react';
+import { AlertTriangle, ArrowUpDown, Plus } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 
@@ -536,7 +535,6 @@ function StockPage() {
 
   const [stock, setStock] = useState<StockBatch[]>([]);
   const [search, setSearch] = useState('');
-  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [showOpeningStock, setShowOpeningStock] = useState(false);
   const [stockForm, setStockForm] = useState({
@@ -688,18 +686,6 @@ const productOptions = products.map((p) => ({
     }
   };
 
-  // ✅ Delete batch
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`/stock/delete/${deleteId}`);
-      setStock((prev) => prev.filter((s) => s.id !== deleteId));
-      setDeleteId(null);
-      toast.success('Stock batch deleted.');
-    } catch (e) {
-      toast.error('Failed to delete stock batch.');
-    }
-  };
-
   const filtered = stock.filter((s) => {
     const q = search.toLowerCase();
     return (
@@ -787,11 +773,6 @@ const productOptions = products.map((p) => ({
                           className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
                           title="Adjust stock">
                           <ArrowUpDown className="h-3.5 w-3.5" />
-                        </button>
-                        <button onClick={() => setDeleteId(s.id)}
-                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-                          title="Delete">
-                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
@@ -958,8 +939,6 @@ const productOptions = products.map((p) => ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <ConfirmDialog open={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={handleDelete} />
     </div>
   );
 }

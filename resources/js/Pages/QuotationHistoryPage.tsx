@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchBar from '@/components/shared/SearchBar';
@@ -9,10 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Printer, Eye, Trash2, FileOutput } from 'lucide-react';
+import { Printer, Eye, Trash2, FileOutput, Pencil } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 import NumberedPagination from '@/components/shared/NumberedPagination';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface QuotationItem {
     id:         number;
@@ -39,6 +40,8 @@ interface Quotation {
 }
 
 function QuotationHistoryPage() {
+    const { user } = useAuth();
+    const canEdit = user?.role === 'owner' || user?.role === 'admin';
     const [quotations,  setQuotations]  = useState<Quotation[]>([]);
     const [search,      setSearch]      = useState('');
     const [dateFilter,  setDateFilter]  = useState('');
@@ -232,6 +235,13 @@ function QuotationHistoryPage() {
                                                     className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-600"
                                                     title="Issue Invoice">
                                                     <FileOutput className="h-3.5 w-3.5" />
+                                                </button>
+                                            )}
+                                            {canEdit && qtn.status !== 'invoiced' && (
+                                                <button onClick={() => router.visit(`/quotation/edit/${qtn.id}`)}
+                                                    className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"
+                                                    title="Edit quotation">
+                                                    <Pencil className="h-3.5 w-3.5" />
                                                 </button>
                                             )}
                                             <button onClick={() => setDeleteId(qtn.id)}

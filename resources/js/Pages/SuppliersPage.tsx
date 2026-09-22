@@ -29,6 +29,7 @@ interface Supplier {
 function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [search, setSearch] = useState('');
+  const [tab, setTab] = useState<'all' | 'vat' | 'regular'>('all');
   const [showAdd, setShowAdd] = useState(false);
   const [editSup, setEditSup] = useState<Supplier | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -54,9 +55,12 @@ function SuppliersPage() {
     }
   };
 
-  const filtered = suppliers.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = suppliers.filter((s) => {
+    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
+    if (tab === 'vat') return matchSearch && s.is_vat === 1;
+    if (tab === 'regular') return matchSearch && s.is_vat === 0;
+    return matchSearch;
+  });
 
   const handleSave = async () => {
     if (editSup) {
@@ -118,8 +122,20 @@ function SuppliersPage() {
   return (
         <div className="space-y-4 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="w-full sm:w-72">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search suppliers..." />
+        <div className="flex gap-3 items-center flex-wrap">
+          <div className="w-60">
+            <SearchBar value={search} onChange={setSearch} placeholder="Search suppliers..." />
+          </div>
+          {/* Tab filter */}
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            {(['all', 'vat', 'regular'] as const).map((t) => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`px-3 py-1.5 text-xs font-medium capitalize transition-colors
+                  ${tab === t ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}>
+                {t === 'vat' ? 'VAT' : t === 'regular' ? 'Regular' : 'All'}
+              </button>
+            ))}
+          </div>
         </div>
         <Button onClick={() => { setForm({}); setShowAdd(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Add Supplier
@@ -132,17 +148,31 @@ function SuppliersPage() {
             <tr className="border-b bg-muted/50">
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Name</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Mobile</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Type</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((s) => (
               <tr key={s.id} className="border-b last:border-0 hover:bg-muted/30">
-                <td className="px-4 py-3 text-sm font-medium">{s.name}</td>
+                <td className="px-4 py-3">
+                  <p className="text-sm font-medium">{s.name}</p>
+                  {s.is_vat === 1 && s.vatDetail?.company_name && (
+                    <p className="text-xs text-muted-foreground">{s.vatDetail.company_name}</p>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-sm">{s.contact_no}</td>
+                <td className="px-4 py-3">
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium
+                    ${s.is_vat === 1
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'}`}>
+                    {s.is_vat === 1 ? 'VAT' : 'Regular'}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-1">
-                    <button onClick={() => { 
+                    <button onClick={() => {
                       setForm({
                         name:                s.name,
                         contact_no:          s.contact_no,
@@ -154,8 +184,8 @@ function SuppliersPage() {
                         vat_company_address: s.vatDetail?.company_address || '',
                         vat_company_contact: s.vatDetail?.company_contact || '',
                         vat_number:          s.vatDetail?.vat_number      || '',
-                      }); 
-                      setEditSup(s); 
+                      });
+                      setEditSup(s);
                     }} className="p-1.5 rounded-lg hover:bg-muted">
                       <Edit className="h-3.5 w-3.5" />
                     </button>
@@ -167,6 +197,13 @@ function SuppliersPage() {
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  No suppliers found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

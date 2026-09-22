@@ -317,7 +317,7 @@
 
 // (WrappedInvoicePage as any).layout = (page: React.ReactNode) => <AppShell>{page}</AppShell>;
 
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AppShell from '@/AppShell';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -367,6 +367,7 @@ const WALK_IN_ID = 1; // default walk-in customer id
 
 function InvoicePage() {
     const { user } = useAuth();
+    const { editId } = usePage().props as { editId?: number };
 
     const [invoiceNum,     setInvoiceNum]     = useState('INV-0001');
     const [poNumber,       setPoNumber]       = useState('');
@@ -385,6 +386,8 @@ function InvoicePage() {
     const [vatRate,        setVatRate]        = useState(0);
     const [businessEntities, setBusinessEntities] = useState<{ id: number; name: string; is_vat_registered: number; vat_no: string | null }[]>([]);
     const [businessEntityId, setBusinessEntityId] = useState<string>('');
+    const [alreadyReceived, setAlreadyReceived] = useState(0);
+    const [formLoaded,     setFormLoaded]     = useState(false);
 
     // Unit price modal state
     const [priceModalOpen,  setPriceModalOpen]  = useState(false);
@@ -401,14 +404,15 @@ function InvoicePage() {
     const discountedTotal = Math.max(0, subTotal - Number(discount || 0));
     const vatAmount       = Math.round(discountedTotal * vatRate / 100);
     const grandTotal      = discountedTotal + vatAmount;
-    const balance         = Number(paidAmount || 0) - grandTotal;
+    const balance         = (editId ? alreadyReceived : Number(paidAmount || 0)) - grandTotal;
 
     useEffect(() => {
-        fetchFormData();
-        inputRef.current?.focus();
+        loadInitialData();
     }, []);
 
     useEffect(() => {
+        // In edit mode the invoice keeps its originally stored VAT rate.
+        if (editId) return;
         if (!invoiceDate) return;
         const selectedEntity = businessEntities.find((e) => String(e.id) === businessEntityId);
         if (selectedEntity && !selectedEntity.is_vat_registered) {
@@ -418,7 +422,7 @@ function InvoicePage() {
         axios.get('/vat/by-date', { params: { date: invoiceDate } })
             .then((res) => setVatRate(res.data ? Number(res.data.vat_percentage) : 0))
             .catch(() => setVatRate(0));
-    }, [invoiceDate, businessEntityId, businessEntities]);
+    }, [invoiceDate, businessEntityId, businessEntities, editId]);
 
     const fetchNextNumber = async () => {
         try {
@@ -441,6 +445,79 @@ function InvoicePage() {
             }
         } catch (e: any) {
             console.log('Form data error:', e.response?.data);
+        }
+    };
+
+    // Load form data, and — when editing — the existing invoice on top of it
+    const loadInitialData = async () => {
+        try {
+            const formRes = await axios.get('/invoice/form-data');
+            setCustomers(formRes.data.customers);
+            if (Array.isArray(formRes.data.payment_methods)) setPaymentMethods(formRes.data.payment_methods);
+            if (Array.isArray(formRes.data.business_entities)) setBusinessEntities(formRes.data.business_entities);
+
+            let stock: StockItem[] = formRes.data.stock || [];
+
+            if (editId) {
+                const res = await axios.get(`/invoice/show/${editId}`);
+                const inv = res.data.invoice;
+
+                // Merge the invoice's own batches back into the stock list (with the
+                // quantity this invoice currently holds added back) so they stay selectable.
+                const stockById = new Map(stock.map((s) => [s.stock_batch_id, { ...s }]));
+                (inv.items || []).forEach((it: any) => {
+                    const existing = stockById.get(it.stock_batch_id);
+                    if (existing) {
+                        existing.current_quantity += it.quantity;
+                    } else {
+                        stockById.set(it.stock_batch_id, {
+                            stock_batch_id:   it.stock_batch_id,
+                            product_id:       it.stock_batch?.product?.id ?? 0,
+                            generic_name:     it.stock_batch?.product?.generic_name ?? 'N/A',
+                            barcode_value:    '',
+                            brand:            null,
+                            category:         null,
+                            purchase_price:   0,
+                            current_quantity: it.quantity,
+                            expiry_date:      null,
+                            batch_number:     it.stock_batch?.batch_number ?? null,
+                        });
+                    }
+                });
+                stock = Array.from(stockById.values());
+
+                setInvoiceNum(inv.invoice_number);
+                setPoNumber(inv.po_number || '');
+                setInvoiceDate(inv.invoice_date ? String(inv.invoice_date).slice(0, 10) : format(new Date(), 'yyyy-MM-dd'));
+                setSelectedCustomer(String(inv.customer_id));
+                setBusinessEntityId(inv.business_entity_id ? String(inv.business_entity_id) : '');
+                setDiscount(inv.discount ? String(inv.discount) : '');
+                setVatRate(Number(inv.vat_percentage || 0));
+                setPaymentMethod(inv.payment_method || 0);
+                setAlreadyReceived((inv.receivables || []).reduce((s: number, r: any) => s + Number(r.amount), 0));
+                setCart((inv.items || []).map((it: any) => {
+                    const batchStock = stockById.get(it.stock_batch_id);
+                    return {
+                        stock_batch_id: it.stock_batch_id,
+                        product_id:     it.stock_batch?.product?.id ?? 0,
+                        name:           it.stock_batch?.product?.generic_name ?? 'N/A',
+                        brand:          null,
+                        qty:            it.quantity,
+                        price:          Number(it.unit_price),
+                        stock:          batchStock?.current_quantity ?? it.quantity,
+                    };
+                }));
+            } else if (formRes.data.next_number) {
+                setInvoiceNum(formRes.data.next_number);
+                inputRef.current?.focus();
+            }
+
+            setStockItems(stock);
+        } catch (e: any) {
+            console.log('Form data error:', e.response?.data);
+            if (editId) toast.error('Failed to load invoice for editing.');
+        } finally {
+            setFormLoaded(true);
         }
     };
 
@@ -549,17 +626,19 @@ function InvoicePage() {
         }
     };
 
-    // ✅ Save invoice (printAfterSave=true opens PDF after save)
+    // ✅ Save invoice (printAfterSave=true opens PDF after save). Updates in place when editing.
     const handleSave = async (printAfterSave = false) => {
         if (!selectedCustomer) { toast.error('Please select a customer.'); return; }
         if (cart.length === 0) { toast.error('Please add at least one product.'); return; }
         if (!paymentMethod) { toast.error('Please select a payment method.'); return; }
 
         setSaving(true);
-        const toastId = toast.loading(printAfterSave ? 'Saving & preparing print...' : 'Saving invoice...');
+        const toastId = toast.loading(
+            editId ? 'Updating invoice...' : (printAfterSave ? 'Saving & preparing print...' : 'Saving invoice...')
+        );
 
         try {
-            const res = await axios.post('/invoice/store', {
+            const payload = {
                 business_entity_id: businessEntityId ? Number(businessEntityId) : null,
                 customer_id:    Number(selectedCustomer),
                 user_id:        user?.id,
@@ -569,14 +648,22 @@ function InvoicePage() {
                 discount:       Number(discount || 0),
                 vat_percentage: vatRate,
                 grand_total:    grandTotal,
-                paid_amount:    Number(paidAmount || 0),
                 payment_method: paymentMethod,
                 items: cart.map((i) => ({
                     stock_batch_id: i.stock_batch_id,
                     quantity:       i.qty,
                     unit_price:     i.price,
                 })),
-            });
+            };
+
+            if (editId) {
+                await axios.post(`/invoice/update/${editId}`, payload);
+                toast.success('Invoice updated successfully!', { id: toastId });
+                router.visit('/invoice-history');
+                return;
+            }
+
+            const res = await axios.post('/invoice/store', { ...payload, paid_amount: Number(paidAmount || 0) });
 
             toast.success('Invoice saved successfully!', { id: toastId });
 
@@ -596,7 +683,7 @@ function InvoicePage() {
             await fetchFormData();
 
         } catch (error: any) {
-            const msg = error.response?.data?.message || 'Failed to save invoice.';
+            const msg = error.response?.data?.message || (editId ? 'Failed to update invoice.' : 'Failed to save invoice.');
             toast.error(msg, { id: toastId });
         } finally {
             setSaving(false);
@@ -664,6 +751,11 @@ function InvoicePage() {
                         <div className="flex items-center gap-2 shrink-0">
                             <ShoppingCart className="h-4 w-4 text-primary" />
                             <span className="text-sm font-semibold font-mono">{invoiceNum}</span>
+                            {editId && (
+                                <span className="text-[10px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-0.5">
+                                    Editing
+                                </span>
+                            )}
                         </div>
                         <Input
                             value={poNumber}
@@ -783,20 +875,27 @@ function InvoicePage() {
 
                     {/* Paid Amount + Balance */}
                     <div className="space-y-1">
-                        {/* Paid Amount — borderless inline input */}
-                        <div className="flex items-center justify-between py-1">
-                            <span className="text-xs text-muted-foreground">Paid Amount</span>
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs text-muted-foreground">Rs.</span>
-                                <input type="number" placeholder="0" value={paidAmount}
-                                    onChange={(e) => setPaidAmount(e.target.value)}
-                                    className="w-24 text-right bg-transparent border-0 border-b border-dashed
-                                               border-muted-foreground/40 focus:outline-none focus:border-primary
-                                               text-sm font-semibold pb-px
-                                               [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                                               [&::-webkit-inner-spin-button]:appearance-none" />
+                        {editId ? (
+                            <div className="flex items-center justify-between py-1">
+                                <span className="text-xs text-muted-foreground">Already Received</span>
+                                <span className="text-sm font-semibold">Rs. {alreadyReceived.toLocaleString()}</span>
                             </div>
-                        </div>
+                        ) : (
+                            /* Paid Amount — borderless inline input */
+                            <div className="flex items-center justify-between py-1">
+                                <span className="text-xs text-muted-foreground">Paid Amount</span>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-xs text-muted-foreground">Rs.</span>
+                                    <input type="number" placeholder="0" value={paidAmount}
+                                        onChange={(e) => setPaidAmount(e.target.value)}
+                                        className="w-24 text-right bg-transparent border-0 border-b border-dashed
+                                                   border-muted-foreground/40 focus:outline-none focus:border-primary
+                                                   text-sm font-semibold pb-px
+                                                   [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
+                                                   [&::-webkit-inner-spin-button]:appearance-none" />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Balance */}
                         <div className={`flex items-center justify-between px-3 py-2 rounded-lg
@@ -830,15 +929,25 @@ function InvoicePage() {
                             </SelectContent>
                         </Select>
 
-                        <Button onClick={() => handleSave(false)} disabled={cart.length === 0 || saving || !paymentMethod}
-                            className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-                            <Save className="h-4 w-4" />
-                            {saving ? 'Saving...' : 'Save'}
-                        </Button>
-                        <Button onClick={() => handleSave(true)} disabled={cart.length === 0 || saving || !paymentMethod}
-                            className="flex-1 gap-2">
-                            <Printer className="h-4 w-4" /> Save & Print
-                        </Button>
+                        {editId ? (
+                            <Button onClick={() => handleSave(false)} disabled={!formLoaded || cart.length === 0 || saving || !paymentMethod}
+                                className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                                <Save className="h-4 w-4" />
+                                {saving ? 'Updating...' : 'Update Invoice'}
+                            </Button>
+                        ) : (
+                            <>
+                                <Button onClick={() => handleSave(false)} disabled={cart.length === 0 || saving || !paymentMethod}
+                                    className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                                    <Save className="h-4 w-4" />
+                                    {saving ? 'Saving...' : 'Save'}
+                                </Button>
+                                <Button onClick={() => handleSave(true)} disabled={cart.length === 0 || saving || !paymentMethod}
+                                    className="flex-1 gap-2">
+                                    <Printer className="h-4 w-4" /> Save & Print
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

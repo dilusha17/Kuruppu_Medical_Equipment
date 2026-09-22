@@ -11,6 +11,12 @@ class Grn extends Model
 {
     use SoftDeletes;
 
+    // received_date is stored as a DATETIME column but is always used as a plain date;
+    // this keeps every JSON response (grids, history, payables) date-only.
+    protected $casts = [
+        'received_date' => 'date:Y-m-d',
+    ];
+
     protected $fillable = [
         'grn_number',
         'supplier_id',

@@ -85,13 +85,6 @@ class StockController extends Controller
         ]);       
     }
 
-    public function delete($id) {
-
-        $batch = StockBatches::findOrFail($id);
-        $batch->delete();
-        return response()->json(['message' => 'Stock batch deleted']);        
-    }
-
     public function openingStock(Request $request) {
 
         $validated = $request->validate([

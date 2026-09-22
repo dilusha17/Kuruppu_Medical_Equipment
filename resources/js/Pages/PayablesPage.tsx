@@ -702,6 +702,8 @@ interface ExpenseItem {
     description:    string;
     category:       string;
     amount:         number;
+    paid_amount:    number;
+    balance:        number;
     notes:          string | null;
 }
 
@@ -745,6 +747,7 @@ function PayablesPage() {
     const [expDesc,          setExpDesc]          = useState('');
     const [expCategory,      setExpCategory]      = useState('');
     const [expAmount,        setExpAmount]        = useState('');
+    const [expPaid,          setExpPaid]          = useState('');
     const [expNotes,         setExpNotes]         = useState('');
     const [expenseCategories, setExpenseCategories] = useState<{ value: string; label: string }[]>([]);
     const [nextExpNumber,    setNextExpNumber]    = useState('Auto-generated');
@@ -880,6 +883,7 @@ function PayablesPage() {
                 description:        expDesc,
                 category_id:        Number(expCategory),
                 amount:             Number(expAmount),
+                paid_amount:        expPaid !== '' ? Number(expPaid) : undefined,
                 notes:              expNotes || null,
                 user_id:            user?.id,
                 deposit_account_id: expDepositId ? Number(expDepositId) : null,
@@ -890,6 +894,7 @@ function PayablesPage() {
             setExpDesc('');
             setExpCategory('');
             setExpAmount('');
+            setExpPaid('');
             setExpNotes('');
             setExpDepositId('');
             fetchExpenses();
@@ -1054,12 +1059,14 @@ function PayablesPage() {
                                     <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Description</th>
                                     <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Category</th>
                                     <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Amount</th>
+                                    <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Paid</th>
+                                    <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Balance</th>
                                     <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredExpenses.length === 0 ? (
-                                    <tr><td colSpan={6} className="text-center py-10 text-sm text-muted-foreground">No expenses found.</td></tr>
+                                    <tr><td colSpan={8} className="text-center py-10 text-sm text-muted-foreground">No expenses found.</td></tr>
                                 ) : filteredExpenses.map((e) => (
                                     <tr key={e.id} className="border-b border-border last:border-0 hover:bg-muted/30">
                                         <td className="px-4 py-3 text-sm font-medium text-primary font-mono">{e.expense_number}</td>
@@ -1069,6 +1076,10 @@ function PayablesPage() {
                                             <span className="text-xs px-2 py-0.5 rounded-full bg-accent text-accent-foreground">{e.category}</span>
                                         </td>
                                         <td className="px-4 py-3 text-sm font-semibold text-right">Rs. {Number(e.amount).toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-sm text-right text-green-600">Rs. {Number(e.paid_amount ?? e.amount).toLocaleString()}</td>
+                                        <td className={`px-4 py-3 text-sm text-right font-medium ${Number(e.balance) > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                            Rs. {Number(e.balance ?? 0).toLocaleString()}
+                                        </td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center justify-end gap-1">
                                                 <button onClick={() => setDeleteExpId(e.id)}
@@ -1191,6 +1202,18 @@ function PayablesPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Paid Amount (Rs.)</label>
+                            <Input type="number" value={expPaid} onChange={(e) => setExpPaid(e.target.value)}
+                                placeholder={expAmount || '0'} />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Balance (Rs.)</label>
+                            <Input value={Math.max(0, Number(expAmount || 0) - Number(expPaid !== '' ? expPaid : (expAmount || 0))).toLocaleString()}
+                                disabled className="bg-muted text-muted-foreground" />
                         </div>
                     </div>
                     <div>

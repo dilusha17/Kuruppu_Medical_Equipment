@@ -94,7 +94,8 @@ class ReceivableController extends Controller
         $invoice = Invoice::findOrFail($validated['reference_id']);
 
         $collected   = $invoice->receivables()->sum('amount');
-        $outstanding = $invoice->grand_total - $collected;
+        $credited    = $invoice->creditNotes()->sum('grand_total');
+        $outstanding = max(0, $invoice->grand_total - $credited - $collected);
 
         if ($validated['amount'] > $outstanding) {
             return response()->json([
@@ -110,9 +111,7 @@ class ReceivableController extends Controller
             'deposit_account_id' => $validated['deposit_account_id'] ?? null,
         ]);
 
-        $newCollected = $collected + $validated['amount'];
-        $newStatus    = $newCollected >= $invoice->grand_total ? 'paid' : 'partial';
-        $invoice->update(['status' => $newStatus]);
+        $invoice->syncPaymentStatus();
 
         return response()->json($receivable, 201);
     }
@@ -134,7 +133,8 @@ class ReceivableController extends Controller
             foreach ($validated['invoice_ids'] as $invoiceId) {
                 $invoice     = Invoice::findOrFail($invoiceId);
                 $collected   = $invoice->receivables()->sum('amount');
-                $outstanding = max(0, $invoice->grand_total - $collected);
+                $credited    = $invoice->creditNotes()->sum('grand_total');
+                $outstanding = max(0, $invoice->grand_total - $credited - $collected);
 
                 if ($outstanding <= 0) continue;
 
@@ -148,7 +148,7 @@ class ReceivableController extends Controller
                     'reference_no'       => $validated['reference_no'] ?? null,
                 ]);
 
-                $invoice->update(['status' => 'paid']);
+                $invoice->syncPaymentStatus();
             }
         });
 

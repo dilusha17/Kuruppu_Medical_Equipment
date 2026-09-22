@@ -56,4 +56,26 @@ class Invoice extends Model
     public function paymentMethod(): BelongsTo {
         return $this->belongsTo(PaymentMethod::class, 'payment_method');
     }
+
+    /**
+     * Recompute and persist this invoice's payment status from actual cash
+     * received (receivables) net of any credit notes issued against it.
+     * A credit note reduces what is owed; it is never counted as cash received.
+     */
+    public function syncPaymentStatus(): void
+    {
+        $collected = $this->receivables()->sum('amount');
+        $credited  = $this->creditNotes()->sum('grand_total');
+        $netDue    = max(0, $this->grand_total - $credited);
+
+        if ($collected >= $netDue) {
+            $status = 'paid';
+        } elseif ($collected > 0) {
+            $status = 'partial';
+        } else {
+            $status = 'unpaid';
+        }
+
+        $this->update(['status' => $status]);
+    }
 }

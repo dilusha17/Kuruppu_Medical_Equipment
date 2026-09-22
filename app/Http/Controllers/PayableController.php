@@ -22,7 +22,7 @@ class PayableController extends Controller
                 return [
                     'id'           => $grn->id,
                     'grn_number'   => $grn->grn_number,
-                    'received_date'=> $grn->received_date,
+                    'received_date'=> $grn->received_date?->format('Y-m-d'),
                     'supplier'     => $grn->supplier?->name,
                     'total_amount' => $grn->total_amount,
                     'paid'         => $totalPaid,
@@ -44,6 +44,8 @@ class PayableController extends Controller
                 'description'    => $exp->description,
                 'category'       => $exp->category?->name ?? '—',
                 'amount'         => $exp->amount,
+                'paid_amount'    => $exp->paid_amount,
+                'balance'        => $exp->balance,
                 'notes'          => $exp->notes,
             ];
         });
@@ -79,6 +81,7 @@ class PayableController extends Controller
             'description'        => 'required|string',
             'category_id'        => 'required|exists:expenses_category,id',
             'amount'             => 'required|numeric|min:0',
+            'paid_amount'        => 'nullable|numeric|min:0|lte:amount',
             'notes'              => 'nullable|string',
             'user_id'            => 'required|exists:users,id',
             'deposit_account_id' => 'nullable|exists:deposit_accounts,id',
@@ -89,12 +92,16 @@ class PayableController extends Controller
         $next = $last ? ($last->id + 1) : 1;
         $expNumber = 'EXP-' . str_pad($next, 4, '0', STR_PAD_LEFT);
 
+        $paidAmount = $validated['paid_amount'] ?? $validated['amount'];
+
         $expense = Expense::create([
             'expense_number'     => $expNumber,
             'date'               => $validated['date'],
             'description'        => $validated['description'],
             'category_id'        => $validated['category_id'],
             'amount'             => $validated['amount'],
+            'paid_amount'        => $paidAmount,
+            'balance'            => $validated['amount'] - $paidAmount,
             'notes'              => $validated['notes'] ?? null,
             'user_id'            => $validated['user_id'],
             'deposit_account_id' => $validated['deposit_account_id'] ?? null,

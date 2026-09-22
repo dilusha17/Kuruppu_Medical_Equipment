@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Invoice ────────────────────────────────────────────────────────────
     Route::get('/invoice', fn() => Inertia::render('InvoicePage'));
+    Route::get('/invoice/edit/{id}', fn($id) => Inertia::render('InvoicePage', ['editId' => (int) $id]));
     Route::get('/invoice-history', fn() => Inertia::render('InvoiceHistoryPage'));
     Route::get('/invoice/print/{id}', [InvoiceController::class, 'printView']);
     Route::prefix('/invoice')->group(function () {
@@ -72,6 +73,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/all',            [InvoiceController::class, 'all']);
         Route::get('/show/{id}',      [InvoiceController::class, 'show']);
         Route::post('/store',         [InvoiceController::class, 'store']);
+        Route::post('/update/{id}',   [InvoiceController::class, 'update']);
         Route::delete('/delete/{id}', [InvoiceController::class, 'delete']);
     });
 
@@ -91,6 +93,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Quotation ──────────────────────────────────────────────────────────
     Route::get('/quotation', fn() => Inertia::render('QuotationPage'));
+    Route::get('/quotation/edit/{id}', fn($id) => Inertia::render('QuotationPage', ['editId' => (int) $id]));
     Route::get('/quotation-history', fn() => Inertia::render('QuotationHistoryPage'));
     Route::get('/quotation/print/{id}', [QuotationController::class, 'printView']);
     Route::prefix('/quotation')->group(function () {
@@ -99,12 +102,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/all',            [QuotationController::class, 'all']);
         Route::get('/show/{id}',      [QuotationController::class, 'show']);
         Route::post('/store',         [QuotationController::class, 'store']);
+        Route::post('/update/{id}',   [QuotationController::class, 'update']);
         Route::post('/issue-invoice', [QuotationController::class, 'issueInvoice']);
         Route::delete('/delete/{id}', [QuotationController::class, 'delete']);
     });
 
     // ── GRN ────────────────────────────────────────────────────────────────
     Route::get('/grn', fn() => Inertia::render('GRNPage'));
+    Route::get('/grn/edit/{id}', fn($id) => Inertia::render('GRNPage', ['editId' => (int) $id]));
     Route::get('/grn-history', fn() => Inertia::render('GRNHistoryPage'));
     Route::get('/grn/print/{id}', [GrnController::class, 'printView']);
     Route::prefix('/grn')->group(function () {
@@ -113,6 +118,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/all',            [GrnController::class, 'all']);
         Route::get('/show/{id}',      [GrnController::class, 'show']);
         Route::post('/store',         [GrnController::class, 'store']);
+        Route::post('/update/{id}',   [GrnController::class, 'update']);
         Route::delete('/delete/{id}', [GrnController::class, 'delete']);
     });
 
@@ -132,7 +138,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/adjustments/{batchId}',  [StockController::class, 'adjustments']);
         Route::post('/opening',               [StockController::class, 'openingStock']);
         Route::post('/adjust/{batchId}',      [StockController::class, 'adjust']);
-        Route::delete('/delete/{id}',         [StockController::class, 'delete']);
     });
 
     // ── Customers ──────────────────────────────────────────────────────────
@@ -299,6 +304,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/profit-loss/pdf',  [ReportController::class, 'profitLossPdf']);
         Route::get('/expenses/pdf',     [ReportController::class, 'expensesPdf']);
         Route::get('/purchases/pdf',    [ReportController::class, 'purchasesPdf']);
+        Route::get('/invoice-summary',      [ReportController::class, 'invoiceSummary']);
+        Route::get('/invoice-summary/csv',  [ReportController::class, 'invoiceSummaryCsv']);
+        Route::get('/purchase-summary',     [ReportController::class, 'purchaseSummary']);
+        Route::get('/purchase-summary/csv', [ReportController::class, 'purchaseSummaryCsv']);
+        Route::get('/sales',     [ReportController::class, 'sales']);
+        Route::get('/sales/csv', [ReportController::class, 'salesCsv']);
+        Route::get('/sales/pdf', [ReportController::class, 'salesPdf']);
     });
 
     // ── Fallback ───────────────────────────────────────────────────────────

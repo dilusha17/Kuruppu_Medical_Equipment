@@ -52,7 +52,7 @@
                 <th style="width:14%">GRN #</th>
                 <th style="width:12%">Date</th>
                 <th style="width:22%">Supplier</th>
-                <th style="width:15%">Supplier Inv #</th>
+                <th style="width:15%">Tax Invoice No.</th>
                 <th class="r" style="width:18%">Amount</th>
                 <th style="width:14%">Status</th>
             </tr>
@@ -62,7 +62,7 @@
             <tr>
                 <td>{{ $i + 1 }}</td>
                 <td>{{ $grn->grn_number }}</td>
-                <td>{{ $grn->received_date }}</td>
+                <td>{{ $grn->received_date?->format('Y-m-d') }}</td>
                 <td>{{ $grn->supplier?->name ?? '—' }}</td>
                 <td>{{ $grn->supplier_invoice_no ?? '—' }}</td>
                 <td class="r">{{ number_format($grn->total_amount, 2) }}</td>

@@ -92,7 +92,12 @@
                     <td>{{ $item->stockBatch?->product?->generic_name ?? '—' }}</td>
                     <td>{{ $item->stockBatch?->batch_number ?? '—' }}</td>
                     <td>{{ ucfirst($item->reason) }}</td>
-                    <td>{{ $item->restock_action === 'restocked' ? 'Restocked' : 'Written Off' }}</td>
+                    <td>
+                        @if($item->restock_action === 'restocked') Restocked
+                        @elseif($item->restock_action === 'deducted') Deducted
+                        @else Written Off
+                        @endif
+                    </td>
                     <td class="r">{{ $item->quantity }}</td>
                     <td class="r">{{ number_format($item->unit_price, 2) }}</td>
                     <td class="r">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>

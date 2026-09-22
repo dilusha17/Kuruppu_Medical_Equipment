@@ -302,7 +302,7 @@
                     <p class="info-text"><strong>Payment:</strong> {{ ucfirst($grn->paymentMethod->name) }}</p>
                 @endif
                 @if ($grn->supplier_invoice_no)
-                    <p class="info-text"><strong>Supplier Invoice:</strong> {{ $grn->supplier_invoice_no }}</p>
+                    <p class="info-text"><strong>Tax Invoice No.:</strong> {{ $grn->supplier_invoice_no }}</p>
                 @endif
                 <p class="info-text"><strong>Status:</strong> {{ strtoupper($grn->payment_status ?? 'UNPAID') }}</p>
             </td>

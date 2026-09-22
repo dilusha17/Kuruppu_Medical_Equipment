@@ -57,24 +57,35 @@ class TaxInvoiceApiController extends Controller
 
     public function history(Request $request)
     {
-        $query = TaxInvoice::orderBy('created_at', 'desc');
+        $query = TaxInvoice::with(['invoice:id,invoice_number', 'customer:id,name'])
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('vat_invoice_number', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('vat_invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function ($c) use ($search) {
+                      $c->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('vatDetail', function ($v) use ($search) {
+                            $v->where('company_name', 'like', "%{$search}%")
+                              ->orWhere('nick_name', 'like', "%{$search}%");
+                        });
+                  })
+                  ->orWhereHas('invoice', function ($i) use ($search) {
+                      $i->where('invoice_number', 'like', "%{$search}%");
+                  });
+            });
         }
 
         $results = $query->get()->map(function ($vi) {
-            $invoice  = Invoice::find($vi->invoice_id, ['invoice_number']);
-            $customer = DB::table('customers')->where('id', $vi->customer_id)->first(['name']);
             return [
                 'id'                  => $vi->id,
                 'vat_invoice_number'  => $vi->vat_invoice_number,
                 'vat_invoice_date'    => $vi->vat_invoice_date,
                 'total_amount'        => $vi->total_amount,
                 'created_at'          => $vi->created_at,
-                'invoice'             => $invoice,
-                'customer'            => $customer,
+                'invoice'             => $vi->invoice,
+                'customer'            => $vi->customer,
             ];
         });
 

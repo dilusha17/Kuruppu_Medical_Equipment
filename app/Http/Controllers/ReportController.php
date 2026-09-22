@@ -7,10 +7,16 @@ use App\Models\BusinessEntity;
 use App\Models\Customers;
 use App\Models\Invoice;
 use App\Models\Grn;
+use App\Models\TaxInvoice;
 use App\Models\Expense;
 use App\Models\ExpensesCategory;
 use App\Models\Suppliers;
+use App\Models\Receivable;
+use App\Models\Payable;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Carbon\Carbon;
 
 class ReportController extends Controller
@@ -33,7 +39,7 @@ class ReportController extends Controller
         $data = $invoices->map(function ($inv) {
             $collected   = $inv->receivables()->sum('amount');
             $outstanding = max(0, $inv->grand_total - $collected);
-            $daysOverdue = Carbon::parse($inv->invoice_date)->diffInDays(Carbon::now());
+            $daysOverdue = (int) Carbon::parse($inv->invoice_date)->diffInDays(Carbon::now());
 
             return [
                 'id'             => $inv->id,
@@ -60,12 +66,13 @@ class ReportController extends Controller
         $from = $request->date_from ?? Carbon::now()->startOfMonth()->toDateString();
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
 
-        $revenue   = Invoice::whereBetween('invoice_date', [$from, $to])->sum('grand_total');
-        $purchases = Grn::whereBetween('received_date', [$from, $to])->sum('total_amount');
-        $expenses  = Expense::whereBetween('date', [$from, $to])->sum('amount');
+        // Cash-basis figures: actual money received/paid in the date range, not invoiced/billed totals.
+        $revenue   = Receivable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $purchases = Payable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $expenses  = Expense::whereBetween('date', [$from, $to])->sum('paid_amount');
 
         $categorySummary = Expense::whereBetween('date', [$from, $to])
-            ->selectRaw('category_id, SUM(amount) as total')
+            ->selectRaw('category_id, SUM(paid_amount) as total')
             ->groupBy('category_id')
             ->with('category:id,name')
             ->get()
@@ -173,7 +180,7 @@ class ReportController extends Controller
                 'grand_total'    => $inv->grand_total,
                 'collected'      => $collected,
                 'outstanding'    => $outstanding,
-                'days_overdue'   => Carbon::parse($inv->invoice_date)->diffInDays(Carbon::now()),
+                'days_overdue'   => (int) Carbon::parse($inv->invoice_date)->diffInDays(Carbon::now()),
             ];
         })->filter(fn($i) => $i['outstanding'] > 0)->values();
 
@@ -204,12 +211,13 @@ class ReportController extends Controller
         $to   = $request->date_to   ?? Carbon::now()->endOfMonth()->toDateString();
         $company = BusinessEntity::query()->first();
 
-        $revenue   = Invoice::whereBetween('invoice_date', [$from, $to])->sum('grand_total');
-        $purchases = Grn::whereBetween('received_date', [$from, $to])->sum('total_amount');
-        $expenses  = Expense::whereBetween('date', [$from, $to])->sum('amount');
+        // Cash-basis figures: actual money received/paid in the date range, not invoiced/billed totals.
+        $revenue   = Receivable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $purchases = Payable::whereBetween('dateTime', [$from, $to])->sum('amount');
+        $expenses  = Expense::whereBetween('date', [$from, $to])->sum('paid_amount');
 
         $categorySummary = Expense::whereBetween('date', [$from, $to])
-            ->selectRaw('category_id, SUM(amount) as total')
+            ->selectRaw('category_id, SUM(paid_amount) as total')
             ->groupBy('category_id')
             ->with('category:id,name')
             ->get()
@@ -305,5 +313,445 @@ class ReportController extends Controller
         ])->setPaper('a4', 'portrait');
 
         return $pdf->stream('Purchases-Report.pdf');
+    }
+
+    // ── Invoice Summary (Output Tax) ──────────────────────────────────
+
+    public function invoiceSummary(Request $request)
+    {
+        $request->validate([
+            'date_from'   => 'required|date',
+            'date_to'     => 'required|date|after_or_equal:date_from',
+            'customer_id' => ['nullable', 'integer', Rule::exists('customers', 'id')->where('is_vat', 1)],
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $query = $this->buildInvoiceSummaryQuery($from, $to, $request->customer_id);
+
+        $totals = DB::query()->fromSub($query, 'combined')
+            ->selectRaw('SUM(sub_total) AS sum_net, SUM(vat_amount) AS sum_vat')
+            ->first();
+
+        $records = $query->orderByDesc('vat_invoice_date')
+            ->orderByDesc('vat_invoice_number')
+            ->paginate(50);
+
+        $page   = $records->currentPage();
+        $perPage = $records->perPage();
+
+        $records->getCollection()->transform(function ($row, $index) use ($page, $perPage) {
+            return $this->mapInvoiceSummaryRow($row, ($page - 1) * $perPage, $index);
+        });
+
+        return response()->json([
+            'records' => $records,
+            'totals'  => [
+                'sum_net' => round((float) $totals->sum_net, 2),
+                'sum_vat' => round((float) $totals->sum_vat, 2),
+            ],
+        ]);
+    }
+
+    public function invoiceSummaryCsv(Request $request): StreamedResponse
+    {
+        $request->validate([
+            'date_from'   => 'required|date',
+            'date_to'     => 'required|date|after_or_equal:date_from',
+            'customer_id' => ['nullable', 'integer', Rule::exists('customers', 'id')->where('is_vat', 1)],
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $rows = $this->buildInvoiceSummaryQuery($from, $to, $request->customer_id)
+            ->orderBy('vat_invoice_date')
+            ->orderBy('vat_invoice_number')
+            ->get();
+
+        $filename = 'invoice-summary-' . $request->date_from . '-to-' . $request->date_to . '.csv';
+
+        return new StreamedResponse(function () use ($rows) {
+            $h = fopen('php://output', 'w');
+            fputcsv($h, ['#', 'Invoice Date', 'Tax Invoice No', "Purchaser's TIN",
+                         'Name of the Purchaser', 'Value of Supply', 'VAT Amount']);
+
+            $sumNet = $sumVat = 0.0;
+            foreach ($rows as $i => $row) {
+                $mapped = $this->mapInvoiceSummaryRow($row, 0, $i);
+                $sumNet += (float) $row->sub_total;
+                $sumVat += (float) $row->vat_amount;
+                fputcsv($h, [
+                    $mapped['serial_no'],
+                    $mapped['invoice_date'],
+                    $mapped['tax_invoice_no'],
+                    $mapped['tin'],
+                    $mapped['purchaser_name'],
+                    number_format($row->sub_total, 2, '.', ''),
+                    number_format($row->vat_amount, 2, '.', ''),
+                ]);
+            }
+            fputcsv($h, ['', '', '', '', '', number_format($sumNet, 2, '.', ''), number_format($sumVat, 2, '.', '')]);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    private function buildInvoiceSummaryQuery(Carbon $from, Carbon $to, $customerId = null)
+    {
+        $query = TaxInvoice::query()
+            ->with(['customer.vatDetail'])
+            ->whereBetween('vat_invoice_date', [$from, $to]);
+
+        if ($customerId) {
+            $query->where('customer_id', $customerId);
+        }
+
+        return $query;
+    }
+
+    private function mapInvoiceSummaryRow($row, int $offset, int $index): array
+    {
+        $vatDetail = $row->customer?->vatDetail;
+        $vatNumber = $vatDetail?->vat_number;
+        $tin       = $vatNumber ? substr($vatNumber, 0, 9) : '';
+        $name      = $vatDetail?->company_name ?: ($row->customer?->name ?? '—');
+
+        return [
+            'id'              => $row->id,
+            'serial_no'       => $offset + $index + 1,
+            'invoice_date'    => Carbon::parse($row->vat_invoice_date)->format('Y-m-d'),
+            'tax_invoice_no'  => $row->vat_invoice_number,
+            'tin'             => $tin,
+            'purchaser_name'  => $name,
+            'net_amount'      => round((float) $row->sub_total, 2),
+            'vat_amount'      => round((float) $row->vat_amount, 2),
+        ];
+    }
+
+    // ── Purchase Summary (Input Tax) ──────────────────────────────────
+
+    public function purchaseSummary(Request $request)
+    {
+        $request->validate([
+            'date_from'    => 'required|date',
+            'date_to'      => 'required|date|after_or_equal:date_from',
+            'supplier_id'  => ['nullable', 'integer', Rule::exists('suppliers', 'id')->where('is_vat', 1)],
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $query = $this->buildPurchaseSummaryQuery($from, $to, $request->supplier_id);
+
+        $totals = DB::query()->fromSub($query->toBase(), 'combined')
+            ->selectRaw('SUM(sub_total) AS sum_net, SUM(vat_amount) AS sum_vat')
+            ->first();
+
+        $records = $this->buildPurchaseSummaryQuery($from, $to, $request->supplier_id)
+            ->orderBy('received_date')
+            ->orderBy('grn_number')
+            ->paginate(50);
+
+        $page    = $records->currentPage();
+        $perPage = $records->perPage();
+
+        $records->getCollection()->transform(function ($row, $index) use ($page, $perPage) {
+            return $this->mapPurchaseSummaryRow($row, ($page - 1) * $perPage, $index);
+        });
+
+        return response()->json([
+            'records' => $records,
+            'totals'  => [
+                'sum_net' => round((float) $totals->sum_net, 2),
+                'sum_vat' => round((float) $totals->sum_vat, 2),
+            ],
+        ]);
+    }
+
+    public function purchaseSummaryCsv(Request $request): StreamedResponse
+    {
+        $request->validate([
+            'date_from'    => 'required|date',
+            'date_to'      => 'required|date|after_or_equal:date_from',
+            'supplier_id'  => ['nullable', 'integer', Rule::exists('suppliers', 'id')->where('is_vat', 1)],
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $rows = $this->buildPurchaseSummaryQuery($from, $to, $request->supplier_id)
+            ->orderBy('received_date')
+            ->orderBy('grn_number')
+            ->get();
+
+        $filename = 'purchase-summary-' . $request->date_from . '-to-' . $request->date_to . '.csv';
+
+        return new StreamedResponse(function () use ($rows) {
+            $h = fopen('php://output', 'w');
+            fputcsv($h, ['#', 'Date', 'Tax Invoice No.', "Supplier's TIN",
+                         'Name of the Supplier', 'Value of Purchase', 'VAT Amount']);
+
+            $sumNet = $sumVat = 0.0;
+            foreach ($rows as $i => $row) {
+                $mapped = $this->mapPurchaseSummaryRow($row, 0, $i);
+                $sumNet += (float) $row->sub_total;
+                $sumVat += (float) $row->vat_amount;
+                fputcsv($h, [
+                    $mapped['serial_no'],
+                    $mapped['date'],
+                    $mapped['supplier_invoice_no'],
+                    $mapped['tin'],
+                    $mapped['supplier_name'],
+                    number_format($row->sub_total, 2, '.', ''),
+                    number_format($row->vat_amount, 2, '.', ''),
+                ]);
+            }
+            fputcsv($h, ['', '', '', '', '', number_format($sumNet, 2, '.', ''), number_format($sumVat, 2, '.', '')]);
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    private function buildPurchaseSummaryQuery(Carbon $from, Carbon $to, $supplierId = null)
+    {
+        $query = Grn::query()
+            ->with(['supplier.vatDetail'])
+            ->where('is_vat', true)
+            ->whereBetween('received_date', [$from, $to]);
+
+        if ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        }
+
+        return $query;
+    }
+
+    private function mapPurchaseSummaryRow($row, int $offset, int $index): array
+    {
+        $vatDetail = $row->supplier?->vatDetail;
+        $vatNumber = $vatDetail?->vat_number;
+        $tin       = $vatNumber ? substr($vatNumber, 0, 9) : '';
+        $name      = $vatDetail?->company_name ?: ($row->supplier?->name ?? '—');
+
+        return [
+            'id'                  => $row->id,
+            'serial_no'           => $offset + $index + 1,
+            'date'                => Carbon::parse($row->received_date)->format('Y-m-d'),
+            'supplier_invoice_no' => $row->supplier_invoice_no ?: $row->grn_number,
+            'tin'                 => $tin,
+            'supplier_name'       => $name,
+            'net_amount'          => round((float) $row->sub_total, 2),
+            'vat_amount'          => round((float) $row->vat_amount, 2),
+        ];
+    }
+
+    // ── Sales Report ───────────────────────────────────────────────────
+
+    public function sales(Request $request)
+    {
+        $request->validate([
+            'date_from'          => 'required|date',
+            'date_to'            => 'required|date|after_or_equal:date_from',
+            'business_entity_id' => 'nullable|integer|exists:business_entities,id',
+            'customer_id'        => 'nullable|integer|exists:customers,id',
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $records = $this->buildSalesQuery($request, $from, $to)
+            ->orderByDesc('invoice_date')
+            ->orderByDesc('invoice_number')
+            ->paginate(50);
+
+        $page    = $records->currentPage();
+        $perPage = $records->perPage();
+
+        $records->getCollection()->transform(function ($row, $index) use ($page, $perPage) {
+            return $this->mapSalesRow($row, ($page - 1) * $perPage, $index);
+        });
+
+        return response()->json([
+            'records' => $records,
+            'totals'  => $this->salesTotals($request, $from, $to),
+        ]);
+    }
+
+    public function salesCsv(Request $request): StreamedResponse
+    {
+        $request->validate([
+            'date_from'          => 'required|date',
+            'date_to'            => 'required|date|after_or_equal:date_from',
+            'business_entity_id' => 'nullable|integer|exists:business_entities,id',
+            'customer_id'        => 'nullable|integer|exists:customers,id',
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $rows = $this->buildSalesQuery($request, $from, $to)
+            ->orderBy('invoice_date')
+            ->orderBy('invoice_number')
+            ->get();
+
+        $filename = 'sales-report-' . $request->date_from . '-to-' . $request->date_to . '.csv';
+        $sumKeys  = ['sub_total', 'discount', 'vat', 'grand_total', 'credited', 'collected', 'balance'];
+
+        return new StreamedResponse(function () use ($rows, $sumKeys) {
+            $h = fopen('php://output', 'w');
+            fwrite($h, "\xEF\xBB\xBF");
+            fputcsv($h, ['#', 'Date', 'Invoice No', 'Customer', 'Business Entity', 'Sub Total',
+                         'Discount', 'VAT', 'Grand Total', 'Credited', 'Collected', 'Balance', 'Status']);
+
+            $sums = array_fill_keys($sumKeys, 0.0);
+            foreach ($rows as $i => $row) {
+                $mapped = $this->mapSalesRow($row, 0, $i);
+                foreach ($sumKeys as $key) {
+                    $sums[$key] += $mapped[$key];
+                }
+                fputcsv($h, [
+                    $mapped['serial_no'],
+                    $mapped['invoice_date'],
+                    $mapped['invoice_number'],
+                    $mapped['customer_name'],
+                    $mapped['business_entity'],
+                    number_format($mapped['sub_total'], 2, '.', ''),
+                    number_format($mapped['discount'], 2, '.', ''),
+                    number_format($mapped['vat'], 2, '.', ''),
+                    number_format($mapped['grand_total'], 2, '.', ''),
+                    number_format($mapped['credited'], 2, '.', ''),
+                    number_format($mapped['collected'], 2, '.', ''),
+                    number_format($mapped['balance'], 2, '.', ''),
+                    ucfirst($mapped['status']),
+                ]);
+            }
+            fputcsv($h, array_merge(['', '', '', '', ''], array_map(
+                fn($key) => number_format($sums[$key], 2, '.', ''),
+                $sumKeys
+            ), ['']));
+            fclose($h);
+        }, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'no-store, no-cache',
+        ]);
+    }
+
+    public function salesPdf(Request $request)
+    {
+        $request->validate([
+            'date_from'          => 'required|date',
+            'date_to'            => 'required|date|after_or_equal:date_from',
+            'business_entity_id' => 'nullable|integer|exists:business_entities,id',
+            'customer_id'        => 'nullable|integer|exists:customers,id',
+        ]);
+
+        $from = Carbon::parse($request->date_from)->startOfDay();
+        $to   = Carbon::parse($request->date_to)->endOfDay();
+
+        $rows = $this->buildSalesQuery($request, $from, $to)
+            ->orderBy('invoice_date')
+            ->orderBy('invoice_number')
+            ->get()
+            ->values()
+            ->map(fn($row, $i) => $this->mapSalesRow($row, 0, $i));
+
+        $company = $request->filled('business_entity_id')
+            ? BusinessEntity::find($request->business_entity_id)
+            : BusinessEntity::query()->first();
+
+        $entityName = $request->filled('business_entity_id') ? $company?->name : null;
+        $customerName = $request->filled('customer_id')
+            ? Customers::find($request->customer_id)?->name
+            : null;
+
+        $pdf = Pdf::loadView('pdf.report-sales', [
+            'rows'         => $rows,
+            'totals'       => $this->salesTotals($request, $from, $to),
+            'company'      => $company,
+            'dateFrom'     => $request->date_from,
+            'dateTo'       => $request->date_to,
+            'entityName'   => $entityName,
+            'customerName' => $customerName,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Sales-Report.pdf');
+    }
+
+    private function buildSalesQuery(Request $request, Carbon $from, Carbon $to)
+    {
+        $query = Invoice::query()
+            ->with(['customer.vatDetail', 'businessEntity'])
+            ->withSum('receivables as collected_sum', 'amount')
+            ->withSum('creditNotes as credited_sum', 'grand_total')
+            ->whereBetween('invoice_date', [$from, $to]);
+
+        if ($request->filled('business_entity_id')) {
+            $query->where('business_entity_id', $request->business_entity_id);
+        }
+
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        return $query;
+    }
+
+    private function salesTotals(Request $request, Carbon $from, Carbon $to): array
+    {
+        $rows = $this->buildSalesQuery($request, $from, $to)->get();
+
+        $sumKeys = ['sub_total', 'discount', 'vat', 'grand_total', 'credited', 'collected', 'balance'];
+        $sums    = array_fill_keys($sumKeys, 0.0);
+
+        foreach ($rows as $row) {
+            $mapped = $this->mapSalesRow($row, 0, 0);
+            foreach ($sumKeys as $key) {
+                $sums[$key] += $mapped[$key];
+            }
+        }
+
+        $sums['count'] = $rows->count();
+
+        return $sums;
+    }
+
+    private function mapSalesRow($row, int $offset, int $index): array
+    {
+        $vatDetail    = $row->customer?->vatDetail;
+        $customerName = $vatDetail?->company_name ?: ($row->customer?->name ?? 'Walk-in Customer');
+
+        $subTotal   = (float) $row->sub_total;
+        $discount   = (float) $row->discount;
+        $grandTotal = (float) $row->grand_total;
+        $vat        = round($grandTotal - ($subTotal - $discount), 2);
+        $credited   = round((float) ($row->credited_sum ?? 0), 2);
+        $collected  = round((float) ($row->collected_sum ?? 0), 2);
+        $balance    = max(0, round($grandTotal - $credited - $collected, 2));
+
+        return [
+            'id'              => $row->id,
+            'serial_no'       => $offset + $index + 1,
+            'invoice_date'    => Carbon::parse($row->invoice_date)->format('Y-m-d'),
+            'invoice_number'  => $row->invoice_number,
+            'customer_name'   => $customerName,
+            'business_entity' => $row->businessEntity?->name ?? '—',
+            'sub_total'       => round($subTotal, 2),
+            'discount'        => round($discount, 2),
+            'vat'             => $vat,
+            'grand_total'     => round($grandTotal, 2),
+            'credited'        => $credited,
+            'collected'       => $collected,
+            'balance'         => $balance,
+            'status'          => $row->status,
+        ];
     }
 }

@@ -14,8 +14,8 @@ interface CreditNoteItem {
     id: number;
     quantity: number;
     unit_price: number;
-    reason: 'shortage' | 'damage';
-    restock_action: 'restocked' | 'written_off';
+    reason: 'shortage' | 'damage' | 'excess';
+    restock_action: 'restocked' | 'written_off' | 'deducted';
     stock_batch?: { batch_number: string; product?: { generic_name: string } };
 }
 
@@ -29,10 +29,11 @@ interface CreditNoteRow {
     items: CreditNoteItem[];
 }
 
-const reasonBadge = (reason: string) =>
-    reason === 'shortage'
-        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+const reasonBadge = (reason: string) => {
+    if (reason === 'shortage') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+    if (reason === 'excess') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+};
 
 function CreditNoteHistoryPage() {
     const [rows, setRows] = useState<CreditNoteRow[]>([]);

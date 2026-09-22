@@ -40,7 +40,7 @@ interface CreditItemRow {
     already_credited: number;
     creditable_qty: number;
     credit_qty: string;
-    reason: 'shortage' | 'damage';
+    reason: 'shortage' | 'damage' | 'excess';
     restock_action: 'restock' | 'write_off';
 }
 
@@ -248,12 +248,13 @@ function CreditNotePage() {
                                         <td className="px-3 py-2">
                                             <Select
                                                 value={it.reason}
-                                                onValueChange={(v) => updateItem(it.invoice_item_id, { reason: v as 'shortage' | 'damage' })}
+                                                onValueChange={(v) => updateItem(it.invoice_item_id, { reason: v as 'shortage' | 'damage' | 'excess' })}
                                                 disabled={it.creditable_qty === 0}
                                             >
                                                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="shortage">Shortage</SelectItem>
+                                                    <SelectItem value="excess">Excess</SelectItem>
                                                     <SelectItem value="damage">Damage</SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -270,9 +271,13 @@ function CreditNotePage() {
                                                         <SelectItem value="write_off">Write Off</SelectItem>
                                                     </SelectContent>
                                                 </Select>
-                                            ) : (
+                                            ) : it.reason === 'excess' ? (
                                                 <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                                                     Auto-restocked
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                                    Deducted from stock
                                                 </span>
                                             )}
                                         </td>

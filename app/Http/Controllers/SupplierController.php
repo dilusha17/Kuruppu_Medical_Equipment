@@ -94,7 +94,7 @@ class SupplierController extends Controller
             SupplierVatDetail::where('supplier_id', $supplier->id)->delete();
         }
 
-        $supplier->load(['company', 'vatDetail']);
+        $supplier->load('vatDetail');
 
         return response()->json($supplier);
     }

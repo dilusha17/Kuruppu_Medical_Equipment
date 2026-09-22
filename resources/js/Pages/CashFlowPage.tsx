@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { format } from 'date-fns';
 import { Printer, Wallet, Landmark, TrendingUp, TrendingDown, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -72,7 +73,10 @@ function CashFlowPage() {
             setTotalInflow(res.data.total_inflow);
             setTotalOutflow(res.data.total_outflow);
             setNetFlow(res.data.net_flow);
-        } catch (e) { console.log(e); }
+        } catch (e: any) {
+            console.log(e);
+            toast.error(e.response?.data?.message || 'Failed to load cash flow data.');
+        }
         finally { setLoading(false); }
     };
 

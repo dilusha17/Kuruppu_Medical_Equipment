@@ -42,7 +42,7 @@
                 <td class="section-head" colspan="2">Revenue</td>
             </tr>
             <tr>
-                <td class="lbl">Invoice Revenue</td>
+                <td class="lbl">Revenue (Collected)</td>
                 <td class="amt" style="color: #27ae60;">Rs. {{ number_format($data['revenue'], 2) }}</td>
             </tr>
 
@@ -50,7 +50,7 @@
                 <td class="section-head" colspan="2">Less: Cost of Goods</td>
             </tr>
             <tr>
-                <td class="lbl">Purchases (GRNs)</td>
+                <td class="lbl">Purchases (Paid)</td>
                 <td class="amt">Rs. {{ number_format($data['purchases'], 2) }}</td>
             </tr>
 
