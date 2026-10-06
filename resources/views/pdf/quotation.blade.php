@@ -43,7 +43,8 @@
     <p class="company-header">
         {{ $company->company_name ?? 'COMPANY NAME' }}<br>
         @if($company->company_address ?? false) <span style="font-weight: normal">{{ $company->company_address }}</span><br> @endif
-        @if($company->company_phone ?? false) <span style="font-weight: normal">{{ $company->company_phone }}</span> @endif
+        <span style="font-weight: normal; font-size: 9pt;">+94 71 42 37 505, +94 11 291 60 11, FAX: +94 11 291 60 11</span><br>
+        <span style="font-weight: normal; font-size: 10pt; text-transform: lowercase;">info@kuruppusafety.com | www.kuruppusafety.com</span>
     </p>
 
     <h1 class="doc-title">QUOTATION</h1>
